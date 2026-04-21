@@ -1,0 +1,352 @@
+// AngoPress — Prisma Schema
+// PostgreSQL | Prisma ORM
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  ADMIN
+  CLIENT
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+enum SubscriptionStatus {
+  PENDING     // Aguardando confirmação de pagamento
+  ACTIVE      // Ativa
+  EXPIRED     // Expirada
+  CANCELLED   // Cancelada
+}
+
+enum PressReleaseStatus {
+  DRAFT       // Rascunho
+  PUBLISHED   // Publicado
+  SCHEDULED   // Agendado
+  ARCHIVED    // Arquivado
+}
+
+enum CampaignStatus {
+  DRAFT       // Rascunho / configuração
+  QUEUED      // Na fila para envio
+  SENDING     // A ser enviado
+  SENT        // Enviado
+  FAILED      // Falhou
+  SCHEDULED   // Agendado
+  CANCELLED   // Cancelado
+}
+
+enum RecipientStatus {
+  PENDING
+  SENT
+  DELIVERED
+  BOUNCED
+  FAILED
+  OPTED_OUT
+}
+
+enum EmailEventType {
+  DELIVERED
+  OPENED
+  CLICKED
+  BOUNCED
+  COMPLAINED
+  UNSUBSCRIBED
+}
+
+enum MediaType {
+  TV
+  RADIO
+  PRINT      // Jornal impresso
+  DIGITAL    // Portal online / site
+  PODCAST
+  MAGAZINE
+}
+
+enum JournalistRegistrationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ─────────────────────────────────────────────────────────────────
+// USERS
+// ─────────────────────────────────────────────────────────────────
+
+model User {
+  id           String     @id @default(cuid())
+  name         String
+  email        String     @unique
+  passwordHash String     @map("password_hash")
+  role         UserRole   @default(CLIENT)
+  status       UserStatus @default(PENDING)
+  avatarUrl    String?    @map("avatar_url")
+  phone        String?
+  company      String?
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  // Relações
+  subscription    Subscription?
+  pressReleases   PressRelease[]
+  campaigns       Campaign[]
+  mailingLists    MailingList[]
+  refreshTokens   RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  revoked   Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// SUBSCRIPTIONS & PLANS
+// ─────────────────────────────────────────────────────────────────
+
+model SubscriptionPlan {
+  id              String   @id @default(cuid())
+  name            String   @unique  // "Básico", "Profissional", "Empresarial"
+  description     String?
+  maxSendsMonth   Int      @map("max_sends_month")
+  features        Json     // Lista de funcionalidades incluídas
+  priceMonthlyAoa Decimal  @map("price_monthly_aoa") @db.Decimal(10, 2)
+  priceYearlyAoa  Decimal? @map("price_yearly_aoa") @db.Decimal(10, 2)
+  isActive        Boolean  @default(true) @map("is_active")
+  sortOrder       Int      @default(0) @map("sort_order")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  subscriptions Subscription[]
+
+  @@map("subscription_plans")
+}
+
+model Subscription {
+  id          String             @id @default(cuid())
+  userId      String             @unique @map("user_id")
+  planId      String             @map("plan_id")
+  status      SubscriptionStatus @default(PENDING)
+  activatedAt DateTime?          @map("activated_at")
+  expiresAt   DateTime?          @map("expires_at")
+  sendsUsed   Int                @default(0) @map("sends_used")
+  // Periodo de referência para reset do contador
+  periodStart DateTime?          @map("period_start")
+  periodEnd   DateTime?          @map("period_end")
+  // Notas internas do admin (ex: comprovante recebido)
+  adminNotes  String?            @map("admin_notes")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  user User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan SubscriptionPlan @relation(fields: [planId], references: [id])
+
+  @@map("subscriptions")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// JOURNALISTS
+// ─────────────────────────────────────────────────────────────────
+
+model Journalist {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  outlet       String    // Veículo de comunicação
+  jobTitle     String?   @map("job_title")
+  coverageArea String[]  @map("coverage_area") // ["economia", "política", "tecnologia"]
+  mediaType    MediaType @map("media_type")
+  city         String?
+  province     String?
+  country      String    @default("Angola")
+  phone        String?
+  isActive     Boolean   @default(true) @map("is_active")
+  isOptedOut   Boolean   @default(false) @map("is_opted_out")
+  bounceCount  Int       @default(0) @map("bounce_count")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  // Relações
+  listContacts       MailingListContact[]
+  campaignRecipients CampaignRecipient[]
+  emailEvents        EmailEvent[]
+
+  @@index([email])
+  @@index([city, mediaType])
+  @@index([country, province])
+  @@map("journalists")
+}
+
+model JournalistRegistration {
+  id         String                       @id @default(cuid())
+  name       String
+  email      String
+  outlet     String
+  jobTitle   String?                      @map("job_title")
+  mediaType  MediaType                    @map("media_type")
+  city       String?
+  message    String?
+  status     JournalistRegistrationStatus @default(PENDING)
+  reviewedBy String?                      @map("reviewed_by")
+  reviewedAt DateTime?                    @map("reviewed_at")
+  createdAt  DateTime                     @default(now()) @map("created_at")
+
+  @@map("journalist_registrations")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// MAILING LISTS
+// ─────────────────────────────────────────────────────────────────
+
+model MailingList {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user     User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contacts MailingListContact[]
+
+  @@map("mailing_lists")
+}
+
+model MailingListContact {
+  id           String   @id @default(cuid())
+  listId       String   @map("list_id")
+  journalistId String   @map("journalist_id")
+  addedAt      DateTime @default(now()) @map("added_at")
+
+  list       MailingList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  journalist Journalist  @relation(fields: [journalistId], references: [id], onDelete: Cascade)
+
+  @@unique([listId, journalistId])
+  @@map("mailing_list_contacts")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// PRESS RELEASES
+// ─────────────────────────────────────────────────────────────────
+
+model PressRelease {
+  id          String             @id @default(cuid())
+  userId      String             @map("user_id")
+  title       String
+  content     String             // HTML do editor TipTap
+  summary     String?            // Resumo/olho da notícia
+  status      PressReleaseStatus @default(DRAFT)
+  scheduledAt DateTime?          @map("scheduled_at")
+  publishedAt DateTime?          @map("published_at")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  user        User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attachments PressReleaseAttachment[]
+  campaigns   Campaign[]
+
+  @@map("press_releases")
+}
+
+model PressReleaseAttachment {
+  id             String   @id @default(cuid())
+  pressReleaseId String   @map("press_release_id")
+  fileName       String   @map("file_name")
+  fileUrl        String   @map("file_url")    // URL do S3
+  fileType       String   @map("file_type")   // "application/pdf", "image/jpeg", etc.
+  fileSize       Int      @map("file_size")   // em bytes
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  pressRelease PressRelease @relation(fields: [pressReleaseId], references: [id], onDelete: Cascade)
+
+  @@map("press_release_attachments")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// CAMPAIGNS
+// ─────────────────────────────────────────────────────────────────
+
+model Campaign {
+  id             String         @id @default(cuid())
+  userId         String         @map("user_id")
+  pressReleaseId String         @map("press_release_id")
+  name           String
+  subject        String         // Assunto do e-mail
+  status         CampaignStatus @default(DRAFT)
+  scheduledAt    DateTime?      @map("scheduled_at")
+  sentAt         DateTime?      @map("sent_at")
+  totalRecipients Int           @default(0) @map("total_recipients")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pressRelease PressRelease        @relation(fields: [pressReleaseId], references: [id])
+  recipients   CampaignRecipient[]
+  emailEvents  EmailEvent[]
+
+  @@map("campaigns")
+}
+
+model CampaignRecipient {
+  id           String          @id @default(cuid())
+  campaignId   String          @map("campaign_id")
+  journalistId String          @map("journalist_id")
+  status       RecipientStatus @default(PENDING)
+  sentAt       DateTime?       @map("sent_at")
+  // Token único para rastreio por destinatário
+  trackingToken String         @unique @default(cuid()) @map("tracking_token")
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  campaign   Campaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  journalist Journalist @relation(fields: [journalistId], references: [id])
+
+  @@unique([campaignId, journalistId])
+  @@map("campaign_recipients")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ANALYTICS
+// ─────────────────────────────────────────────────────────────────
+
+model EmailEvent {
+  id           String         @id @default(cuid())
+  campaignId   String         @map("campaign_id")
+  journalistId String         @map("journalist_id")
+  eventType    EmailEventType @map("event_type")
+  // Para cliques: URL clicada
+  clickedUrl   String?        @map("clicked_url")
+  // IP do destinatário (para abertura)
+  ipAddress    String?        @map("ip_address")
+  userAgent    String?        @map("user_agent")
+  occurredAt   DateTime       @default(now()) @map("occurred_at")
+
+  campaign   Campaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  journalist Journalist @relation(fields: [journalistId], references: [id])
+
+  @@index([campaignId, eventType])
+  @@index([journalistId])
+  @@map("email_events")
+}
