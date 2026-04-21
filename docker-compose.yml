@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-angopress_dev}
       POSTGRES_DB: ${POSTGRES_DB:-angopress}
     ports:
-      - '5432:5432'
+      - '5434:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:

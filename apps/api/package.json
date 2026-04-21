@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "description": "AngoPress API — NestJS Backend",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "scripts": {
     "build": "nest build",
     "dev": "nest start --watch",
