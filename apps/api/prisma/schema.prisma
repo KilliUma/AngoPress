@@ -93,11 +93,13 @@ model User {
   passwordHash String     @map("password_hash")
   role         UserRole   @default(CLIENT)
   status       UserStatus @default(PENDING)
-  avatarUrl    String?    @map("avatar_url")
-  phone        String?
-  company      String?
-  createdAt    DateTime   @default(now()) @map("created_at")
-  updatedAt    DateTime   @updatedAt @map("updated_at")
+  avatarUrl            String?   @map("avatar_url")
+  phone                String?
+  company              String?
+  passwordResetToken   String?   @map("password_reset_token")
+  passwordResetExpires DateTime? @map("password_reset_expires")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
 
   // Relações
   subscription    Subscription?

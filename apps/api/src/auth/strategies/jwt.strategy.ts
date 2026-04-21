@@ -1,0 +1,34 @@
+import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { PassportStrategy } from '@nestjs/passport'
+import { ExtractJwt, Strategy } from 'passport-jwt'
+import { ConfigService } from '@nestjs/config'
+import { UsersService } from '@/users/users.service'
+import { UserStatus } from '@prisma/client'
+
+export interface JwtPayload {
+  sub: string
+  email: string
+  role: string
+}
+
+@Injectable()
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+  constructor(
+    configService: ConfigService,
+    private readonly usersService: UsersService,
+  ) {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey: configService.get<string>('jwt.secret') as string,
+    })
+  }
+
+  async validate(payload: JwtPayload) {
+    const user = await this.usersService.findById(payload.sub)
+    if (!user || user.status === UserStatus.INACTIVE) {
+      throw new UnauthorizedException('Utilizador inválido ou inactivo')
+    }
+    return { id: user.id, email: user.email, role: user.role, name: user.name }
+  }
+}

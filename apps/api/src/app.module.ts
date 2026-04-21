@@ -2,8 +2,11 @@ import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { ThrottlerModule } from '@nestjs/throttler'
 import { ScheduleModule } from '@nestjs/schedule'
+import { APP_GUARD } from '@nestjs/core'
 import { PrismaModule } from '@/prisma/prisma.module'
 import { AuthModule } from '@/auth/auth.module'
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard'
+import { RolesGuard } from '@/auth/guards/roles.guard'
 import { UsersModule } from '@/users/users.module'
 import { JournalistsModule } from '@/journalists/journalists.module'
 import { PressReleasesModule } from '@/press-releases/press-releases.module'
@@ -56,6 +59,12 @@ import redisConfig from '@/config/redis.config'
     AdminModule,
     UploadsModule,
     WebhooksModule,
+  ],
+  providers: [
+    // Guards globais — JwtAuthGuard protege todas as rotas por defeito
+    // Use @Public() nos endpoints que não precisam de autenticação
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
   ],
 })
 export class AppModule {}
