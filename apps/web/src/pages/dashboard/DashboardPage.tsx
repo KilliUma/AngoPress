@@ -1,6 +1,12 @@
 import { Users, List, FileText, Send, TrendingUp } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 import { useJournalists } from '@/hooks/useJournalists'
 import { useMailingLists } from '@/hooks/useMailingLists'
+import { usePressReleases } from '@/hooks/usePressReleases'
+import { useCampaigns } from '@/hooks/useCampaigns'
 import { useAuthStore } from '@/store/auth.store'
 import { clsx } from 'clsx'
 
@@ -38,11 +44,24 @@ function StatCard({
 
 export function DashboardPage() {
   const { user } = useAuthStore()
+  const navigate = useNavigate()
   const { data: journalistsData, isLoading: loadingJ } = useJournalists({ limit: 1 })
   const { data: listsData, isLoading: loadingL } = useMailingLists()
+  const { data: prData, isLoading: loadingPR } = usePressReleases({ limit: 1 })
+  const { data: campaignsData, isLoading: loadingC } = useCampaigns({ status: 'SENT', limit: 6 })
 
   const totalJournalists = journalistsData?.meta.total ?? 0
   const totalLists = listsData?.length ?? 0
+  const totalPR = prData?.meta.total ?? 0
+  const totalCampaigns = campaignsData?.meta.total ?? 0
+
+  const chartData = (campaignsData?.data ?? [])
+    .filter((c) => c.sentAt)
+    .map((c) => ({
+      name: c.name.length > 16 ? c.name.slice(0, 14) + '…' : c.name,
+      Enviados: c.totalRecipients,
+    }))
+    .reverse()
 
   return (
     <div className="space-y-6">
@@ -70,57 +89,117 @@ export function DashboardPage() {
           color="bg-emerald-500"
           loading={loadingL}
         />
-        <StatCard label="Press Releases" value="—" icon={FileText} color="bg-amber-500" />
-        <StatCard label="Campanhas" value="—" icon={Send} color="bg-violet-500" />
+        <StatCard
+          label="Press Releases"
+          value={totalPR}
+          icon={FileText}
+          color="bg-amber-500"
+          loading={loadingPR}
+        />
+        <StatCard
+          label="Campanhas Enviadas"
+          value={totalCampaigns}
+          icon={Send}
+          color="bg-violet-500"
+          loading={loadingC}
+        />
       </div>
 
-      {/* Quick actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Gráfico de campanhas */}
         <div className="bg-white rounded-xl border border-neutral-200 p-6">
           <div className="flex items-center gap-2 mb-4">
-            <TrendingUp size={18} className="text-brand-600" />
-            <h2 className="font-semibold text-neutral-900">Acções rápidas</h2>
+            <TrendingUp size={16} className="text-brand-600" />
+            <h2 className="font-semibold text-neutral-900 text-sm">Envios por campanha</h2>
           </div>
-          <div className="space-y-2">
-            <a
-              href="/jornalistas"
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 transition-colors group"
-            >
-              <Users size={16} className="text-neutral-400 group-hover:text-brand-600" />
-              <span className="text-sm text-neutral-600 group-hover:text-neutral-900">
-                Gerir base de dados de jornalistas
-              </span>
-            </a>
-            <a
-              href="/listas"
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 transition-colors group"
-            >
-              <List size={16} className="text-neutral-400 group-hover:text-brand-600" />
-              <span className="text-sm text-neutral-600 group-hover:text-neutral-900">
-                Criar ou gerir listas de mailing
-              </span>
-            </a>
-            <a
-              href="/press-releases/novo"
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 transition-colors group"
-            >
-              <FileText size={16} className="text-neutral-400 group-hover:text-brand-600" />
-              <span className="text-sm text-neutral-600 group-hover:text-neutral-900">
-                Redigir novo press release
-              </span>
-            </a>
-          </div>
+          {loadingC ? (
+            <div className="h-40 animate-pulse bg-neutral-100 rounded-lg" />
+          ) : chartData.length === 0 ? (
+            <div className="h-40 flex items-center justify-center text-neutral-400 text-sm">
+              Sem campanhas enviadas ainda.
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={160}>
+              <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10 }} />
+                <Tooltip />
+                <Bar dataKey="Enviados" fill="#7c3aed" radius={[3, 3, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
 
-        <div className="bg-brand-800 rounded-xl p-6 text-white">
-          <h2 className="font-semibold mb-2">AngoPress</h2>
-          <p className="text-brand-300 text-sm mb-4">
-            Plataforma de distribuição de press releases para os principais meios de comunicação de
-            Angola.
-          </p>
-          <div className="text-xs text-brand-400 border-t border-brand-700 pt-4 mt-4">
-            Fase 2 em desenvolvimento · v1.0.0
+        {/* Quick actions + últimas campanhas */}
+        <div className="space-y-4">
+          <div className="bg-white rounded-xl border border-neutral-200 p-5">
+            <h2 className="font-semibold text-neutral-900 text-sm mb-3">Acções rápidas</h2>
+            <div className="space-y-1.5">
+              <a
+                href="/jornalistas"
+                className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-neutral-50 group"
+              >
+                <Users size={15} className="text-neutral-400 group-hover:text-brand-600" />
+                <span className="text-sm text-neutral-600 group-hover:text-neutral-900">
+                  Gerir jornalistas
+                </span>
+              </a>
+              <a
+                href="/press-releases/novo"
+                className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-neutral-50 group"
+              >
+                <FileText size={15} className="text-neutral-400 group-hover:text-brand-600" />
+                <span className="text-sm text-neutral-600 group-hover:text-neutral-900">
+                  Novo press release
+                </span>
+              </a>
+              <a
+                href="/campanhas/nova"
+                className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-neutral-50 group"
+              >
+                <Send size={15} className="text-neutral-400 group-hover:text-brand-600" />
+                <span className="text-sm text-neutral-600 group-hover:text-neutral-900">
+                  Nova campanha
+                </span>
+              </a>
+            </div>
           </div>
+
+          {/* Últimas campanhas */}
+          {campaignsData?.data.length ? (
+            <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
+              <div className="px-5 py-3 border-b border-neutral-100 flex items-center justify-between">
+                <h2 className="font-semibold text-neutral-900 text-sm">Últimas campanhas</h2>
+                <button
+                  type="button"
+                  onClick={() => navigate('/campanhas')}
+                  className="text-xs text-brand-600 hover:underline"
+                >
+                  Ver todas
+                </button>
+              </div>
+              <ul className="divide-y divide-neutral-100">
+                {campaignsData.data.slice(0, 4).map((c) => (
+                  <li
+                    key={c.id}
+                    className="flex items-center justify-between px-5 py-2.5 hover:bg-neutral-50 cursor-pointer"
+                    onClick={() => navigate(`/campanhas/${c.id}`)}
+                  >
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-neutral-800 truncate">{c.name}</p>
+                      <p className="text-xs text-neutral-500">
+                        {c.sentAt ? format(new Date(c.sentAt), 'dd MMM', { locale: ptBR }) : '—'}
+                      </p>
+                    </div>
+                    <span className="text-xs text-neutral-500 ml-3 shrink-0">
+                      {c.totalRecipients} env.
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
