@@ -3,6 +3,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { ValidationPipe, VersioningType } from '@nestjs/common'
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 import { ConfigService } from '@nestjs/config'
+import fastifyMultipart from '@fastify/multipart'
 import { AppModule } from './app.module'
 
 async function bootstrap() {
@@ -14,6 +15,11 @@ async function bootstrap() {
   const configService = app.get(ConfigService)
   const port = configService.get<number>('PORT', 3001)
   const clientUrl = configService.get<string>('CLIENT_URL', 'http://localhost:5173')
+
+  // Upload de ficheiros (multipart)
+  await app.register(fastifyMultipart, {
+    limits: { fileSize: 20 * 1024 * 1024, files: 5 }, // 20MB por ficheiro, máx 5
+  })
 
   // Prefixo global da API
   app.setGlobalPrefix('api')
