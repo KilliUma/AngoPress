@@ -13,12 +13,25 @@ import {
   CreditCard,
   User,
   X,
+  ShieldCheck,
 } from 'lucide-react'
+import { useAuthStore } from '@/store/auth.store'
 
-const NAV_ITEMS = [
-  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+// Navegação exclusiva do ADMINISTRADOR
+const ADMIN_NAV = [
+  { to: '/admin', icon: ShieldCheck, label: 'Painel Admin' },
   { to: '/jornalistas', icon: Users, label: 'Jornalistas' },
   { to: '/listas', icon: List, label: 'Listas de Envio' },
+  { to: '/press-releases', icon: FileText, label: 'Press Releases' },
+  { to: '/campanhas', icon: Megaphone, label: 'Campanhas' },
+  { to: '/analytics', icon: BarChart2, label: 'Analytics' },
+  { to: '/assinatura', icon: CreditCard, label: 'Assinaturas' },
+  { to: '/perfil', icon: User, label: 'Perfil' },
+]
+
+// Navegação exclusiva do CLIENTE
+const CLIENT_NAV = [
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/press-releases', icon: FileText, label: 'Press Releases' },
   { to: '/campanhas', icon: Megaphone, label: 'Campanhas' },
   { to: '/analytics', icon: BarChart2, label: 'Analytics' },
@@ -33,6 +46,10 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname()
+  const { user } = useAuthStore()
+  const isAdmin = user?.role === 'ADMIN'
+  const NAV_ITEMS = isAdmin ? ADMIN_NAV : CLIENT_NAV
+  const homeHref = isAdmin ? '/admin' : '/dashboard'
 
   return (
     <>
@@ -54,7 +71,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       >
         {/* Logo */}
         <div className="h-14 flex items-center justify-between px-5 border-b border-neutral-200 shrink-0">
-          <Link href="/dashboard" className="flex items-center gap-2" onClick={onClose}>
+          <Link href={homeHref} className="flex items-center gap-2" onClick={onClose}>
             <svg viewBox="0 0 36 36" className="w-8 h-8 shrink-0">
               <circle
                 cx="18"
@@ -93,10 +110,18 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           </button>
         </div>
 
+        {/* Badge de ambiente */}
+        {isAdmin && (
+          <div className="mx-3 mt-3 px-3 py-1.5 bg-brand-50 border border-brand-200 rounded-lg flex items-center gap-2">
+            <ShieldCheck size={14} className="text-brand-600 shrink-0" />
+            <span className="text-xs font-semibold text-brand-700">Área de Administração</span>
+          </div>
+        )}
+
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-0.5">
           {NAV_ITEMS.map(({ to, icon: Icon, label }) => {
-            const active = to === '/dashboard' ? pathname === to : pathname.startsWith(to)
+            const active = to === homeHref ? pathname === to : pathname.startsWith(to)
             return (
               <Link
                 key={to}

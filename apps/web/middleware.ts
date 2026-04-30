@@ -44,15 +44,13 @@ function isRateLimited(ip: string, pathname: string): boolean {
 
 const PROTECTED = [
   '/dashboard',
-  '/jornalistas',
-  '/listas',
   '/press-releases',
   '/campanhas',
   '/analytics',
   '/assinatura',
   '/perfil',
 ]
-const ADMIN_ONLY = ['/admin']
+const ADMIN_ONLY = ['/admin', '/jornalistas', '/listas']
 const AUTH_PAGES = ['/login', '/cadastro', '/esqueci-senha', '/redefinir-senha']
 
 export async function middleware(request: NextRequest) {
@@ -82,6 +80,7 @@ export async function middleware(request: NextRequest) {
     try {
       const { payload } = await jwtVerify(token, JWT_SECRET)
       if (ADMIN_ONLY.some((p) => pathname.startsWith(p)) && payload.role !== 'ADMIN') {
+        // Clientes que tentam aceder a rotas admin → redireccionados para o seu dashboard
         return NextResponse.redirect(new URL('/dashboard', request.url))
       }
     } catch {
@@ -91,8 +90,10 @@ export async function middleware(request: NextRequest) {
 
   if (isAuthPage && token) {
     try {
-      await jwtVerify(token, JWT_SECRET)
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+      const { payload } = await jwtVerify(token, JWT_SECRET)
+      // Redireccionamento pós-login por role
+      const dest = payload.role === 'ADMIN' ? '/admin' : '/dashboard'
+      return NextResponse.redirect(new URL(dest, request.url))
     } catch {
       // token inválido, continua para página de auth
     }

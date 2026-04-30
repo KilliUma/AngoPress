@@ -16,6 +16,7 @@ export function useRegister() {
     onSuccess: ({ user }) => {
       setUser(user)
       qc.clear()
+      // Novos registos são sempre CLIENT → dashboard do cliente
       router.push('/dashboard')
     },
     onError: (error: { response?: { data?: { message?: string } } }) => {
@@ -34,7 +35,8 @@ export function useLogin() {
     onSuccess: ({ user }) => {
       setUser(user)
       qc.clear()
-      router.push('/dashboard')
+      // Redireccionamento por role: admin → /admin, cliente → /dashboard
+      router.push(user.role === 'ADMIN' ? '/admin' : '/dashboard')
     },
     onError: (error: { response?: { data?: { message?: string } } }) => {
       toast.error(error.response?.data?.message || 'Credenciais inválidas. Tente novamente.')

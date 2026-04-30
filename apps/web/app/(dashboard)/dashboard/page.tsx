@@ -3,8 +3,7 @@
 import Link from 'next/link'
 import { Users, List, FileText, Send, TrendingUp } from 'lucide-react'
 import { clsx } from 'clsx'
-import { useJournalists } from '@/hooks/useJournalists'
-import { useMailingLists } from '@/hooks/useMailingLists'
+import { usePressReleases } from '@/hooks/usePressReleases'
 import { useAuthStore } from '@/store/auth.store'
 
 function StatCard({
@@ -41,11 +40,9 @@ function StatCard({
 
 export default function DashboardPage() {
   const { user } = useAuthStore()
-  const { data: journalistsData, isLoading: loadingJ } = useJournalists({ limit: 1 })
-  const { data: listsData, isLoading: loadingL } = useMailingLists()
+  const { data: prData, isLoading: loadingPR } = usePressReleases({ limit: 1 })
 
-  const totalJournalists = journalistsData?.meta?.total ?? 0
-  const totalLists = listsData?.length ?? 0
+  const totalPR = prData?.meta?.total ?? 0
 
   return (
     <div className="space-y-6">
@@ -58,21 +55,15 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          label="Jornalistas"
-          value={totalJournalists}
-          icon={Users}
+          label="Press Releases"
+          value={totalPR}
+          icon={FileText}
           color="bg-brand-600"
-          loading={loadingJ}
+          loading={loadingPR}
         />
-        <StatCard
-          label="Listas de Mailing"
-          value={totalLists}
-          icon={List}
-          color="bg-emerald-500"
-          loading={loadingL}
-        />
-        <StatCard label="Press Releases" value="—" icon={FileText} color="bg-amber-500" />
         <StatCard label="Campanhas" value="—" icon={Send} color="bg-violet-500" />
+        <StatCard label="Jornalistas alcançados" value="—" icon={Users} color="bg-emerald-500" />
+        <StatCard label="Aberturas de email" value="—" icon={TrendingUp} color="bg-amber-500" />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -83,30 +74,39 @@ export default function DashboardPage() {
           </div>
           <div className="space-y-2">
             <Link
-              href="/jornalistas"
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 transition-colors group"
-            >
-              <Users size={16} className="text-neutral-400 group-hover:text-brand-600" />
-              <span className="text-sm text-neutral-600 group-hover:text-neutral-900">
-                Gerir base de dados de jornalistas
-              </span>
-            </Link>
-            <Link
-              href="/listas"
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 transition-colors group"
-            >
-              <List size={16} className="text-neutral-400 group-hover:text-brand-600" />
-              <span className="text-sm text-neutral-600 group-hover:text-neutral-900">
-                Criar ou gerir listas de mailing
-              </span>
-            </Link>
-            <Link
               href="/press-releases/novo"
               className="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 transition-colors group"
             >
               <FileText size={16} className="text-neutral-400 group-hover:text-brand-600" />
               <span className="text-sm text-neutral-600 group-hover:text-neutral-900">
                 Redigir novo press release
+              </span>
+            </Link>
+            <Link
+              href="/campanhas"
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 transition-colors group"
+            >
+              <Send size={16} className="text-neutral-400 group-hover:text-brand-600" />
+              <span className="text-sm text-neutral-600 group-hover:text-neutral-900">
+                Criar nova campanha de envio
+              </span>
+            </Link>
+            <Link
+              href="/analytics"
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 transition-colors group"
+            >
+              <TrendingUp size={16} className="text-neutral-400 group-hover:text-brand-600" />
+              <span className="text-sm text-neutral-600 group-hover:text-neutral-900">
+                Ver relatórios de desempenho
+              </span>
+            </Link>
+            <Link
+              href="/assinatura"
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 transition-colors group"
+            >
+              <List size={16} className="text-neutral-400 group-hover:text-brand-600" />
+              <span className="text-sm text-neutral-600 group-hover:text-neutral-900">
+                Consultar plano e assinatura
               </span>
             </Link>
           </div>
