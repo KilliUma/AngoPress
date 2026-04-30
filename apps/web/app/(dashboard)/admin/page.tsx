@@ -9,7 +9,7 @@ import {
   TrendingUp,
   UserCheck,
   CreditCard,
-  BarChart2,
+  Settings,
 } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useJournalists } from '@/hooks/useJournalists'
@@ -110,9 +110,17 @@ export default function AdminDashboardPage() {
           <div className="space-y-1">
             {[
               { href: '/jornalistas', icon: Users, label: 'Gerir base de dados de jornalistas' },
-              { href: '/listas', icon: List, label: 'Criar ou gerir listas de mailing' },
-              { href: '/press-releases', icon: FileText, label: 'Ver todos os press releases' },
-              { href: '/analytics', icon: BarChart2, label: 'Consultar analytics da plataforma' },
+              {
+                href: '/admin/utilizadores',
+                icon: UserCheck,
+                label: 'Gerir utilizadores e clientes',
+              },
+              {
+                href: '/admin/assinaturas',
+                icon: CreditCard,
+                label: 'Consultar assinaturas activas',
+              },
+              { href: '/admin/planos', icon: Settings, label: 'Gerir planos de preços' },
             ].map(({ href, icon: Icon, label }) => (
               <Link
                 key={href}
@@ -128,25 +136,25 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        <div className="bg-brand-800 rounded-xl p-6 text-white">
+        <div className="bg-neutral-900 rounded-xl p-6 text-white">
           <h2 className="font-semibold mb-2">Área de Administração</h2>
-          <p className="text-brand-300 text-sm mb-4">
-            Aqui gere todos os recursos partilhados da plataforma — jornalistas, listas e
-            distribuição de comunicados para os clientes AngoPress.
+          <p className="text-neutral-300 text-sm mb-4">
+            Aqui gere todos os recursos da plataforma — a base de dados de jornalistas (o produto
+            core), clientes, assinaturas e planos.
           </p>
           <div className="space-y-2">
             {[
               {
-                icon: UserCheck,
-                label: 'Gerir jornalistas e registos pendentes',
+                icon: Users,
+                label: 'Importar/Exportar Jornalistas (CSV)',
                 href: '/jornalistas',
               },
-              { icon: CreditCard, label: 'Consultar assinaturas activas', href: '/assinatura' },
+              { icon: CreditCard, label: 'Painel de Assinaturas', href: '/admin/assinaturas' },
             ].map(({ icon: Icon, label, href }) => (
               <Link
                 key={href}
                 href={href}
-                className="flex items-center gap-2 text-brand-200 hover:text-white text-sm transition-colors"
+                className="flex items-center gap-2 text-neutral-400 hover:text-white text-sm transition-colors"
               >
                 <Icon size={14} />
                 {label}

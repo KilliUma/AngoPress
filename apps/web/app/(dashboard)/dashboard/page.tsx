@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { Users, List, FileText, Send, TrendingUp } from 'lucide-react'
 import { clsx } from 'clsx'
 import { usePressReleases } from '@/hooks/usePressReleases'
+import { useJournalists } from '@/hooks/useJournalists'
+import { useMailingLists } from '@/hooks/useMailingLists'
 import { useAuthStore } from '@/store/auth.store'
 
 function StatCard({
@@ -41,8 +43,12 @@ function StatCard({
 export default function DashboardPage() {
   const { user } = useAuthStore()
   const { data: prData, isLoading: loadingPR } = usePressReleases({ limit: 1 })
+  const { data: jData, isLoading: loadingJ } = useJournalists({ limit: 1 })
+  const { data: mlData, isLoading: loadingML } = useMailingLists()
 
   const totalPR = prData?.meta?.total ?? 0
+  const totalJournalists = jData?.meta?.total ?? 0
+  const totalLists = mlData?.length ?? 0
 
   return (
     <div className="space-y-6">
@@ -55,15 +61,27 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
+          label="Jornalistas na BD"
+          value={totalJournalists}
+          icon={Users}
+          color="bg-emerald-500"
+          loading={loadingJ}
+        />
+        <StatCard
+          label="Listas de Mailing"
+          value={totalLists}
+          icon={List}
+          color="bg-violet-500"
+          loading={loadingML}
+        />
+        <StatCard
           label="Press Releases"
           value={totalPR}
           icon={FileText}
           color="bg-brand-600"
           loading={loadingPR}
         />
-        <StatCard label="Campanhas" value="—" icon={Send} color="bg-violet-500" />
-        <StatCard label="Jornalistas alcançados" value="—" icon={Users} color="bg-emerald-500" />
-        <StatCard label="Aberturas de email" value="—" icon={TrendingUp} color="bg-amber-500" />
+        <StatCard label="Campanhas Enviadas" value="—" icon={Send} color="bg-amber-500" />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -112,13 +130,15 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-brand-800 rounded-xl p-6 text-white">
-          <h2 className="font-semibold mb-2">AngoPress</h2>
-          <p className="text-brand-300 text-sm mb-4">
-            Plataforma de distribuição de press releases para os principais meios de comunicação de
-            Angola.
-          </p>
-          <div className="text-xs text-brand-400 border-t border-brand-700 pt-4 mt-4">v1.0.0</div>
+        <div className="bg-brand-800 rounded-xl p-6 text-white flex flex-col justify-between">
+          <div>
+            <h2 className="font-semibold mb-2">AngoPress</h2>
+            <p className="text-brand-300 text-sm">
+              Plataforma de distribuição de press releases para os principais meios de comunicação
+              de Angola.
+            </p>
+          </div>
+          <div className="text-xs text-brand-400 border-t border-brand-700 pt-4 mt-6">v1.0.0</div>
         </div>
       </div>
     </div>

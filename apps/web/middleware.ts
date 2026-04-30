@@ -44,13 +44,15 @@ function isRateLimited(ip: string, pathname: string): boolean {
 
 const PROTECTED = [
   '/dashboard',
+  '/jornalistas',
+  '/listas',
   '/press-releases',
   '/campanhas',
   '/analytics',
   '/assinatura',
   '/perfil',
 ]
-const ADMIN_ONLY = ['/admin', '/jornalistas', '/listas']
+const ADMIN_ONLY = ['/admin']
 const AUTH_PAGES = ['/login', '/cadastro', '/esqueci-senha', '/redefinir-senha']
 
 export async function middleware(request: NextRequest) {
