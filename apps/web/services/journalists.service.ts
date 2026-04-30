@@ -30,6 +30,8 @@ export interface JournalistQuery {
   search?: string
   mediaType?: MediaType
   coverageArea?: string
+  city?: string
+  country?: string
   isActive?: string
   page?: number
   limit?: number
@@ -76,4 +78,20 @@ export const journalistsService = {
 
   submitRegistration: (payload: JournalistRegistrationPayload) =>
     api.post('/journalists/registrations', payload).then((r) => r.data),
+
+  exportCsv: () =>
+    api.get('/journalists/export', { responseType: 'blob' }).then((r) => r.data as Blob),
+
+  importCsv: (file: File) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    return api
+      .post<{
+        message: string
+        created: number
+        skipped: number
+        errors: { row: number; message: string }[]
+      }>('/journalists/import', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+      .then((r) => r.data)
+  },
 }

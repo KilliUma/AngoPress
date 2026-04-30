@@ -68,3 +68,31 @@ export function useDeleteJournalist() {
     onError: () => toast.error('Erro ao remover jornalista'),
   })
 }
+
+export function useExportJournalistsCsv() {
+  return useMutation({
+    mutationFn: async () => {
+      const blob = await journalistsService.exportCsv()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `jornalistas-${new Date().toISOString().split('T')[0]}.csv`
+      a.click()
+      URL.revokeObjectURL(url)
+    },
+    onError: () => toast.error('Erro ao exportar CSV'),
+  })
+}
+
+export function useImportJournalistsCsv() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (file: File) => journalistsService.importCsv(file),
+    onSuccess: (result) => {
+      qc.invalidateQueries({ queryKey: journalistKeys.all })
+      toast.success(result.message)
+    },
+    onError: (e: { response?: { data?: { message?: string } } }) =>
+      toast.error(e.response?.data?.message || 'Erro ao importar CSV'),
+  })
+}

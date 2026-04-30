@@ -1,17 +1,42 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
-import { Plus, Search, Pencil, Trash2, X, Loader2, RefreshCw, Users } from 'lucide-react'
+import {
+  Plus,
+  Search,
+  Pencil,
+  Trash2,
+  X,
+  Loader2,
+  RefreshCw,
+  Users,
+  Download,
+  Upload,
+  AlertCircle,
+  CheckCircle2,
+} from 'lucide-react'
 import { clsx } from 'clsx'
 import {
   useJournalists,
   useCreateJournalist,
   useUpdateJournalist,
   useDeleteJournalist,
+  useExportJournalistsCsv,
+  useImportJournalistsCsv,
 } from '@/hooks/useJournalists'
 import type { Journalist, CreateJournalistPayload, MediaType } from '@/services/journalists.service'
 import { useAuthStore } from '@/store/auth.store'
+
+/** Debounce simples */
+function useDebounce<T>(value: T, delay = 300): T {
+  const [debounced, setDebounced] = useState(value)
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), delay)
+    return () => clearTimeout(t)
+  }, [value, delay])
+  return debounced
+}
 
 const MEDIA_TYPE_LABELS: Record<MediaType, string> = {
   TV: 'Televisão',
@@ -250,46 +275,99 @@ function JournalistModal({
 export default function JournalistsPage() {
   const { user } = useAuthStore()
   const isAdmin = user?.role === 'ADMIN'
-  const [search, setSearch] = useState('')
+  const [searchInput, setSearchInput] = useState('')
   const [mediaTypeFilter, setMediaTypeFilter] = useState<MediaType | ''>('')
+  const [cityFilter, setCityFilter] = useState('')
   const [page, setPage] = useState(1)
   const [modalOpen, setModalOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<Journalist | undefined>()
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
+  const [importOpen, setImportOpen] = useState(false)
+  const [importFile, setImportFile] = useState<File | null>(null)
+  const [importErrors, setImportErrors] = useState<{ row: number; message: string }[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Debounce 300ms na pesquisa
+  const search = useDebounce(searchInput, 300)
+  const cityDebounced = useDebounce(cityFilter, 300)
 
   const { data, isLoading, refetch } = useJournalists({
     search: search || undefined,
     mediaType: mediaTypeFilter || undefined,
+    city: cityDebounced || undefined,
     page,
     limit: 20,
   })
   const deleteMutation = useDeleteJournalist()
+  const exportCsv = useExportJournalistsCsv()
+  const importCsv = useImportJournalistsCsv()
+
+  const handleImport = async () => {
+    if (!importFile) return
+    setImportErrors([])
+    const result = await importCsv.mutateAsync(importFile).catch((e) => {
+      const errs = e?.response?.data?.errors ?? []
+      setImportErrors(errs)
+      return null
+    })
+    if (result) {
+      setImportErrors(result.errors ?? [])
+      setImportOpen(false)
+      setImportFile(null)
+    }
+  }
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-neutral-900">Jornalistas</h1>
           <p className="text-neutral-500 text-sm mt-0.5">Base de dados de jornalistas angolanos</p>
         </div>
-        <button
-          onClick={() => {
-            setEditTarget(undefined)
-            setModalOpen(true)
-          }}
-          className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors"
-        >
-          <Plus size={16} /> Novo jornalista
-        </button>
+        <div className="flex items-center gap-2">
+          {isAdmin && (
+            <>
+              <button
+                onClick={() => exportCsv.mutate()}
+                disabled={exportCsv.isPending}
+                className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium border border-neutral-300 rounded-lg text-neutral-700 hover:bg-neutral-50 disabled:opacity-60 transition-colors"
+                title="Exportar CSV"
+              >
+                {exportCsv.isPending ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <Download size={14} />
+                )}
+                Exportar
+              </button>
+              <button
+                onClick={() => setImportOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium border border-neutral-300 rounded-lg text-neutral-700 hover:bg-neutral-50 transition-colors"
+              >
+                <Upload size={14} /> Importar CSV
+              </button>
+            </>
+          )}
+          <button
+            onClick={() => {
+              setEditTarget(undefined)
+              setModalOpen(true)
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors"
+          >
+            <Plus size={16} /> Novo jornalista
+          </button>
+        </div>
       </div>
 
+      {/* Filtros */}
       <div className="flex items-center gap-3 flex-wrap">
         <div className="relative flex-1 min-w-[200px] max-w-sm">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
           <input
-            value={search}
+            value={searchInput}
             onChange={(e) => {
-              setSearch(e.target.value)
+              setSearchInput(e.target.value)
               setPage(1)
             }}
             placeholder="Pesquisar nome, email ou veículo..."
@@ -311,6 +389,15 @@ export default function JournalistsPage() {
             </option>
           ))}
         </select>
+        <input
+          value={cityFilter}
+          onChange={(e) => {
+            setCityFilter(e.target.value)
+            setPage(1)
+          }}
+          placeholder="Filtrar por cidade..."
+          className="border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 w-40"
+        />
         <button
           onClick={() => refetch()}
           className="p-2 text-neutral-500 hover:text-brand-600 hover:bg-neutral-100 rounded-lg transition-colors"
@@ -320,6 +407,7 @@ export default function JournalistsPage() {
         </button>
       </div>
 
+      {/* Tabela */}
       <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
@@ -424,6 +512,7 @@ export default function JournalistsPage() {
         )}
       </div>
 
+      {/* Paginação */}
       {data && data.meta.totalPages > 1 && (
         <div className="flex items-center justify-between text-sm text-neutral-500">
           <span>
@@ -452,8 +541,10 @@ export default function JournalistsPage() {
         </div>
       )}
 
+      {/* Modal criar/editar */}
       {modalOpen && <JournalistModal journalist={editTarget} onClose={() => setModalOpen(false)} />}
 
+      {/* Confirmar eliminação */}
       {deleteTarget && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-sm">
@@ -479,6 +570,100 @@ export default function JournalistsPage() {
                 {deleteMutation.isPending && <Loader2 size={14} className="animate-spin" />}
                 Eliminar
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal importar CSV */}
+      {importOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg">
+            <div className="flex items-center justify-between p-6 border-b border-neutral-200">
+              <h2 className="text-lg font-semibold text-neutral-900">Importar Jornalistas (CSV)</h2>
+              <button
+                onClick={() => {
+                  setImportOpen(false)
+                  setImportFile(null)
+                  setImportErrors([])
+                }}
+                className="text-neutral-400 hover:text-neutral-600"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <p className="text-sm text-neutral-600">
+                O CSV deve ter as colunas:{' '}
+                <code className="bg-neutral-100 px-1 rounded text-xs">
+                  name, email, outlet, mediaType
+                </code>{' '}
+                (obrigatórias) e opcionalmente{' '}
+                <code className="bg-neutral-100 px-1 rounded text-xs">
+                  jobTitle, coverageArea, city, province, country, phone, isActive
+                </code>
+                .
+              </p>
+              <p className="text-xs text-neutral-500">
+                Separar múltiplas áreas com ponto e vírgula (;). Tipos de média válidos: TV, RADIO,
+                PRINT, DIGITAL, PODCAST.
+              </p>
+              <div
+                className="border-2 border-dashed border-neutral-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 transition-colors"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {importFile ? (
+                  <div className="flex items-center justify-center gap-2 text-emerald-600">
+                    <CheckCircle2 size={18} />
+                    <span className="text-sm font-medium">{importFile.name}</span>
+                  </div>
+                ) : (
+                  <div className="text-neutral-400">
+                    <Upload size={24} className="mx-auto mb-2" />
+                    <p className="text-sm">Clique para seleccionar um ficheiro CSV</p>
+                  </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".csv,text/csv"
+                  className="hidden"
+                  onChange={(e) => setImportFile(e.target.files?.[0] ?? null)}
+                />
+              </div>
+              {importErrors.length > 0 && (
+                <div className="max-h-32 overflow-y-auto space-y-1">
+                  {importErrors.map((err) => (
+                    <div
+                      key={err.row}
+                      className="flex items-start gap-2 text-xs text-amber-700 bg-amber-50 rounded px-2 py-1"
+                    >
+                      <AlertCircle size={12} className="shrink-0 mt-0.5" />
+                      Linha {err.row}: {err.message}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  onClick={() => {
+                    setImportOpen(false)
+                    setImportFile(null)
+                    setImportErrors([])
+                  }}
+                  className="px-4 py-2 text-sm text-neutral-600"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleImport}
+                  disabled={!importFile || importCsv.isPending}
+                  className="flex items-center gap-2 px-5 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 disabled:opacity-60 transition-colors"
+                >
+                  {importCsv.isPending && <Loader2 size={14} className="animate-spin" />}
+                  Importar
+                </button>
+              </div>
             </div>
           </div>
         </div>

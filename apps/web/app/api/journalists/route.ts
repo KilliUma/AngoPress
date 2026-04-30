@@ -12,6 +12,8 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') ?? undefined
     const mediaType = searchParams.get('mediaType') ?? undefined
     const coverageArea = searchParams.get('coverageArea') ?? undefined
+    const city = searchParams.get('city') ?? undefined
+    const country = searchParams.get('country') ?? undefined
     const isActive = searchParams.get('isActive') ?? undefined
     const page = Number(searchParams.get('page') ?? 1)
     const limit = Number(searchParams.get('limit') ?? 20)
@@ -23,10 +25,14 @@ export async function GET(request: NextRequest) {
         { name: { contains: search, mode: 'insensitive' } },
         { email: { contains: search, mode: 'insensitive' } },
         { outlet: { contains: search, mode: 'insensitive' } },
+        { jobTitle: { contains: search, mode: 'insensitive' } },
+        { coverageArea: { has: search.toLowerCase() } },
       ]
     }
     if (mediaType) where.mediaType = mediaType
     if (coverageArea) where.coverageArea = { has: coverageArea }
+    if (city) where.city = { contains: city, mode: 'insensitive' }
+    if (country) where.country = { contains: country, mode: 'insensitive' }
     if (isActive !== undefined) where.isActive = isActive === 'true'
 
     const [data, total] = await Promise.all([
