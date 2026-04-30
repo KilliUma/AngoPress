@@ -12,7 +12,6 @@ import { LoginPage } from '@/pages/auth/LoginPage'
 import { RegisterPage } from '@/pages/auth/RegisterPage'
 import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage'
 import { ResetPasswordPage } from '@/pages/auth/ResetPasswordPage'
-
 // Dashboard Pages
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
 import { JournalistsPage } from '@/pages/journalists/JournalistsPage'
@@ -53,6 +52,9 @@ export const router = createBrowserRouter([
       { path: '/redefinir-senha', element: <ResetPasswordPage /> },
     ],
   },
+
+  // Registo público de jornalistas — redirecciona para o login; o modal está na landing page
+  { path: '/cadastro-jornalista', element: <Navigate to="/login" replace /> },
 
   // Rotas protegidas do cliente
   {

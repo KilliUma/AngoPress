@@ -64,11 +64,30 @@ export class AuthService {
   async login(dto: LoginDto) {
     const user = await this.usersService.findByEmail(dto.email.toLowerCase())
     if (!user) {
+      // Verificar se é um jornalista com pedido de cadastro pendente ou rejeitado
+      const journalistReg = await this.prisma.journalistRegistration.findFirst({
+        where: { email: dto.email.toLowerCase() },
+        orderBy: { createdAt: 'desc' },
+      })
+      if (journalistReg?.status === 'PENDING') {
+        throw new UnauthorizedException(
+          'O seu pedido de cadastro como jornalista está em análise. Receberá uma notificação quando for aprovado.',
+        )
+      }
+      if (journalistReg?.status === 'REJECTED') {
+        throw new UnauthorizedException(
+          'O seu pedido de cadastro como jornalista foi rejeitado. Contacte o suporte para mais informações.',
+        )
+      }
       throw new UnauthorizedException('Credenciais inválidas')
     }
 
     if (user.status === UserStatus.INACTIVE) {
       throw new UnauthorizedException('Conta inactiva. Contacte o suporte.')
+    }
+
+    if (user.status === UserStatus.PENDING) {
+      throw new UnauthorizedException('A sua conta está pendente de activação. Contacte o suporte.')
     }
 
     const passwordMatch = await bcrypt.compare(dto.password, user.passwordHash)

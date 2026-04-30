@@ -63,13 +63,21 @@ api.interceptors.response.use(
       isRefreshing = true
 
       try {
+        const refreshToken = useAuthStore.getState().refreshToken
+        if (!refreshToken) {
+          throw new Error('Sem refresh token')
+        }
         const { data } = await axios.post(
           `${BASE_URL}/api/v1/auth/refresh`,
-          {},
+          { refreshToken },
           { withCredentials: true },
         )
         const newToken = data.accessToken
         useAuthStore.getState().setAccessToken(newToken)
+        // Actualizar o refreshToken se a API devolver um novo (rotação)
+        if (data.refreshToken) {
+          useAuthStore.setState({ refreshToken: data.refreshToken })
+        }
         processQueue(null, newToken)
         originalRequest.headers.Authorization = `Bearer ${newToken}`
         return api(originalRequest)

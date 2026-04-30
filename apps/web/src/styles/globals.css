@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Sonner toasts — garantir z-index elevado */
+[data-sonner-toaster] {
+  z-index: 9999 !important;
+}
+
 @layer base {
   :root {
     --color-brand: #8a0018;

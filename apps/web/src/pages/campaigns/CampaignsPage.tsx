@@ -94,73 +94,76 @@ export function CampaignsPage() {
             <p className="text-neutral-500 text-sm">Nenhuma campanha encontrada.</p>
           </div>
         ) : (
-          <table className="w-full text-sm">
-            <thead className="bg-neutral-50 text-neutral-500 text-xs uppercase tracking-wide">
-              <tr>
-                <th className="text-left px-5 py-3 font-medium">Nome</th>
-                <th className="text-left px-5 py-3 font-medium">Press Release</th>
-                <th className="text-left px-5 py-3 font-medium">Estado</th>
-                <th className="text-left px-5 py-3 font-medium">Destinatários</th>
-                <th className="text-left px-5 py-3 font-medium">Criada em</th>
-                <th className="px-5 py-3" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-100">
-              {data.data.map((c) => (
-                <tr key={c.id} className="hover:bg-neutral-50 transition-colors">
-                  <td className="px-5 py-3 font-medium text-neutral-800 max-w-xs truncate">
-                    {c.name}
-                  </td>
-                  <td className="px-5 py-3 text-neutral-500 max-w-[160px] truncate">
-                    {c.pressRelease?.title ?? '—'}
-                  </td>
-                  <td className="px-5 py-3">
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[c.status]}`}
-                    >
-                      {STATUS_LABELS[c.status]}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3 text-neutral-500">{c.totalRecipients}</td>
-                  <td className="px-5 py-3 text-neutral-500">
-                    {format(new Date(c.createdAt), 'dd MMM yyyy', { locale: ptBR })}
-                  </td>
-                  <td className="px-5 py-3">
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        type="button"
-                        onClick={() => navigate(`/campanhas/${c.id}`)}
-                        title="Relatório"
-                        className="p-1.5 rounded hover:bg-neutral-100 text-neutral-500"
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[640px]">
+              <thead className="bg-neutral-50 text-neutral-500 text-xs uppercase tracking-wide">
+                <tr>
+                  <th className="text-left px-5 py-3 font-medium">Nome</th>
+                  <th className="text-left px-5 py-3 font-medium">Press Release</th>
+                  <th className="text-left px-5 py-3 font-medium">Estado</th>
+                  <th className="text-left px-5 py-3 font-medium">Destinatários</th>
+                  <th className="text-left px-5 py-3 font-medium">Criada em</th>
+                  <th className="px-5 py-3" />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-100">
+                {data.data.map((c) => (
+                  <tr key={c.id} className="hover:bg-neutral-50 transition-colors">
+                    <td className="px-5 py-3 font-medium text-neutral-800 max-w-xs truncate">
+                      {c.name}
+                    </td>
+                    <td className="px-5 py-3 text-neutral-500 max-w-[160px] truncate">
+                      {c.pressRelease?.title ?? '—'}
+                    </td>
+                    <td className="px-5 py-3">
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[c.status]}`}
                       >
-                        <BarChart2 size={15} />
-                      </button>
-                      {(c.status === 'DRAFT' || c.status === 'SCHEDULED') && (
+                        {STATUS_LABELS[c.status]}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3 text-neutral-500">{c.totalRecipients}</td>
+                    <td className="px-5 py-3 text-neutral-500">
+                      {format(new Date(c.createdAt), 'dd MMM yyyy', { locale: ptBR })}
+                    </td>
+                    <td className="px-5 py-3">
+                      <div className="flex items-center justify-end gap-1">
                         <button
                           type="button"
-                          onClick={() => sendCampaign.mutate(c.id)}
-                          title="Enviar agora"
-                          className="p-1.5 rounded hover:bg-green-50 text-green-600"
+                          onClick={() => navigate(`/campanhas/${c.id}`)}
+                          title="Relatório"
+                          className="p-1.5 rounded hover:bg-neutral-100 text-neutral-500"
                         >
-                          <Send size={15} />
+                          <BarChart2 size={15} />
                         </button>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (window.confirm('Eliminar esta campanha?')) deleteCampaign.mutate(c.id)
-                        }}
-                        title="Eliminar"
-                        className="p-1.5 rounded hover:bg-red-50 text-red-500"
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                        {(c.status === 'DRAFT' || c.status === 'SCHEDULED') && (
+                          <button
+                            type="button"
+                            onClick={() => sendCampaign.mutate(c.id)}
+                            title="Enviar agora"
+                            className="p-1.5 rounded hover:bg-green-50 text-green-600"
+                          >
+                            <Send size={15} />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.confirm('Eliminar esta campanha?'))
+                              deleteCampaign.mutate(c.id)
+                          }}
+                          title="Eliminar"
+                          className="p-1.5 rounded hover:bg-red-50 text-red-500"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 

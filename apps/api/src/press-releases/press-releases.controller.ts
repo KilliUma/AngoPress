@@ -27,11 +27,20 @@ interface JwtUser {
   name: string
 }
 
+import { Public } from '@/auth/decorators/public.decorator'
+
 @ApiTags('press-releases')
 @ApiBearerAuth()
 @Controller('press-releases')
 export class PressReleasesController {
   constructor(private readonly pressReleasesService: PressReleasesService) {}
+
+  @Public()
+  @Get('public/featured')
+  @ApiOperation({ summary: 'Press releases publicados em destaque (público)' })
+  getFeatured() {
+    return this.pressReleasesService.getFeatured()
+  }
 
   @Get()
   @ApiOperation({ summary: 'Listar press releases com filtros' })

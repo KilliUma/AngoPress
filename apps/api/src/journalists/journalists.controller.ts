@@ -15,7 +15,9 @@ import { JournalistsService } from './journalists.service'
 import { CreateJournalistDto } from './dto/create-journalist.dto'
 import { UpdateJournalistDto } from './dto/update-journalist.dto'
 import { QueryJournalistDto } from './dto/query-journalist.dto'
+import { CreateJournalistRegistrationDto } from './dto/create-journalist-registration.dto'
 import { Roles } from '@/auth/decorators/roles.decorator'
+import { Public } from '@/auth/decorators/public.decorator'
 import { UserRole } from '@prisma/client'
 
 @ApiTags('journalists')
@@ -55,5 +57,15 @@ export class JournalistsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: string) {
     return this.journalistsService.remove(id)
+  }
+
+  // ─── Registo público de jornalista ───────────────────────────────────────────
+
+  @Public()
+  @Post('registrations')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Jornalista submete pedido de cadastro (público)' })
+  submitRegistration(@Body() dto: CreateJournalistRegistrationDto) {
+    return this.journalistsService.submitRegistration(dto)
   }
 }

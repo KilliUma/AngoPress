@@ -365,96 +365,98 @@ export function JournalistsPage() {
             <p className="text-sm mt-1">Adicione o primeiro jornalista à base de dados</p>
           </div>
         ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-neutral-200 bg-neutral-50 text-neutral-500 text-xs uppercase tracking-wide">
-                <th className="text-left px-4 py-3">Nome</th>
-                <th className="text-left px-4 py-3 hidden md:table-cell">Veículo</th>
-                <th className="text-left px-4 py-3 hidden lg:table-cell">Meio</th>
-                <th className="text-left px-4 py-3 hidden xl:table-cell">Áreas</th>
-                <th className="text-left px-4 py-3">Estado</th>
-                <th className="text-right px-4 py-3">Acções</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-100">
-              {data.data.map((j) => (
-                <tr key={j.id} className="hover:bg-neutral-50 transition-colors">
-                  <td className="px-4 py-3">
-                    <div>
-                      <p className="font-medium text-neutral-900">{j.name}</p>
-                      <p className="text-xs text-neutral-500">{j.email}</p>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-neutral-600 hidden md:table-cell">
-                    <div>
-                      <p>{j.outlet}</p>
-                      {j.jobTitle && <p className="text-xs text-neutral-400">{j.jobTitle}</p>}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 hidden lg:table-cell">
-                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-700">
-                      {MEDIA_TYPE_LABELS[j.mediaType]}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 hidden xl:table-cell">
-                    <div className="flex flex-wrap gap-1">
-                      {j.coverageArea.slice(0, 3).map((a) => (
-                        <span
-                          key={a}
-                          className="px-1.5 py-0.5 bg-neutral-100 text-neutral-600 rounded text-xs"
-                        >
-                          {a}
-                        </span>
-                      ))}
-                      {j.coverageArea.length > 3 && (
-                        <span className="text-xs text-neutral-400">
-                          +{j.coverageArea.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={clsx(
-                        'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium',
-                        j.isActive
-                          ? 'bg-emerald-50 text-emerald-700'
-                          : 'bg-neutral-100 text-neutral-500',
-                      )}
-                    >
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[520px]">
+              <thead>
+                <tr className="border-b border-neutral-200 bg-neutral-50 text-neutral-500 text-xs uppercase tracking-wide">
+                  <th className="text-left px-4 py-3">Nome</th>
+                  <th className="text-left px-4 py-3 hidden md:table-cell">Veículo</th>
+                  <th className="text-left px-4 py-3 hidden lg:table-cell">Meio</th>
+                  <th className="text-left px-4 py-3 hidden xl:table-cell">Áreas</th>
+                  <th className="text-left px-4 py-3">Estado</th>
+                  <th className="text-right px-4 py-3">Acções</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-100">
+                {data.data.map((j) => (
+                  <tr key={j.id} className="hover:bg-neutral-50 transition-colors">
+                    <td className="px-4 py-3">
+                      <div>
+                        <p className="font-medium text-neutral-900">{j.name}</p>
+                        <p className="text-xs text-neutral-500">{j.email}</p>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-neutral-600 hidden md:table-cell">
+                      <div>
+                        <p>{j.outlet}</p>
+                        {j.jobTitle && <p className="text-xs text-neutral-400">{j.jobTitle}</p>}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 hidden lg:table-cell">
+                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-700">
+                        {MEDIA_TYPE_LABELS[j.mediaType]}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 hidden xl:table-cell">
+                      <div className="flex flex-wrap gap-1">
+                        {j.coverageArea.slice(0, 3).map((a) => (
+                          <span
+                            key={a}
+                            className="px-1.5 py-0.5 bg-neutral-100 text-neutral-600 rounded text-xs"
+                          >
+                            {a}
+                          </span>
+                        ))}
+                        {j.coverageArea.length > 3 && (
+                          <span className="text-xs text-neutral-400">
+                            +{j.coverageArea.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
                       <span
                         className={clsx(
-                          'w-1.5 h-1.5 rounded-full',
-                          j.isActive ? 'bg-emerald-500' : 'bg-neutral-400',
+                          'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium',
+                          j.isActive
+                            ? 'bg-emerald-50 text-emerald-700'
+                            : 'bg-neutral-100 text-neutral-500',
                         )}
-                      />
-                      {j.isActive ? 'Activo' : 'Inactivo'}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        onClick={() => openEdit(j)}
-                        className="p-1.5 rounded hover:bg-neutral-100 text-neutral-500 hover:text-brand-600 transition-colors"
-                        title="Editar"
                       >
-                        <Pencil size={14} />
-                      </button>
-                      {isAdmin && (
+                        <span
+                          className={clsx(
+                            'w-1.5 h-1.5 rounded-full',
+                            j.isActive ? 'bg-emerald-500' : 'bg-neutral-400',
+                          )}
+                        />
+                        {j.isActive ? 'Activo' : 'Inactivo'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-1">
                         <button
-                          onClick={() => setDeleteTarget(j.id)}
-                          className="p-1.5 rounded hover:bg-red-50 text-neutral-500 hover:text-red-600 transition-colors"
-                          title="Remover"
+                          onClick={() => openEdit(j)}
+                          className="p-1.5 rounded hover:bg-neutral-100 text-neutral-500 hover:text-brand-600 transition-colors"
+                          title="Editar"
                         >
-                          <Trash2 size={14} />
+                          <Pencil size={14} />
                         </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                        {isAdmin && (
+                          <button
+                            onClick={() => setDeleteTarget(j.id)}
+                            className="p-1.5 rounded hover:bg-red-50 text-neutral-500 hover:text-red-600 transition-colors"
+                            title="Remover"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 

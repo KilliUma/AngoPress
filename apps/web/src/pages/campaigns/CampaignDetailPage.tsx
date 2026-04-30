@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { ArrowLeft, Send, Loader2, Download } from 'lucide-react'
+import { ArrowLeft, Send, Loader2, Download, FileDown } from 'lucide-react'
 import {
   useCampaign,
   useCampaignMetrics,
@@ -48,7 +48,7 @@ function MetricCard({
 }
 
 function exportCsv(events: ReturnType<typeof useCampaignEvents>['data']) {
-  if (!events?.data.length) return
+  if (!events) return
   const header = 'Jornalista,E-mail,Veículo,Evento,URL Clicada,Data'
   const rows = events.data.map((e) =>
     [
@@ -74,6 +74,8 @@ export function CampaignDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [eventsPage, setEventsPage] = useState(1)
+  const [exportingPdf, setExportingPdf] = useState(false)
+  const metricsRef = useRef<HTMLDivElement>(null)
 
   const { data: campaign, isLoading } = useCampaign(id)
   // Polling a cada 5s quando está a enviar
@@ -83,6 +85,32 @@ export function CampaignDetailPage() {
   )
   const { data: events } = useCampaignEvents(id!, eventsPage)
   const sendCampaign = useSendCampaign()
+
+  async function exportPdf() {
+    if (!metricsRef.current || !campaign) return
+    setExportingPdf(true)
+    try {
+      const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf'),
+      ])
+      const canvas = await html2canvas(metricsRef.current, { scale: 2, useCORS: true })
+      const imgData = canvas.toDataURL('image/png')
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: [canvas.width / 2, canvas.height / 2 + 60],
+      })
+      pdf.setFontSize(14)
+      pdf.text(`Relatório: ${campaign.name}`, 20, 30)
+      pdf.setFontSize(10)
+      pdf.text(`Assunto: ${campaign.subject}`, 20, 46)
+      pdf.addImage(imgData, 'PNG', 0, 60, canvas.width / 2, canvas.height / 2)
+      pdf.save(`relatorio-${campaign.name.replace(/\s+/g, '-').toLowerCase()}.pdf`)
+    } finally {
+      setExportingPdf(false)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -126,11 +154,22 @@ export function CampaignDetailPage() {
             Enviar agora
           </button>
         )}
+        {metrics && (
+          <button
+            type="button"
+            onClick={exportPdf}
+            disabled={exportingPdf}
+            className="flex items-center gap-2 px-3 py-2 rounded-xl border border-neutral-200 text-sm text-neutral-600 hover:bg-neutral-50 disabled:opacity-40"
+          >
+            {exportingPdf ? <Loader2 size={14} className="animate-spin" /> : <FileDown size={14} />}
+            Exportar PDF
+          </button>
+        )}
       </div>
 
       {/* Métricas */}
       {metrics && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div ref={metricsRef} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           <MetricCard label="Enviados" value={campaign.totalRecipients} />
           <MetricCard label="Entregues" value={metrics.metrics.delivered} />
           <MetricCard

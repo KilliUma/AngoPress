@@ -10,10 +10,14 @@ import {
 import { UpdateUserStatusDto } from './dto/update-user-status.dto'
 import { AdminActivateSubscriptionDto } from './dto/activate-subscription.dto'
 import { ReviewRegistrationDto } from './dto/review-registration.dto'
+import { MailService } from '@/mail/mail.service'
 
 @Injectable()
 export class AdminService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mail: MailService,
+  ) {}
 
   // ─── Estatísticas globais ──────────────────────────────────────────────────
 
@@ -42,6 +46,23 @@ export class AdminService {
       totalJournalists,
       totalPressReleases,
     }
+  }
+
+  async getPublicStats() {
+    const [totalJournalists, totalCampaignsSent, activeCompanies, recentJournalists] =
+      await Promise.all([
+        this.prisma.journalist.count({ where: { isActive: true } }),
+        this.prisma.campaign.count({ where: { status: 'SENT' } }),
+        this.prisma.subscription.count({ where: { status: SubscriptionStatus.ACTIVE } }),
+        this.prisma.journalist.findMany({
+          where: { isActive: true },
+          select: { name: true },
+          orderBy: { createdAt: 'desc' },
+          take: 5,
+        }),
+      ])
+    const journalistInitials = recentJournalists.map((j) => j.name.trim().charAt(0).toUpperCase())
+    return { totalJournalists, totalCampaignsSent, activeCompanies, journalistInitials }
   }
 
   // ─── Utilizadores ─────────────────────────────────────────────────────────
@@ -151,8 +172,11 @@ export class AdminService {
       await this.prisma.user.update({ where: { id: userId }, data: { status: UserStatus.ACTIVE } })
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let result: any
+
     if (user.subscription) {
-      return this.prisma.subscription.update({
+      result = await this.prisma.subscription.update({
         where: { userId },
         data: {
           status: SubscriptionStatus.ACTIVE,
@@ -169,28 +193,39 @@ export class AdminService {
           plan: true,
         },
       })
+    } else {
+      if (!dto.planId) {
+        throw new NotFoundException('planId é obrigatório para criar uma nova subscrição')
+      }
+
+      result = await this.prisma.subscription.create({
+        data: {
+          userId,
+          planId: dto.planId,
+          status: SubscriptionStatus.ACTIVE,
+          activatedAt: now,
+          expiresAt,
+          periodStart: now,
+          periodEnd: expiresAt,
+          ...(dto.adminNotes && { adminNotes: dto.adminNotes }),
+        },
+        include: {
+          user: { select: { id: true, name: true, email: true } },
+          plan: true,
+        },
+      })
     }
 
-    if (!dto.planId) {
-      throw new NotFoundException('planId é obrigatório para criar uma nova subscrição')
-    }
-
-    return this.prisma.subscription.create({
-      data: {
-        userId,
-        planId: dto.planId,
-        status: SubscriptionStatus.ACTIVE,
-        activatedAt: now,
-        expiresAt,
-        periodStart: now,
-        periodEnd: expiresAt,
-        ...(dto.adminNotes && { adminNotes: dto.adminNotes }),
-      },
-      include: {
-        user: { select: { id: true, name: true, email: true } },
-        plan: true,
-      },
+    // Enviar email de notificação ao utilizador
+    void this.mail.sendSubscriptionActivated({
+      toEmail: result.user.email,
+      toName: result.user.name,
+      planName: result.plan.name,
+      expiresAt,
+      sendsPerMonth: result.plan.maxSendsMonth,
     })
+
+    return result
   }
 
   // ─── Planos ────────────────────────────────────────────────────────────────
@@ -240,6 +275,16 @@ export class AdminService {
     ])
 
     return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } }
+  }
+
+  async getAdminNotifications() {
+    const [pendingSubscriptions, pendingJournalistRegistrations] = await Promise.all([
+      this.prisma.subscription.count({ where: { status: SubscriptionStatus.PENDING } }),
+      this.prisma.journalistRegistration.count({
+        where: { status: JournalistRegistrationStatus.PENDING },
+      }),
+    ])
+    return { pendingSubscriptions, pendingJournalistRegistrations }
   }
 
   async reviewJournalistRegistration(id: string, dto: ReviewRegistrationDto, reviewedBy: string) {

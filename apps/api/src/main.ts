@@ -5,6 +5,10 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 import { ConfigService } from '@nestjs/config'
 import fastifyMultipart from '@fastify/multipart'
 import { AppModule } from './app.module'
+import { initSentry } from './sentry'
+
+// Inicializar Sentry antes de tudo
+initSentry()
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -15,6 +19,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService)
   const port = configService.get<number>('PORT', 3001)
   const clientUrl = configService.get<string>('CLIENT_URL', 'http://localhost:5173')
+  const landingUrl = configService.get<string>('LANDING_URL', 'http://localhost:3002')
 
   // Upload de ficheiros (multipart)
   await app.register(fastifyMultipart, {
@@ -29,7 +34,7 @@ async function bootstrap() {
 
   // CORS
   app.enableCors({
-    origin: [clientUrl],
+    origin: [clientUrl, landingUrl],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   })

@@ -27,7 +27,22 @@ export class PressReleasesService {
     private readonly prisma: PrismaService,
     private readonly s3: S3Service,
   ) {}
-
+  // ─── Público: press releases em destaque ─────────────────────────
+  async getFeatured() {
+    const data = await this.prisma.pressRelease.findMany({
+      where: { status: PressReleaseStatus.PUBLISHED },
+      orderBy: { publishedAt: 'desc' },
+      take: 6,
+      select: {
+        id: true,
+        title: true,
+        summary: true,
+        publishedAt: true,
+        user: { select: { name: true, company: true } },
+      },
+    })
+    return data
+  }
   // ─── Listagem ──────────────────────────────────────────────────
   async findAll(userId: string, userRole: string, query: QueryPressReleaseDto) {
     const { search, status, page = 1, limit = 20 } = query

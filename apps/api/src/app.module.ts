@@ -19,6 +19,7 @@ import { AdminModule } from '@/admin/admin.module'
 import { UploadsModule } from '@/uploads/uploads.module'
 import { WebhooksModule } from '@/webhooks/webhooks.module'
 import { HealthModule } from '@/health/health.module'
+import { MailModule } from '@/mail/mail.module'
 import appConfig from '@/config/app.config'
 import databaseConfig from '@/config/database.config'
 import jwtConfig from '@/config/jwt.config'
@@ -57,6 +58,7 @@ import redisConfig from '@/config/redis.config'
     AnalyticsModule,
     SubscriptionsModule,
     AdminModule,
+    MailModule,
     UploadsModule,
     WebhooksModule,
   ],

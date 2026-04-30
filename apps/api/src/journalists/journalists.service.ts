@@ -3,6 +3,7 @@ import { PrismaService } from '@/prisma/prisma.service'
 import { CreateJournalistDto } from './dto/create-journalist.dto'
 import { UpdateJournalistDto } from './dto/update-journalist.dto'
 import { QueryJournalistDto } from './dto/query-journalist.dto'
+import { CreateJournalistRegistrationDto } from './dto/create-journalist-registration.dto'
 import { Prisma } from '@prisma/client'
 
 @Injectable()
@@ -100,5 +101,26 @@ export class JournalistsService {
   async remove(id: string) {
     await this.findOne(id)
     await this.prisma.journalist.delete({ where: { id } })
+  }
+
+  /** Pedido de cadastro público por jornalistas */
+  async submitRegistration(dto: CreateJournalistRegistrationDto) {
+    const duplicate = await this.prisma.journalistRegistration.findFirst({
+      where: { email: dto.email.toLowerCase(), status: 'PENDING' },
+    })
+    if (duplicate) {
+      throw new ConflictException('Já existe um pedido pendente para este e-mail.')
+    }
+    return this.prisma.journalistRegistration.create({
+      data: {
+        name: dto.name,
+        email: dto.email.toLowerCase(),
+        outlet: dto.outlet,
+        mediaType: dto.mediaType,
+        jobTitle: dto.jobTitle,
+        city: dto.city,
+        message: dto.message,
+      },
+    })
   }
 }

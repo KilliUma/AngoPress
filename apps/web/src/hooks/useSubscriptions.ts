@@ -18,6 +18,9 @@ export function useMySubscription() {
   return useQuery({
     queryKey: KEYS.my,
     queryFn: () => subscriptionsService.getMySubscription(),
+    // Revalida a cada 15s — detecta activação pelo admin em tempo real
+    refetchInterval: 15_000,
+    refetchIntervalInBackground: false,
   })
 }
 

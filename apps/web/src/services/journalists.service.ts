@@ -55,6 +55,16 @@ export interface CreateJournalistPayload {
 
 export type UpdateJournalistPayload = Partial<CreateJournalistPayload>
 
+export interface JournalistRegistrationPayload {
+  name: string
+  email: string
+  outlet: string
+  mediaType: MediaType
+  jobTitle?: string
+  city?: string
+  message?: string
+}
+
 export const journalistsService = {
   list: (query?: JournalistQuery) =>
     api.get<JournalistListResponse>('/journalists', { params: query }).then((r) => r.data),
@@ -68,4 +78,7 @@ export const journalistsService = {
     api.put<Journalist>(`/journalists/${id}`, payload).then((r) => r.data),
 
   remove: (id: string) => api.delete(`/journalists/${id}`),
+
+  submitRegistration: (payload: JournalistRegistrationPayload) =>
+    api.post('/journalists/registrations', payload).then((r) => r.data),
 }

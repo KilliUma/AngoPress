@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
+import { AlertCircle } from 'lucide-react'
 import { useLogin } from '@/hooks/useAuth'
 
 interface LoginFormData {
@@ -7,57 +8,80 @@ interface LoginFormData {
   password: string
 }
 
+type ApiError = { response?: { data?: { message?: string } } }
+
 export function LoginPage() {
-  const { mutate: login, isPending } = useLogin()
+  const { mutate: login, isPending, isError, error } = useLogin()
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormData>()
 
+  const serverMessage = (error as ApiError)?.response?.data?.message
+
   const onSubmit = (data: LoginFormData) => login(data)
 
   return (
-    <div className="w-full space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">Iniciar sessão</h2>
-        <p className="mt-1 text-sm text-gray-600">
+    <div className="w-full">
+      <div className="mb-8">
+        <h2 className="text-2xl font-extrabold text-neutral-900 tracking-tight">
+          Bem-vindo de volta
+        </h2>
+        <p className="mt-1.5 text-sm text-neutral-500">
           Não tem conta?{' '}
-          <Link to="/register" className="font-medium text-brand-700 hover:text-brand-800">
-            Registar
+          <Link
+            to="/cadastro"
+            className="font-semibold text-brand-600 hover:text-brand-700 transition-colors"
+          >
+            Criar conta grátis
           </Link>
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {isError && serverMessage && (
+          <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+            <p className="text-sm text-amber-800">{serverMessage}</p>
+          </div>
+        )}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="email"
+            className="block text-xs font-semibold text-neutral-600 uppercase tracking-wide mb-1"
+          >
             Email
           </label>
           <input
             id="email"
             type="email"
             autoComplete="email"
+            placeholder="nome@empresa.ao"
             {...register('email', {
               required: 'Email obrigatório',
               pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Email inválido' },
             })}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-700 focus:outline-none focus:ring-1 focus:ring-brand-700 disabled:bg-gray-50"
+            className="mt-1 block w-full rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 shadow-sm placeholder:text-neutral-400 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 disabled:bg-neutral-50 transition-colors"
             disabled={isPending}
           />
           {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="password"
+            className="block text-xs font-semibold text-neutral-600 uppercase tracking-wide mb-1"
+          >
             Password
           </label>
           <input
             id="password"
             type="password"
             autoComplete="current-password"
+            placeholder="A sua password"
             {...register('password', { required: 'Password obrigatória' })}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-700 focus:outline-none focus:ring-1 focus:ring-brand-700 disabled:bg-gray-50"
+            className="mt-1 block w-full rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 shadow-sm placeholder:text-neutral-400 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 disabled:bg-neutral-50 transition-colors"
             disabled={isPending}
           />
           {errors.password && (
@@ -67,8 +91,8 @@ export function LoginPage() {
 
         <div className="flex items-center justify-end">
           <Link
-            to="/forgot-password"
-            className="text-sm font-medium text-brand-700 hover:text-brand-800"
+            to="/esqueci-senha"
+            className="text-xs font-semibold text-brand-600 hover:text-brand-700 transition-colors"
           >
             Esqueceu a password?
           </Link>
@@ -77,9 +101,9 @@ export function LoginPage() {
         <button
           type="submit"
           disabled={isPending}
-          className="w-full rounded-lg bg-brand-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 transition-colors"
+          className="w-full rounded-xl bg-brand-600 px-4 py-3 text-sm font-bold text-white shadow-md shadow-brand-200 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 transition-colors"
         >
-          {isPending ? 'A entrar…' : 'Entrar'}
+          {isPending ? 'A entrar…' : 'Entrar na conta'}
         </button>
       </form>
     </div>

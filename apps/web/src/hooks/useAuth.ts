@@ -11,7 +11,7 @@ export function useLogin() {
   return useMutation({
     mutationFn: (payload: LoginPayload) => authService.login(payload),
     onSuccess: (data) => {
-      setAuth(data.user, data.accessToken)
+      setAuth(data.user, data.accessToken, data.refreshToken)
       toast.success(`Bem-vindo, ${data.user.name}!`)
       navigate(data.user.role === 'ADMIN' ? '/admin' : '/dashboard')
     },
@@ -28,7 +28,7 @@ export function useRegister() {
   return useMutation({
     mutationFn: (payload: RegisterPayload) => authService.register(payload),
     onSuccess: (data) => {
-      setAuth(data.user, data.accessToken)
+      setAuth(data.user, data.accessToken, data.refreshToken)
       toast.success('Conta criada com sucesso!')
       navigate('/dashboard')
     },

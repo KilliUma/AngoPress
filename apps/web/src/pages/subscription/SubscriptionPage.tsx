@@ -23,13 +23,11 @@ function PlanCard({
   isCurrentPlan,
   onSelect,
   loading,
-  canRequest,
 }: {
   plan: SubscriptionPlan
   isCurrentPlan: boolean
   onSelect: (id: string) => void
   loading: boolean
-  canRequest: boolean
 }) {
   return (
     <div
@@ -77,7 +75,7 @@ function PlanCard({
         ))}
       </ul>
 
-      {!isCurrentPlan && canRequest && (
+      {!isCurrentPlan && (
         <button
           type="button"
           disabled={loading}
@@ -107,7 +105,8 @@ export function SubscriptionPage() {
   const sendsRemaining = subscription?.sendsRemaining ?? 0
   const progressPct = sendsMax > 0 ? Math.min(100, (sendsUsed / sendsMax) * 100) : 0
 
-  const canRequest = !subscription || status === 'EXPIRED' || status === 'CANCELLED'
+  // Empresa pode solicitar qualquer plano que não seja o actual (incluindo upgrade/downgrade com sub activa)
+  const canRequest = true
 
   return (
     <div className="space-y-8">

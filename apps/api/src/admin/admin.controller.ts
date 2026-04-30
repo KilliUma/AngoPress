@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common'
 import { AdminService } from './admin.service'
 import { Roles } from '@/auth/decorators/roles.decorator'
+import { Public } from '@/auth/decorators/public.decorator'
 import { CurrentUser } from '@/auth/decorators/current-user.decorator'
 import {
   UserRole,
@@ -35,6 +36,19 @@ export class AdminController {
   @Get('stats')
   getStats() {
     return this.admin.getStats()
+  }
+
+  @Get('public-stats')
+  @Public()
+  getPublicStats() {
+    return this.admin.getPublicStats()
+  }
+
+  // ─── Notificações ──────────────────────────────────────────────
+
+  @Get('notifications')
+  getAdminNotifications() {
+    return this.admin.getAdminNotifications()
   }
 
   // ─── Utilizadores ──────────────────────────────────────────────

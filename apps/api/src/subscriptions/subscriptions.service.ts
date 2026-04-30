@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-  BadRequestException,
-} from '@nestjs/common'
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common'
 import { PrismaService } from '@/prisma/prisma.service'
 import { SubscriptionStatus } from '@prisma/client'
 import { RequestSubscriptionDto } from './dto/request-subscription.dto'
@@ -61,10 +56,6 @@ export class SubscriptionsService {
     if (!plan || !plan.isActive) throw new NotFoundException('Plano não encontrado ou inactivo')
 
     const existing = await this.prisma.subscription.findUnique({ where: { userId } })
-
-    if (existing?.status === SubscriptionStatus.ACTIVE) {
-      throw new ConflictException('Já possui uma assinatura activa. Aguarde a renovação.')
-    }
 
     if (existing) {
       return this.prisma.subscription.update({

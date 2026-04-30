@@ -148,4 +148,12 @@ export const adminService = {
     notes?: string,
   ) =>
     api.post(`/admin/journalist-registrations/${id}/review`, { status, notes }).then((r) => r.data),
+
+  getNotifications: () =>
+    api
+      .get<{
+        pendingSubscriptions: number
+        pendingJournalistRegistrations: number
+      }>('/admin/notifications')
+      .then((r) => r.data),
 }
