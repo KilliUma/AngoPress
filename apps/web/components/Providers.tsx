@@ -2,7 +2,8 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useAuthStore } from '@/store/auth.store'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -11,6 +12,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
         defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
       }),
   )
+
+  useEffect(() => {
+    useAuthStore.persist.rehydrate()
+  }, [])
 
   return (
     <QueryClientProvider client={queryClient}>

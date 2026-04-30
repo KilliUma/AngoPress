@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
+import { useQuery } from '@tanstack/react-query'
 import {
   Plus,
   Search,
@@ -48,18 +49,23 @@ const MEDIA_TYPE_LABELS: Record<MediaType, string> = {
 
 const MEDIA_TYPES = Object.keys(MEDIA_TYPE_LABELS) as MediaType[]
 
-const COVERAGE_AREAS = [
+const FALLBACK_COVERAGE_AREAS = [
   'economia',
-  'política',
+  'politica',
   'tecnologia',
-  'saúde',
+  'saude',
   'desporto',
   'cultura',
   'sociedade',
-  'negócios',
+  'negocios',
   'internacional',
-  'educação',
+  'educacao',
 ]
+
+interface CategoryOption {
+  name: string
+  slug: string
+}
 
 function JournalistModal({
   journalist,
@@ -96,6 +102,16 @@ function JournalistModal({
   })
 
   const selectedAreas = watch('coverageArea') ?? []
+  const { data: categories = [] } = useQuery<CategoryOption[]>({
+    queryKey: ['categories'],
+    queryFn: () => fetch('/api/categories').then((res) => res.json()),
+  })
+  const coverageAreas =
+    categories.length > 0 ? categories.map((category) => category.slug) : FALLBACK_COVERAGE_AREAS
+  const coverageLabels = Object.fromEntries(
+    categories.map((category) => [category.slug, category.name]),
+  )
+
   const toggleArea = (area: string) => {
     setValue(
       'coverageArea',
@@ -219,7 +235,7 @@ function JournalistModal({
               Áreas de cobertura
             </label>
             <div className="flex flex-wrap gap-2">
-              {COVERAGE_AREAS.map((area) => (
+              {coverageAreas.map((area) => (
                 <button
                   key={area}
                   type="button"
@@ -231,7 +247,7 @@ function JournalistModal({
                       : 'bg-white text-neutral-600 border-neutral-300 hover:border-brand-400',
                   )}
                 >
-                  {area}
+                  {coverageLabels[area] ?? area}
                 </button>
               ))}
             </div>

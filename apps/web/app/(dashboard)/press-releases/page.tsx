@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import {
@@ -198,7 +197,7 @@ export default function PressReleasesPage() {
         />
       </div>
 
-      <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden">
+      <div className="bg-white border border-neutral-200 rounded-2xl overflow-visible">
         {isLoading ? (
           <div className="p-12 text-center text-neutral-400 text-sm">A carregar...</div>
         ) : !data?.data.length ? (

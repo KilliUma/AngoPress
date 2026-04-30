@@ -14,7 +14,7 @@ export interface JwtPayload {
 }
 
 export async function signAccessToken(payload: JwtPayload): Promise<string> {
-  return new SignJWT(payload as Record<string, unknown>)
+  return new SignJWT({ ...payload })
     .setProtectedHeader({ alg: 'HS256' })
     .setExpirationTime('15m')
     .setIssuedAt()
@@ -22,7 +22,7 @@ export async function signAccessToken(payload: JwtPayload): Promise<string> {
 }
 
 export async function signRefreshToken(payload: JwtPayload): Promise<string> {
-  return new SignJWT(payload as Record<string, unknown>)
+  return new SignJWT({ ...payload })
     .setProtectedHeader({ alg: 'HS256' })
     .setExpirationTime('7d')
     .setIssuedAt()

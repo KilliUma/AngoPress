@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/subscriptions/plans — público
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const plans = await prisma.subscriptionPlan.findMany({
       where: { isActive: true },

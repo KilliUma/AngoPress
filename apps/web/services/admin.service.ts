@@ -5,7 +5,7 @@ export type UserRole = 'ADMIN' | 'CLIENT'
 export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'PENDING'
 export type SubscriptionStatus = 'PENDING' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED'
 export type JournalistRegistrationStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
-export type MediaType = 'PRINT' | 'ONLINE' | 'TV' | 'RADIO' | 'AGENCY'
+export type MediaType = 'TV' | 'RADIO' | 'PRINT' | 'DIGITAL' | 'PODCAST' | 'MAGAZINE'
 
 export interface AdminUser {
   id: string
@@ -55,11 +55,14 @@ export interface JournalistRegistration {
 
 export interface AdminStats {
   totalUsers: number
+  activeUsers: number
   activeSubscriptions: number
   pendingSubscriptions: number
   totalCampaignsSent: number
+  totalSends: number
   totalJournalists: number
   totalPressReleases: number
+  monthlyRevenueAoa: number
 }
 
 export interface PageMeta {
@@ -106,6 +109,25 @@ export interface CreatePlanPayload {
   sortOrder?: number
 }
 
+export interface Category {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  isActive: boolean
+  sortOrder: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateCategoryPayload {
+  name: string
+  slug?: string
+  description?: string
+  isActive?: boolean
+  sortOrder?: number
+}
+
 export const adminService = {
   getStats: () => api.get<AdminStats>('/admin/stats').then((r) => r.data),
 
@@ -134,6 +156,19 @@ export const adminService = {
     api.patch<SubscriptionPlan>(`/admin/plans/${id}`, payload).then((r) => r.data),
 
   deletePlan: (id: string) => api.delete(`/admin/plans/${id}`).then((r) => r.data),
+
+  getCategories: () =>
+    api
+      .get<Category[]>('/admin/categories', { params: { includeInactive: true } })
+      .then((r) => r.data),
+
+  createCategory: (payload: CreateCategoryPayload) =>
+    api.post<Category>('/admin/categories', payload).then((r) => r.data),
+
+  updateCategory: (id: string, payload: Partial<CreateCategoryPayload>) =>
+    api.patch<Category>(`/admin/categories/${id}`, payload).then((r) => r.data),
+
+  deleteCategory: (id: string) => api.delete(`/admin/categories/${id}`).then((r) => r.data),
 
   getJournalistRegistrations: (query?: JournalistRegistrationsQuery) =>
     api

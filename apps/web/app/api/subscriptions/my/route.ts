@@ -14,6 +14,15 @@ export async function GET(request: NextRequest) {
     })
     if (!sub) return NextResponse.json(null)
 
+    if (sub.status === 'ACTIVE' && sub.expiresAt && sub.expiresAt < new Date()) {
+      const expired = await prisma.subscription.update({
+        where: { userId: authUser.sub },
+        data: { status: 'EXPIRED' },
+        include: { plan: true },
+      })
+      return NextResponse.json({ ...expired, sendsRemaining: 0 })
+    }
+
     const sendsRemaining = sub.plan ? Math.max(0, sub.plan.maxSendsMonth - sub.sendsUsed) : 0
     return NextResponse.json({ ...sub, sendsRemaining })
   } catch {

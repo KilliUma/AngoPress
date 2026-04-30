@@ -13,6 +13,16 @@ function injectTrackingPixel(html: string, pixelUrl: string): string {
   return html + pixel
 }
 
+function injectUnsubscribeLink(html: string, unsubscribeUrl: string): string {
+  const footer = `
+    <div style="margin-top:32px;padding-top:16px;border-top:1px solid #e5e5e5;font:12px Arial,sans-serif;color:#737373;">
+      Recebeu este comunicado através da AngoPress.
+      <a href="${unsubscribeUrl}" style="color:#8A0018;">Cancelar recepção destes envios</a>.
+    </div>`
+  if (html.includes('</body>')) return html.replace('</body>', `${footer}</body>`)
+  return html + footer
+}
+
 // POST /api/campaigns/[id]/send
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -37,12 +47,25 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       )
     }
 
-    // Verificar quota do plano
+    // Verificar assinatura, expiração e quota do plano
     const subscription = await prisma.subscription.findUnique({
       where: { userId: authUser.sub },
       include: { plan: true },
     })
-    if (subscription) {
+    if (authUser.role !== 'ADMIN') {
+      if (!subscription) {
+        return NextResponse.json({ message: 'Assinatura activa obrigatória' }, { status: 403 })
+      }
+      if (subscription.status !== 'ACTIVE') {
+        return NextResponse.json({ message: 'A sua assinatura não está activa' }, { status: 403 })
+      }
+      if (subscription.expiresAt && subscription.expiresAt < new Date()) {
+        await prisma.subscription.update({
+          where: { userId: authUser.sub },
+          data: { status: 'EXPIRED' },
+        })
+        return NextResponse.json({ message: 'A sua assinatura expirou' }, { status: 403 })
+      }
       const remaining = subscription.plan.maxSendsMonth - subscription.sendsUsed
       if (remaining < campaign._count.recipients) {
         return NextResponse.json(
@@ -57,8 +80,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // Marcar como SENDING
     await prisma.campaign.update({ where: { id }, data: { status: 'SENDING', sentAt: new Date() } })
 
-    const appUrl =
-      (process.env.NEXT_PUBLIC_APP_URL ?? process.env.VERCEL_URL)
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL
+      ? process.env.NEXT_PUBLIC_APP_URL
+      : process.env.VERCEL_URL
         ? `https://${process.env.VERCEL_URL}`
         : 'http://localhost:3000'
 
@@ -75,7 +99,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           veiculo: recipient.journalist.outlet,
         })
         const pixelUrl = `${appUrl}/api/track/open/${recipient.trackingToken}`
-        const trackedHtml = injectTrackingPixel(personalized, pixelUrl)
+        const unsubscribeUrl = `${appUrl}/api/unsubscribe/${recipient.trackingToken}`
+        const trackedHtml = injectTrackingPixel(
+          injectUnsubscribeLink(personalized, unsubscribeUrl),
+          pixelUrl,
+        )
 
         await sendEmail({
           to: recipient.journalist.email,

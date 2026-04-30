@@ -5,7 +5,10 @@ import { Card } from '@/components/ui/Card'
 import { BarChart2, Mail, MousePointerClick, AlertCircle } from 'lucide-react'
 import dynamic from 'next/dynamic'
 
-const RechartsChart = dynamic(() => import('@/components/analytics/RechartsChart'), { ssr: false })
+const RechartsChart = dynamic(
+  () => import('@/components/analytics/RechartsChart').then((m) => ({ default: m.default })),
+  { ssr: false },
+)
 
 export default function AnalyticsPage() {
   const { data: campaignsObj, isLoading } = useCampaigns({ limit: 10 })

@@ -10,12 +10,12 @@ export async function GET(request: NextRequest) {
     if (authUser.role !== 'ADMIN')
       return NextResponse.json({ message: 'Sem permissão' }, { status: 403 })
 
-    const [pendingSubscriptions, pendingRegistrations] = await Promise.all([
+    const [pendingSubscriptions, pendingJournalistRegistrations] = await Promise.all([
       prisma.subscription.count({ where: { status: 'PENDING' } }),
       prisma.journalistRegistration.count({ where: { status: 'PENDING' } }),
     ])
 
-    return NextResponse.json({ pendingSubscriptions, pendingRegistrations })
+    return NextResponse.json({ pendingSubscriptions, pendingJournalistRegistrations })
   } catch {
     return NextResponse.json({ message: 'Erro interno do servidor' }, { status: 500 })
   }

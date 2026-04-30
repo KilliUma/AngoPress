@@ -3,19 +3,16 @@
 import Link from 'next/link'
 import {
   Users,
-  List,
-  FileText,
   Send,
   TrendingUp,
   UserCheck,
   CreditCard,
   Settings,
+  ClipboardCheck,
 } from 'lucide-react'
 import { clsx } from 'clsx'
-import { useJournalists } from '@/hooks/useJournalists'
-import { useMailingLists } from '@/hooks/useMailingLists'
 import { useAuthStore } from '@/store/auth.store'
-import { usePressReleases } from '@/hooks/usePressReleases'
+import { useAdminStats } from '@/hooks/useAdmin'
 
 function StatCard({
   label,
@@ -51,13 +48,13 @@ function StatCard({
 
 export default function AdminDashboardPage() {
   const { user } = useAuthStore()
-  const { data: journalistsData, isLoading: loadingJ } = useJournalists({ limit: 1 })
-  const { data: listsData, isLoading: loadingL } = useMailingLists()
-  const { data: prData, isLoading: loadingPR } = usePressReleases({ limit: 1 })
+  const { data: stats, isLoading } = useAdminStats()
 
-  const totalJournalists = journalistsData?.meta?.total ?? 0
-  const totalLists = listsData?.length ?? 0
-  const totalPR = prData?.meta?.total ?? 0
+  const revenue = new Intl.NumberFormat('pt-AO', {
+    style: 'currency',
+    currency: 'AOA',
+    maximumFractionDigits: 0,
+  }).format(stats?.monthlyRevenueAoa ?? 0)
 
   return (
     <div className="space-y-6">
@@ -77,27 +74,33 @@ export default function AdminDashboardPage() {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          label="Jornalistas"
-          value={totalJournalists}
+          label="Usuários activos"
+          value={stats?.activeUsers ?? 0}
           icon={Users}
           color="bg-brand-600"
-          loading={loadingJ}
+          loading={isLoading}
         />
         <StatCard
-          label="Listas de Mailing"
-          value={totalLists}
-          icon={List}
+          label="Assinaturas activas"
+          value={stats?.activeSubscriptions ?? 0}
+          icon={CreditCard}
           color="bg-emerald-500"
-          loading={loadingL}
+          loading={isLoading}
         />
         <StatCard
-          label="Press Releases"
-          value={totalPR}
-          icon={FileText}
+          label="Envios totais"
+          value={stats?.totalSends ?? 0}
+          icon={Send}
           color="bg-amber-500"
-          loading={loadingPR}
+          loading={isLoading}
         />
-        <StatCard label="Campanhas" value="—" icon={Send} color="bg-violet-500" />
+        <StatCard
+          label="Receita mensal"
+          value={revenue}
+          icon={TrendingUp}
+          color="bg-violet-500"
+          loading={isLoading}
+        />
       </div>
 
       {/* Acções rápidas */}
@@ -121,6 +124,16 @@ export default function AdminDashboardPage() {
                 label: 'Consultar assinaturas activas',
               },
               { href: '/admin/planos', icon: Settings, label: 'Gerir planos de preços' },
+              {
+                href: '/admin/categorias',
+                icon: ClipboardCheck,
+                label: 'Configurar categorias/editorias',
+              },
+              {
+                href: '/admin/cadastros',
+                icon: UserCheck,
+                label: 'Aprovar cadastros de jornalistas',
+              },
             ].map(({ href, icon: Icon, label }) => (
               <Link
                 key={href}

@@ -28,7 +28,13 @@ export async function GET(request: NextRequest) {
       }),
     ])
 
-    return NextResponse.json({ data: registrations, total, page, limit })
+    return NextResponse.json({
+      data: registrations,
+      total,
+      page,
+      limit,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    })
   } catch {
     return NextResponse.json({ message: 'Erro interno do servidor' }, { status: 500 })
   }

@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/admin/public-stats — público
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const [totalJournalists, totalCampaignsSent, activeCompanies, journalists] = await Promise.all([
       prisma.journalist.count({ where: { isActive: true } }),

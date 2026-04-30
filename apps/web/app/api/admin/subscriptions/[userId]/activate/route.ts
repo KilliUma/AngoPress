@@ -25,27 +25,57 @@ export async function POST(
       where: { userId },
       include: { plan: true },
     })
-    if (!sub) return NextResponse.json({ message: 'Assinatura não encontrada' }, { status: 404 })
 
-    const effectivePlanId = planId ?? sub.planId
+    if (!sub && !planId) {
+      return NextResponse.json(
+        { message: 'planId é obrigatório para criar uma assinatura' },
+        { status: 400 },
+      )
+    }
+
+    const effectivePlanId = planId ?? sub!.planId
     const plan = planId
       ? await prisma.subscriptionPlan.findUnique({ where: { id: planId } })
-      : sub.plan
+      : sub!.plan
 
     if (!plan) return NextResponse.json({ message: 'Plano não encontrado' }, { status: 404 })
+    const now = new Date()
+    const effectiveExpiresAt = expiresAt
+      ? new Date(expiresAt)
+      : new Date(now.getFullYear(), now.getMonth() + 1, now.getDate())
 
-    const updated = await prisma.subscription.update({
-      where: { userId },
-      data: {
-        planId: effectivePlanId,
-        status: 'ACTIVE',
-        activatedAt: new Date(),
-        expiresAt: expiresAt ? new Date(expiresAt) : null,
-        sendsUsed: 0,
-        adminNotes: adminNotes ?? null,
-      },
-      include: { plan: true },
-    })
+    const updated = sub
+      ? await prisma.subscription.update({
+          where: { userId },
+          data: {
+            planId: effectivePlanId,
+            status: 'ACTIVE',
+            activatedAt: now,
+            expiresAt: effectiveExpiresAt,
+            periodStart: now,
+            periodEnd: effectiveExpiresAt,
+            sendsUsed: 0,
+            adminNotes: adminNotes ?? null,
+          },
+          include: { plan: true },
+        })
+      : await prisma.subscription.create({
+          data: {
+            userId,
+            planId: effectivePlanId,
+            status: 'ACTIVE',
+            activatedAt: now,
+            expiresAt: effectiveExpiresAt,
+            periodStart: now,
+            periodEnd: effectiveExpiresAt,
+            adminNotes: adminNotes ?? null,
+          },
+          include: { plan: true },
+        })
+
+    if (user.status === 'PENDING') {
+      await prisma.user.update({ where: { id: userId }, data: { status: 'ACTIVE' } })
+    }
 
     // Enviar e-mail de confirmação
     try {
@@ -53,7 +83,7 @@ export async function POST(
         toEmail: user.email,
         toName: user.name,
         planName: plan.name,
-        expiresAt: updated.expiresAt ? updated.expiresAt.toISOString() : null,
+        expiresAt: updated.expiresAt ?? effectiveExpiresAt,
         sendsPerMonth: plan.maxSendsMonth,
       })
     } catch {

@@ -10,14 +10,17 @@ import { usePressRelease } from '@/hooks/usePressReleases'
 import { api } from '@/services/api'
 import type { PressReleaseAttachment } from '@/services/press-releases.service'
 
-const RichEditor = dynamic(() => import('@/components/editor/RichEditor'), {
-  ssr: false,
-  loading: () => (
-    <div className="border border-neutral-200 rounded-lg h-64 flex items-center justify-center text-neutral-400 text-sm">
-      A carregar editor...
-    </div>
-  ),
-})
+const RichEditor = dynamic(
+  () => import('@/components/editor/RichEditor').then((m) => ({ default: m.default })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="border border-neutral-200 rounded-lg h-64 flex items-center justify-center text-neutral-400 text-sm">
+        A carregar editor...
+      </div>
+    ),
+  },
+)
 
 interface FormValues {
   title: string
@@ -76,7 +79,10 @@ export default function EditPressReleasePage() {
   }
 
   const handlePublish = handleSubmit(async ({ title, summary }) => {
-    if (!content.trim()) return toast.error('O conteúdo não pode estar vazio')
+    if (!content.trim()) {
+      toast.error('O conteúdo não pode estar vazio')
+      return
+    }
     setSaving(true)
     try {
       await api.put(`/press-releases/${id}`, { title, summary, content })
@@ -91,8 +97,14 @@ export default function EditPressReleasePage() {
   })
 
   const handleSchedule = handleSubmit(async ({ title, summary, scheduledAt }) => {
-    if (!scheduledAt) return toast.error('Seleccione uma data para agendamento')
-    if (!content.trim()) return toast.error('O conteúdo não pode estar vazio')
+    if (!scheduledAt) {
+      toast.error('Seleccione uma data para agendamento')
+      return
+    }
+    if (!content.trim()) {
+      toast.error('O conteúdo não pode estar vazio')
+      return
+    }
     setSaving(true)
     try {
       await api.put(`/press-releases/${id}`, {
@@ -244,7 +256,7 @@ export default function EditPressReleasePage() {
             Conteúdo <span className="text-red-500">*</span>
           </label>
           <RichEditor
-            content={content}
+            value={content}
             onChange={setContent}
             placeholder="Escreva o conteúdo completo do press release..."
           />

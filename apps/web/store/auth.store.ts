@@ -33,6 +33,7 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'angopress-auth',
       partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
+      skipHydration: true,
     },
   ),
 )

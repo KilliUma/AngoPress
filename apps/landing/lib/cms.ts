@@ -291,10 +291,20 @@ export const JOURNALIST_CTA_FALLBACK: JournalistCtaContent = {
 }
 
 // ── Fetch ────────────────────────────────────────────────────────
+async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs = 1500) {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    return await fetch(url, { ...init, signal: controller.signal })
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
 export async function getLandingContent(): Promise<LandingContent> {
   try {
     const base = process.env.WP_URL ?? 'http://angopress.local'
-    const res = await fetch(`${base}/wp-json/angopress/v1/landing`, {
+    const res = await fetchWithTimeout(`${base}/wp-json/angopress/v1/landing`, {
       next: { revalidate: 300 },
     })
     if (!res.ok) throw new Error(`WP API ${res.status}`)
@@ -416,9 +426,12 @@ function mapArticlePreview(a: any): NewsArticlePreview {
 export async function getNewsArticle(slug: string): Promise<NewsArticleFull | null> {
   try {
     const base = process.env.WP_URL ?? 'http://angopress.local'
-    const res = await fetch(`${base}/wp-json/angopress/v1/news/${encodeURIComponent(slug)}`, {
-      next: { revalidate: 300 },
-    })
+    const res = await fetchWithTimeout(
+      `${base}/wp-json/angopress/v1/news/${encodeURIComponent(slug)}`,
+      {
+        next: { revalidate: 300 },
+      },
+    )
     if (!res.ok) return null
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const art: any = await res.json()
@@ -454,9 +467,12 @@ export interface NewsListResult {
 export async function getAllNews(page = 1, perPage = 12): Promise<NewsListResult> {
   try {
     const base = process.env.WP_URL ?? 'http://angopress.local'
-    const res = await fetch(`${base}/wp-json/angopress/v1/news?page=${page}&per_page=${perPage}`, {
-      next: { revalidate: 120 },
-    })
+    const res = await fetchWithTimeout(
+      `${base}/wp-json/angopress/v1/news?page=${page}&per_page=${perPage}`,
+      {
+        next: { revalidate: 120 },
+      },
+    )
     if (!res.ok) throw new Error(`WP API ${res.status}`)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const raw: any = await res.json()

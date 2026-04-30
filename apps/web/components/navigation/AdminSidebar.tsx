@@ -9,7 +9,7 @@ import {
   CreditCard,
   Newspaper,
   Package,
-  Bell,
+  ClipboardCheck,
   ArrowLeft,
 } from 'lucide-react'
 
@@ -17,8 +17,10 @@ const ADMIN_ITEMS = [
   { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
   { to: '/admin/utilizadores', icon: Users, label: 'Utilizadores' },
   { to: '/admin/assinaturas', icon: CreditCard, label: 'Assinaturas' },
-  { to: '/admin/jornalistas', icon: Newspaper, label: 'Jornalistas' },
+  { to: '/jornalistas', icon: Newspaper, label: 'Jornalistas' },
   { to: '/admin/planos', icon: Package, label: 'Planos' },
+  { to: '/admin/categorias', icon: ClipboardCheck, label: 'Categorias' },
+  { to: '/admin/cadastros', icon: ClipboardCheck, label: 'Cadastros' },
 ]
 
 export function AdminSidebar() {

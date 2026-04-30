@@ -1,9 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getAuthUser } from '@/lib/auth'
 
 // GET /api/press-releases/public/featured — sem autenticação
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const data = await prisma.pressRelease.findMany({
       where: { status: 'PUBLISHED' },

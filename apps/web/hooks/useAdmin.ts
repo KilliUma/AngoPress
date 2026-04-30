@@ -9,6 +9,7 @@ import type {
   JournalistRegistrationsQuery,
   ActivateSubscriptionPayload,
   CreatePlanPayload,
+  CreateCategoryPayload,
   UserStatus,
   JournalistRegistrationStatus,
 } from '@/services/admin.service'
@@ -18,6 +19,7 @@ const KEYS = {
   users: (q?: UsersQuery) => ['admin', 'users', q] as const,
   subscriptions: (q?: SubscriptionsQuery) => ['admin', 'subscriptions', q] as const,
   plans: ['admin', 'plans'] as const,
+  categories: ['admin', 'categories'] as const,
   journalistRegs: (q?: JournalistRegistrationsQuery) =>
     ['admin', 'journalist-registrations', q] as const,
 }
@@ -108,6 +110,50 @@ export function useDeletePlan() {
     },
     onError: (e: { response?: { data?: { message?: string } }; message?: string }) =>
       toast.error(e.response?.data?.message || e.message || 'Erro ao desactivar plano'),
+  })
+}
+
+export function useAdminCategories() {
+  return useQuery({ queryKey: KEYS.categories, queryFn: () => adminService.getCategories() })
+}
+
+export function useCreateCategory() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: CreateCategoryPayload) => adminService.createCategory(payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: KEYS.categories })
+      toast.success('Categoria criada com sucesso')
+    },
+    onError: (e: { response?: { data?: { message?: string } }; message?: string }) =>
+      toast.error(e.response?.data?.message || e.message || 'Erro ao criar categoria'),
+  })
+}
+
+export function useUpdateCategory() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: Partial<CreateCategoryPayload> }) =>
+      adminService.updateCategory(id, payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: KEYS.categories })
+      toast.success('Categoria actualizada')
+    },
+    onError: (e: { response?: { data?: { message?: string } }; message?: string }) =>
+      toast.error(e.response?.data?.message || e.message || 'Erro ao actualizar categoria'),
+  })
+}
+
+export function useDeleteCategory() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => adminService.deleteCategory(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: KEYS.categories })
+      toast.success('Categoria desactivada')
+    },
+    onError: (e: { response?: { data?: { message?: string } }; message?: string }) =>
+      toast.error(e.response?.data?.message || e.message || 'Erro ao desactivar categoria'),
   })
 }
 

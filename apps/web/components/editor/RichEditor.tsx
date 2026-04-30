@@ -5,6 +5,9 @@ import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import Table from '@tiptap/extension-table'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import TableRow from '@tiptap/extension-table-row'
 import Placeholder from '@tiptap/extension-placeholder'
 import {
   Bold,
@@ -63,13 +66,16 @@ function ToolbarButton({
   )
 }
 
-export function RichEditor({ value, onChange, placeholder, className }: RichEditorProps) {
+export default function RichEditor({ value, onChange, placeholder, className }: RichEditorProps) {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({ heading: { levels: [2, 3] } }),
       Image.configure({ inline: false, allowBase64: true }),
       Link.configure({ openOnClick: false, HTMLAttributes: { class: 'text-brand-600 underline' } }),
       Table.configure({ resizable: true }),
+      TableRow,
+      TableHeader,
+      TableCell,
       Placeholder.configure({ placeholder: placeholder ?? 'Comece a escrever o press release...' }),
     ],
     content: value,

@@ -26,7 +26,8 @@ export default function RegisterPage() {
     formState: { errors },
   } = useForm<RegisterFormData>()
 
-  const onSubmit = ({ confirmPassword: _, ...data }: RegisterFormData) => register(data)
+  const onSubmit = ({ name, email, password, company }: RegisterFormData) =>
+    register({ name, email, password, company })
 
   return (
     <div className="w-full">

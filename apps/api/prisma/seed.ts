@@ -116,6 +116,32 @@ async function main() {
 
   console.log('Utilizadores criados:', { admin: admin.email, client: client.email })
 
+  // ─── Categorias / Editorias ─────────────────────────────────────────
+  const categorySeeds = [
+    ['Economia', 'economia'],
+    ['Política', 'politica'],
+    ['Tecnologia', 'tecnologia'],
+    ['Saúde', 'saude'],
+    ['Desporto', 'desporto'],
+    ['Cultura', 'cultura'],
+    ['Sociedade', 'sociedade'],
+    ['Negócios', 'negocios'],
+    ['Internacional', 'internacional'],
+    ['Educação', 'educacao'],
+  ] as const
+
+  await Promise.all(
+    categorySeeds.map(([name, slug], index) =>
+      prisma.category.upsert({
+        where: { slug },
+        update: { name, sortOrder: index + 1, isActive: true },
+        create: { name, slug, sortOrder: index + 1 },
+      }),
+    ),
+  )
+
+  console.log(`${categorySeeds.length} categorias criadas.`)
+
   // ─── Jornalistas de Exemplo ────────────────────────────────────────────
   const journalists = await Promise.all([
     prisma.journalist.upsert({

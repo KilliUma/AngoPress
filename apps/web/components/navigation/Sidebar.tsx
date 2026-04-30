@@ -13,7 +13,7 @@ import {
   CreditCard,
   User,
   X,
-  ShieldCheck,
+  ClipboardCheck,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/auth.store'
 
@@ -24,6 +24,8 @@ const ADMIN_NAV = [
   { to: '/admin/assinaturas', icon: CreditCard, label: 'Assinaturas' },
   { to: '/jornalistas', icon: FileText, label: 'Jornalistas' },
   { to: '/admin/planos', icon: List, label: 'Planos' },
+  { to: '/admin/categorias', icon: ClipboardCheck, label: 'Categorias' },
+  { to: '/admin/cadastros', icon: Users, label: 'Cadastros' },
 ]
 
 // Navegação exclusiva do CLIENTE

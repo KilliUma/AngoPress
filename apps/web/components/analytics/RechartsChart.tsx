@@ -11,7 +11,14 @@ import {
   Legend,
 } from 'recharts'
 
-export default function RechartsChart({ data }: { data: any[] }) {
+interface ChartPoint {
+  name: string
+  Enviados: number
+  Aberturas: number
+  Cliques: number
+}
+
+export default function RechartsChart({ data }: { data: ChartPoint[] }) {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>

@@ -46,7 +46,7 @@ function parseCsv(text: string): CsvRow[] {
     headers.forEach((h, i) => {
       row[h] = values[i] ?? ''
     })
-    return row as CsvRow
+    return row as unknown as CsvRow
   })
 }
 

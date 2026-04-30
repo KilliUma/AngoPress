@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Megaphone, Plus, Search, Calendar, CheckCircle2, Clock, XCircle, Send } from 'lucide-react'
+import { Megaphone, Plus, Search, CheckCircle2, Clock } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { useCampaigns } from '@/hooks/useCampaigns'
 import { format } from 'date-fns'
