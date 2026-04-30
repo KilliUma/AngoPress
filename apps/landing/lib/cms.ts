@@ -301,12 +301,26 @@ async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs = 1500
   }
 }
 
+async function fetchWp(base: string, route: string, revalidate: number) {
+  const normalizedBase = base.replace(/\/$/, '')
+  const normalizedRoute = route.startsWith('/') ? route : `/${route}`
+
+  const primaryUrl = `${normalizedBase}/wp-json${normalizedRoute}`
+  const primaryRes = await fetchWithTimeout(primaryUrl, { next: { revalidate } })
+  if (primaryRes.ok) return primaryRes
+
+  // Fallback para hosts WordPress sem rewrite/permalink para /wp-json.
+  const fallbackUrl = `${normalizedBase}/?rest_route=${encodeURIComponent(normalizedRoute)}`
+  const fallbackRes = await fetchWithTimeout(fallbackUrl, { next: { revalidate } })
+  if (fallbackRes.ok) return fallbackRes
+
+  return primaryRes
+}
+
 export async function getLandingContent(): Promise<LandingContent> {
   try {
-    const base = process.env.WP_URL ?? 'http://angopress.local'
-    const res = await fetchWithTimeout(`${base}/wp-json/angopress/v1/landing`, {
-      next: { revalidate: 300 },
-    })
+    const base = process.env.WP_URL ?? 'https://escf.ao/angopress'
+    const res = await fetchWp(base, '/angopress/v1/landing', 300)
     if (!res.ok) throw new Error(`WP API ${res.status}`)
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -425,13 +439,8 @@ function mapArticlePreview(a: any): NewsArticlePreview {
 
 export async function getNewsArticle(slug: string): Promise<NewsArticleFull | null> {
   try {
-    const base = process.env.WP_URL ?? 'http://angopress.local'
-    const res = await fetchWithTimeout(
-      `${base}/wp-json/angopress/v1/news/${encodeURIComponent(slug)}`,
-      {
-        next: { revalidate: 300 },
-      },
-    )
+    const base = process.env.WP_URL ?? 'https://escf.ao/angopress'
+    const res = await fetchWp(base, `/angopress/v1/news/${encodeURIComponent(slug)}`, 300)
     if (!res.ok) return null
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const art: any = await res.json()
@@ -466,13 +475,8 @@ export interface NewsListResult {
 
 export async function getAllNews(page = 1, perPage = 12): Promise<NewsListResult> {
   try {
-    const base = process.env.WP_URL ?? 'http://angopress.local'
-    const res = await fetchWithTimeout(
-      `${base}/wp-json/angopress/v1/news?page=${page}&per_page=${perPage}`,
-      {
-        next: { revalidate: 120 },
-      },
-    )
+    const base = process.env.WP_URL ?? 'https://escf.ao/angopress'
+    const res = await fetchWp(base, `/angopress/v1/news?page=${page}&per_page=${perPage}`, 120)
     if (!res.ok) throw new Error(`WP API ${res.status}`)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const raw: any = await res.json()

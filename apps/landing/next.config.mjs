@@ -8,14 +8,9 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'http',
-        hostname: 'angopress.local',
-        pathname: '/wp-content/uploads/**',
-      },
-      {
         protocol: 'https',
-        hostname: 'angopress.local',
-        pathname: '/wp-content/uploads/**',
+        hostname: 'escf.ao',
+        pathname: '/angopress/wp-content/uploads/**',
       },
     ],
   },
