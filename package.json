@@ -18,7 +18,7 @@
     "db:migrate": "turbo run db:migrate --filter=@angopress/api",
     "db:studio": "turbo run db:studio --filter=@angopress/api",
     "db:seed": "turbo run db:seed --filter=@angopress/api",
-    "prepare": "husky"
+    "prepare": "node -e \"if (process.env.CI || process.env.VERCEL) process.exit(0)\" && husky || true"
   },
   "devDependencies": {
     "turbo": "^2.3.3",
