@@ -6,11 +6,17 @@ const nextConfig = {
     APP_URL: process.env.APP_URL ?? 'http://localhost:5173',
   },
   images: {
+    domains: ['escf.ao'],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'escf.ao',
         pathname: '/angopress/wp-content/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'escf.ao',
+        pathname: '/wp-content/uploads/**',
       },
     ],
   },

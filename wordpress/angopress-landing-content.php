@@ -186,6 +186,17 @@ add_action( 'admin_menu', function () {
         'dashicons-megaphone',
         80
     );
+
+    // Regista explicitamente o submenu "principal" para evitar que o WP
+    // redirecione o topo para o primeiro submenu do CPT (Notícias).
+    add_submenu_page(
+        'angopress-landing',
+        'Conteúdo Landing',
+        'Conteúdo Landing',
+        'manage_options',
+        'angopress-landing',
+        'angopress_landing_page'
+    );
 } );
 
 // ────────────────────────────────────────────────────────────────
