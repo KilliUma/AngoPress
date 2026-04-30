@@ -2,10 +2,5 @@
   "framework": "nextjs",
   "buildCommand": "npx turbo run build --filter=@angopress/web",
   "outputDirectory": "apps/web/.next",
-  "installCommand": "npm install",
-  "functions": {
-    "apps/web/app/api/campaigns/[id]/send/route.ts": {
-      "maxDuration": 60
-    }
-  }
+  "installCommand": "npm install"
 }
