@@ -291,7 +291,7 @@ export const JOURNALIST_CTA_FALLBACK: JournalistCtaContent = {
 }
 
 // ── Fetch ────────────────────────────────────────────────────────
-async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs = 1500) {
+async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs = 8000) {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), timeoutMs)
   try {
