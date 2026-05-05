@@ -48,12 +48,6 @@ export function NewsSection({ content }: Props) {
             <h2 className="text-4xl font-black text-white tracking-tight mt-3">{cms.title}</h2>
             <p className="text-white/40 mt-3 text-base max-w-xl">{cms.description}</p>
           </div>
-          {cms.badge && (
-            <span className="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3 py-1.5 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-              {cms.badge}
-            </span>
-          )}
           <Link
             href="/noticias"
             className="shrink-0 inline-flex items-center gap-1.5 text-sm font-semibold text-white/50 hover:text-white transition-colors duration-200"

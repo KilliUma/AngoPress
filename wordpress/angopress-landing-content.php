@@ -241,40 +241,6 @@ function angopress_landing_page(): void {
         ];
         update_option( 'angopress_about', $about );
 
-        // ── News ──
-        $news_label       = sanitize_text_field( $_POST['news_section_label'] ?? '' );
-        $news_title       = sanitize_text_field( $_POST['news_title']         ?? '' );
-        $news_description = sanitize_textarea_field( $_POST['news_description'] ?? '' );
-        $news_badge       = sanitize_text_field( $_POST['news_badge']         ?? '' );
-
-        $a_cats    = array_map( 'sanitize_text_field',    $_POST['article_category'] ?? [] );
-        $a_titles  = array_map( 'sanitize_text_field',    $_POST['article_title']    ?? [] );
-        $a_excepts = array_map( 'sanitize_textarea_field', $_POST['article_excerpt']  ?? [] );
-        $a_times   = array_map( 'sanitize_text_field',    $_POST['article_read_time'] ?? [] );
-        $a_urls    = array_map( 'esc_url_raw',            $_POST['article_url']      ?? [] );
-        $a_accents = array_map( 'sanitize_text_field',    $_POST['article_accent']   ?? [] );
-
-        $articles = [];
-        foreach ( $a_titles as $i => $t ) {
-            $articles[] = [
-                'category'  => $a_cats[ $i ]    ?? '',
-                'title'     => $t,
-                'excerpt'   => $a_excepts[ $i ] ?? '',
-                'read_time' => $a_times[ $i ]   ?? '5 min',
-                'url'       => $a_urls[ $i ]    ?? '',
-                'accent'    => $a_accents[ $i ] ?? 'brand',
-            ];
-        }
-
-        $news = [
-            'section_label' => $news_label,
-            'title'         => $news_title,
-            'description'   => $news_description,
-            'badge'         => $news_badge,
-            'articles'      => json_encode( $articles ),
-        ];
-        update_option( 'angopress_news', $news );
-
         // ── How It Works ──
         $s_titles  = array_map( 'sanitize_text_field',     $_POST['step_title']       ?? [] );
         $s_descs   = array_map( 'sanitize_textarea_field', $_POST['step_description'] ?? [] );
@@ -340,18 +306,11 @@ function angopress_landing_page(): void {
     $d      = angopress_defaults();
     $hero   = get_option( 'angopress_hero',  $d['hero'] );
     $about  = get_option( 'angopress_about', $d['about'] );
-    $news   = get_option( 'angopress_news',  $d['news'] );
 
     $pillars_raw = $about['pillars'] ?? $d['about']['pillars'];
     $pillars     = json_decode( $pillars_raw, true );
     if ( ! is_array( $pillars ) ) {
         $pillars = json_decode( $d['about']['pillars'], true );
-    }
-
-    $articles_raw = $news['articles'] ?? $d['news']['articles'];
-    $articles     = json_decode( $articles_raw, true );
-    if ( ! is_array( $articles ) ) {
-        $articles = json_decode( $d['news']['articles'], true );
     }
 
     $hiw            = get_option( 'angopress_how_it_works',   $d['how_it_works'] );
@@ -460,50 +419,6 @@ function angopress_landing_page(): void {
                     <select name="pillar_accent[]">
                         <?php foreach ( $accent_options as $val => $label ) : ?>
                             <option value="<?= esc_attr( $val ) ?>" <?= selected( $p['accent'] ?? 'brand', $val, false ) ?>><?= esc_html( $label ) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </table>
-
-        <!-- ── NEWS ── -->
-        <h2 class="title" style="border-top:1px solid #ddd;padding-top:20px;">📰 Secção "Notícias"</h2>
-        <table class="form-table">
-            <tr>
-                <th><label>Label da secção</label></th>
-                <td><input class="regular-text" name="news_section_label" value="<?= esc_attr( $news['section_label'] ) ?>">
-                <p class="description">Texto pequeno acima do título (ex: "Notícias")</p></td>
-            </tr>
-            <tr>
-                <th><label>Título</label></th>
-                <td><input class="large-text" name="news_title" value="<?= esc_attr( $news['title'] ) ?>"></td>
-            </tr>
-            <tr>
-                <th><label>Descrição</label></th>
-                <td><textarea class="large-text" rows="2" name="news_description"><?= esc_textarea( $news['description'] ) ?></textarea></td>
-            </tr>
-            <tr>
-                <th><label>Badge</label></th>
-                <td><input class="large-text" name="news_badge" value="<?= esc_attr( $news['badge'] ) ?>">
-                <p class="description">Etiqueta exibida ao lado do título (ex: "Em breve — integração com blog"). Deixe em branco para ocultar.</p></td>
-            </tr>
-        </table>
-
-        <h2 class="title" style="border-top:1px solid #ddd;padding-top:20px;">📄 Artigos de Notícias (máx. 3)</h2>
-        <table class="form-table">
-            <?php foreach ( (array) $articles as $i => $a ) : ?>
-            <tr>
-                <th>Artigo <?= $i + 1 ?></th>
-                <td style="display:flex;flex-direction:column;gap:8px;">
-                    <input placeholder="Categoria (ex: Plataforma)" class="regular-text" name="article_category[]" value="<?= esc_attr( $a['category'] ?? '' ) ?>">
-                    <input placeholder="Título" class="large-text" name="article_title[]" value="<?= esc_attr( $a['title'] ?? '' ) ?>">
-                    <textarea placeholder="Resumo / Excerpt" class="large-text" rows="2" name="article_excerpt[]"><?= esc_textarea( $a['excerpt'] ?? '' ) ?></textarea>
-                    <input placeholder="Tempo de leitura (ex: 4 min)" class="small-text" name="article_read_time[]" value="<?= esc_attr( $a['read_time'] ?? '5 min' ) ?>">
-                    <input placeholder="URL do artigo (opcional)" class="large-text" name="article_url[]" value="<?= esc_attr( $a['url'] ?? '' ) ?>">
-                    <select name="article_accent[]">
-                        <?php foreach ( $accent_options as $val => $label ) : ?>
-                            <option value="<?= esc_attr( $val ) ?>" <?= selected( $a['accent'] ?? 'brand', $val, false ) ?>><?= esc_html( $label ) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </td>

@@ -2,33 +2,6 @@ import { SectionLabel } from './ui'
 import AnimateIn from '@/components/AnimateIn'
 import type { FeaturedPressRelease } from './types'
 
-const PLACEHOLDERS: FeaturedPressRelease[] = [
-  {
-    id: '1',
-    title: 'Empresa XYZ lança novo produto no mercado angolano',
-    summary:
-      'A empresa XYZ apresentou hoje o seu mais recente produto, reforçando a sua presença no mercado nacional.',
-    publishedAt: new Date().toISOString(),
-    user: { name: 'João Silva', company: 'XYZ Angola' },
-  },
-  {
-    id: '2',
-    title: 'Parceria estratégica entre dois líderes do sector financeiro',
-    summary:
-      'Duas instituições financeiras anunciam acordo de colaboração para ampliar serviços aos clientes.',
-    publishedAt: new Date().toISOString(),
-    user: { name: 'Maria Costa', company: 'Grupo Financeiro' },
-  },
-  {
-    id: '3',
-    title: 'Comunicação institucional: resultados do primeiro trimestre',
-    summary:
-      'Os resultados do primeiro trimestre superam as expectativas, com crescimento de 23% face ao período homólogo.',
-    publishedAt: new Date().toISOString(),
-    user: { name: 'Pedro Nunes', company: 'Empresa Nacional' },
-  },
-]
-
 function timeAgo(dateStr: string | null): string {
   if (!dateStr) return ''
   const diff = Date.now() - new Date(dateStr).getTime()
@@ -71,7 +44,7 @@ function PRCard({ pr, index }: { pr: FeaturedPressRelease; index: number }) {
 }
 
 export function PressReleasesShowcase({ featured }: { featured: FeaturedPressRelease[] }) {
-  const items = featured.length > 0 ? featured.slice(0, 3) : PLACEHOLDERS
+  const items = featured.slice(0, 3)
 
   return (
     <section className="relative py-28 px-4 sm:px-6 overflow-hidden">
@@ -107,11 +80,20 @@ export function PressReleasesShowcase({ featured }: { featured: FeaturedPressRel
           </a>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-5">
-          {items.map((pr, i) => (
-            <PRCard key={pr.id} pr={pr} index={i} />
-          ))}
-        </div>
+        {items.length > 0 ? (
+          <div className="grid md:grid-cols-3 gap-5">
+            {items.map((pr, i) => (
+              <PRCard key={pr.id} pr={pr} index={i} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-8 text-center">
+            <p className="text-white/70 font-semibold">Ainda não há press releases públicos.</p>
+            <p className="text-white/40 text-sm mt-2">
+              Assim que forem publicados, vão aparecer aqui automaticamente.
+            </p>
+          </div>
+        )}
       </div>
     </section>
   )

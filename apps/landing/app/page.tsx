@@ -34,7 +34,13 @@ async function fetchFromCandidates<T>(paths: string[], revalidate: number): Prom
 
   for (const path of paths) {
     try {
-      const res = await fetch(`${base}${path}`, { next: { revalidate } })
+      const controller = new AbortController()
+      const t = setTimeout(() => controller.abort(), 3000)
+      const res = await fetch(`${base}${path}`, {
+        next: { revalidate },
+        signal: controller.signal,
+      })
+      clearTimeout(t)
       if (!res.ok) continue
       return (await res.json()) as T
     } catch {

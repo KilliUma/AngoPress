@@ -163,7 +163,7 @@ export const NEWS_FALLBACK: NewsContent = {
   title: 'Últimas da AngoPress',
   description:
     'Novidades da plataforma, tendências do sector e dicas para uma comunicação mais eficaz.',
-  badge: 'Em breve — integração com blog',
+  badge: '',
   articles: [
     {
       slug: 'angopress-analytics',
@@ -304,17 +304,18 @@ async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs = 1500
 async function fetchWp(base: string, route: string, revalidate: number) {
   const normalizedBase = base.replace(/\/$/, '')
   const normalizedRoute = route.startsWith('/') ? route : `/${route}`
+  const [routePath, routeQuery = ''] = normalizedRoute.split('?')
+  const queryParams = new URLSearchParams(routeQuery)
+  queryParams.set('rest_route', routePath)
 
-  const primaryUrl = `${normalizedBase}/wp-json${normalizedRoute}`
-  const primaryRes = await fetchWithTimeout(primaryUrl, { next: { revalidate } })
-  if (primaryRes.ok) return primaryRes
+  // WordPress em subdirectório raramente tem /wp-json acessível —
+  // tentamos primeiro ?rest_route= (mais rápido) e só depois /wp-json.
+  const restRouteUrl = `${normalizedBase}/?${queryParams.toString()}`
+  const restRouteRes = await fetchWithTimeout(restRouteUrl, { next: { revalidate } })
+  if (restRouteRes.ok) return restRouteRes
 
-  // Fallback para hosts WordPress sem rewrite/permalink para /wp-json.
-  const fallbackUrl = `${normalizedBase}/?rest_route=${encodeURIComponent(normalizedRoute)}`
-  const fallbackRes = await fetchWithTimeout(fallbackUrl, { next: { revalidate } })
-  if (fallbackRes.ok) return fallbackRes
-
-  return primaryRes
+  const primaryUrl = `${normalizedBase}/wp-json${routePath}${routeQuery ? `?${routeQuery}` : ''}`
+  return fetchWithTimeout(primaryUrl, { next: { revalidate } })
 }
 
 export async function getLandingContent(): Promise<LandingContent> {

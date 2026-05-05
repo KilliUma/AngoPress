@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -48,14 +48,39 @@ const TABS: { label: string; value: PressReleaseStatus | undefined }[] = [
 
 function RowMenu({ pr }: { pr: PressRelease }) {
   const [open, setOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement | null>(null)
   const router = useRouter()
   const publish = usePublishPressRelease()
   const archive = useArchivePressRelease()
   const duplicate = useDuplicatePressRelease()
   const remove = useDeletePressRelease()
 
+  useEffect(() => {
+    if (!open) return
+
+    function handlePointerDown(event: MouseEvent) {
+      if (!menuRef.current) return
+      if (!menuRef.current.contains(event.target as Node)) {
+        setOpen(false)
+      }
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handlePointerDown)
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [open])
+
   return (
-    <div className="relative" onBlur={() => setOpen(false)}>
+    <div className="relative" ref={menuRef}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -88,7 +113,7 @@ function RowMenu({ pr }: { pr: PressRelease }) {
           <button
             type="button"
             className="flex items-center gap-2 w-full px-3 py-1.5 hover:bg-neutral-50 text-neutral-700"
-            onMouseDown={() => {
+            onClick={() => {
               setOpen(false)
               duplicate.mutate(pr.id)
             }}
@@ -99,7 +124,7 @@ function RowMenu({ pr }: { pr: PressRelease }) {
             <button
               type="button"
               className="flex items-center gap-2 w-full px-3 py-1.5 hover:bg-neutral-50 text-green-700"
-              onMouseDown={() => {
+              onClick={() => {
                 setOpen(false)
                 publish.mutate(pr.id)
               }}
@@ -111,7 +136,7 @@ function RowMenu({ pr }: { pr: PressRelease }) {
             <button
               type="button"
               className="flex items-center gap-2 w-full px-3 py-1.5 hover:bg-neutral-50 text-orange-700"
-              onMouseDown={() => {
+              onClick={() => {
                 setOpen(false)
                 archive.mutate(pr.id)
               }}
@@ -123,7 +148,7 @@ function RowMenu({ pr }: { pr: PressRelease }) {
           <button
             type="button"
             className="flex items-center gap-2 w-full px-3 py-1.5 hover:bg-neutral-50 text-red-600"
-            onMouseDown={() => {
+            onClick={() => {
               setOpen(false)
               if (window.confirm('Eliminar este press release?')) remove.mutate(pr.id)
             }}

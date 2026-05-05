@@ -11,7 +11,7 @@ const NAV_LINKS = [
 ]
 
 export function NavBar() {
-  const APP_URL = process.env.APP_URL ?? 'http://localhost:5173'
+  const ASSESSOR_LOGIN_URL = 'https://ango-press-web-flame.vercel.app/login/'
   return (
     <header className="fixed top-0 inset-x-0 z-50">
       <div className="absolute inset-0 glass-dark border-b border-white/[0.06]" />
@@ -56,10 +56,10 @@ export function NavBar() {
             Entrar
           </a> */}
           <a
-            href={`${APP_URL}/cadastro`}
+            href={ASSESSOR_LOGIN_URL}
             className="group inline-flex ml-4 items-center gap-1.5 px-4 py-2 text-[13px] font-bold bg-brand-600 hover:bg-brand-500 text-white rounded-lg transition-all duration-200 shadow-lg shadow-brand-900/40 hover:shadow-brand-700/50 ring-1 ring-brand-500/20 hover:ring-brand-400/40"
           >
-            Sou Acessor
+            Sou Assessor
             <svg
               className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-150"
               fill="none"

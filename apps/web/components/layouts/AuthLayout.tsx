@@ -2,11 +2,87 @@
 
 import Link from 'next/link'
 
-const BENEFITS = [
-  'Base de jornalistas angolanos curada',
-  'Envio em massa com personalização',
-  'Analytics de aberturas e cliques',
-  'Agendamento de campanhas',
+const FEATURES = [
+  {
+    icon: (
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.75}
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6"
+        />
+      </svg>
+    ),
+    title: 'Distribuição Inteligente',
+    description:
+      'Envie press releases para jornalistas segmentados por editoria, cidade e tipo de média.',
+  },
+  {
+    icon: (
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.75}
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
+        />
+      </svg>
+    ),
+    title: 'Base de Jornalistas',
+    description:
+      'Aceda à maior base curada de jornalistas angolanos de TV, rádio, digital e imprensa.',
+  },
+  {
+    icon: (
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.75}
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"
+        />
+      </svg>
+    ),
+    title: 'Analytics em Tempo Real',
+    description:
+      'Rastreie aberturas, cliques e resultados de cada campanha com relatórios detalhados.',
+  },
+  {
+    icon: (
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.75}
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+    ),
+    title: 'Agendamento de Campanhas',
+    description:
+      'Programe envios para o momento ideal e maximize a taxa de abertura dos seus releases.',
+  },
 ]
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
@@ -14,6 +90,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex">
       {/* ── Painel esquerdo (brand) ── */}
       <div className="hidden lg:flex lg:w-1/2 bg-brand-800 flex-col justify-between p-12 relative overflow-hidden">
+        {/* Fundos decorativos — mantidos do design system */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full bg-brand-700/40 blur-3xl" />
           <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-brand-900/60 blur-2xl" />
@@ -26,9 +103,11 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             }}
           />
         </div>
+
+        {/* Logo */}
         <Link href="/" className="relative z-10 flex items-center gap-3">
-          <span className="relative w-10 h-10 flex items-center justify-center flex-shrink-0">
-            <svg viewBox="0 0 36 36" className="w-10 h-10">
+          <span className="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-xl bg-white/10 border border-white/20 backdrop-blur-sm">
+            <svg viewBox="0 0 36 36" className="w-7 h-7">
               <circle
                 cx="18"
                 cy="18"
@@ -57,40 +136,56 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
           </span>
           <span className="font-bold text-white text-xl tracking-tight">AngoPress</span>
         </Link>
-        <div className="relative z-10 space-y-8">
-          <div>
-            <h2 className="text-3xl font-extrabold text-white leading-snug mb-3">
-              A plataforma de imprensa
+
+        {/* Conteúdo central */}
+        <div className="relative z-10 space-y-10">
+          {/* Headline */}
+          <div className="space-y-4">
+            <p className="inline-flex items-center gap-2 text-xs font-semibold text-white/70 uppercase tracking-widest">
+              <span className="w-4 h-px bg-white/40" />
+              Plataforma nº 1 em Angola
+            </p>
+            <h2 className="text-4xl font-extrabold text-white leading-[1.15] tracking-tight">
+              Conecte a sua marca
               <br />
-              feita para Angola
+              <span className="text-brand-300">aos jornalistas certos</span>
             </h2>
-            <p className="text-brand-300 text-base leading-relaxed">
-              Distribua press releases, segmente jornalistas e acompanhe os resultados em tempo
-              real.
+            <p className="text-white/75 text-base leading-relaxed max-w-sm">
+              Crie, segmente e envie press releases para toda a imprensa angolana. Rastreie
+              resultados em tempo real.
             </p>
           </div>
-          <ul className="space-y-3">
-            {BENEFITS.map((b) => (
-              <li key={b} className="flex items-center gap-3 text-brand-200 text-sm">
-                <span className="w-5 h-5 rounded-full bg-brand-600/60 border border-brand-500/60 flex items-center justify-center flex-shrink-0">
-                  <svg
-                    className="w-3 h-3 text-neutral-300"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
+
+          {/* Features */}
+          <ul className="space-y-4">
+            {FEATURES.map((f) => (
+              <li key={f.title} className="flex items-start gap-4">
+                <span className="flex-shrink-0 w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-brand-200">
+                  {f.icon}
                 </span>
-                {b}
+                <div>
+                  <p className="text-sm font-semibold text-white">{f.title}</p>
+                  <p className="text-xs text-white/65 leading-relaxed mt-0.5">{f.description}</p>
+                </div>
               </li>
             ))}
           </ul>
         </div>
-        <p className="relative z-10 text-xs text-brand-500">
-          © {new Date().getFullYear()} AngoPress. Todos os direitos reservados.
-        </p>
+
+        {/* Rodapé */}
+        <div className="relative z-10 flex items-center justify-between">
+          <p className="text-xs text-white/40">
+            © {new Date().getFullYear()} AngoPress. Todos os direitos reservados.
+          </p>
+          <div className="flex gap-4 text-xs text-white/50">
+            <Link href="/termos" className="hover:text-white/80 transition-colors">
+              Termos
+            </Link>
+            <Link href="/privacidade" className="hover:text-white/80 transition-colors">
+              Privacidade
+            </Link>
+          </div>
+        </div>
       </div>
 
       {/* ── Painel direito (formulário) ── */}

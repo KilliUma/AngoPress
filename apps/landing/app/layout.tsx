@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter, Space_Grotesk } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 import { ScrollReveal } from '@/components/ScrollReveal'
 
@@ -32,15 +33,16 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-AO">
-      {/* Inline script runs before React hydration to avoid flash of wrong theme */}
-      <head>
-        <script
+      <head />
+      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
+        {/* Inline script runs before React hydration to avoid flash of wrong theme */}
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='light')document.documentElement.classList.add('light');}catch(e){}})();`,
           }}
         />
-      </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
         <ScrollReveal />
         {children}
       </body>

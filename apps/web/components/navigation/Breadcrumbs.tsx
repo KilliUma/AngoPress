@@ -29,8 +29,9 @@ export function Breadcrumbs() {
   // Quebrar pathname em segmentos (ignorar vazios)
   const segments = pathname.split('/').filter(Boolean)
 
-  // Não mostrar breadcrumbs na raiz do dashboard
-  if (segments.length <= 1) return null
+  if (segments.length === 0) return null
+
+  const homeHref = segments[0] === 'admin' ? '/admin' : '/dashboard'
 
   // Construir crumbs
   const crumbs = segments.map((segment, index) => {
@@ -42,21 +43,21 @@ export function Breadcrumbs() {
   })
 
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-sm">
+    <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-[15px]">
       <Link
-        href="/dashboard"
-        className="text-neutral-400 hover:text-neutral-700 transition-colors"
+        href={homeHref}
+        className="text-neutral-500 hover:text-neutral-700 transition-colors"
         aria-label="Início"
       >
         <Home size={14} />
       </Link>
       {crumbs.map(({ label, href, isLast }) => (
         <span key={href} className="flex items-center gap-1">
-          <ChevronRight size={14} className="text-neutral-300 shrink-0" />
+          <ChevronRight size={14} className="text-neutral-400 shrink-0" />
           {isLast ? (
-            <span className="font-medium text-neutral-700">{label}</span>
+            <span className="font-medium text-neutral-900">{label}</span>
           ) : (
-            <Link href={href} className="text-neutral-400 hover:text-neutral-700 transition-colors">
+            <Link href={href} className="text-neutral-500 hover:text-neutral-700 transition-colors">
               {label}
             </Link>
           )}

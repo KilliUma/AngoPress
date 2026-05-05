@@ -155,7 +155,7 @@ export function NotificationBell() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="relative p-1.5 text-neutral-500 hover:text-neutral-800 hover:bg-neutral-100 rounded-lg transition-colors"
+        className="relative p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-colors"
         aria-label="Notificações"
       >
         <Bell size={18} />
@@ -167,21 +167,21 @@ export function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl border border-neutral-200 shadow-lg z-50 overflow-hidden">
-          <div className="px-4 py-3 border-b border-neutral-100 flex items-center justify-between">
+        <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl border border-neutral-200 shadow-2xl shadow-black/20 z-50 overflow-hidden">
+          <div className="px-4 py-3 border-b border-neutral-200 flex items-center justify-between">
             <span className="text-sm font-semibold text-neutral-800">Notificações</span>
             {count > 0 && (
-              <span className="text-xs bg-brand-100 text-brand-700 px-1.5 py-0.5 rounded font-medium">
+              <span className="text-xs bg-brand-600/20 text-brand-300 px-1.5 py-0.5 rounded font-medium border border-brand-500/30">
                 {count}
               </span>
             )}
           </div>
           <ul className="max-h-72 overflow-y-auto">
             {count === 0 ? (
-              <li className="px-4 py-6 text-sm text-neutral-400 text-center">Sem notificações</li>
+              <li className="px-4 py-6 text-sm text-neutral-500 text-center">Sem notificações</li>
             ) : (
               notifications.map((n) => (
-                <li key={n.id} className="border-b border-neutral-50 last:border-0">
+                <li key={n.id} className="border-b border-neutral-100 last:border-0">
                   <Link
                     href={n.link}
                     className="block px-4 py-3 hover:bg-neutral-50 transition-colors"
