@@ -42,6 +42,13 @@ export class PressReleasesController {
     return this.pressReleasesService.getFeatured()
   }
 
+  @Public()
+  @Get('public')
+  @ApiOperation({ summary: 'Listar press releases publicados (público)' })
+  getPublicList(@Query() query: QueryPressReleaseDto) {
+    return this.pressReleasesService.getPublicList(query)
+  }
+
   @Get()
   @ApiOperation({ summary: 'Listar press releases com filtros' })
   findAll(@Query() query: QueryPressReleaseDto, @CurrentUser() user: JwtUser) {

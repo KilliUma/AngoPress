@@ -1,40 +1,32 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { SESClient, SendEmailCommand, SendEmailCommandInput } from '@aws-sdk/client-ses'
+import { Resend } from 'resend'
 
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name)
-  private readonly ses: SESClient | null = null
+  private readonly resend: Resend | null = null
   private readonly isConfigured: boolean
   private readonly fromEmail: string
   private readonly fromName: string
   private readonly appUrl: string
 
   constructor(configService: ConfigService) {
-    const accessKeyId = configService.get<string>('aws.accessKeyId') ?? ''
-    const secretAccessKey = configService.get<string>('aws.secretAccessKey') ?? ''
-    this.fromEmail = configService.get<string>('aws.sesFromEmail') ?? 'noreply@angopress.ao'
-    this.fromName = configService.get<string>('aws.sesFromName') ?? 'AngoPress'
+    const apiKey = configService.get<string>('resend.apiKey') ?? ''
+    this.fromEmail = configService.get<string>('resend.fromEmail') ?? 'noreply@angopress.ao'
+    this.fromName = configService.get<string>('resend.fromName') ?? 'AngoPress'
     this.appUrl = configService.get<string>('app.url') ?? 'http://localhost:3001'
 
-    this.isConfigured =
-      accessKeyId !== '' &&
-      accessKeyId !== 'SUBSTITUIR' &&
-      secretAccessKey !== '' &&
-      secretAccessKey !== 'SUBSTITUIR'
+    this.isConfigured = apiKey !== '' && !apiKey.startsWith('re_placeholder')
 
     if (this.isConfigured) {
-      this.ses = new SESClient({
-        region: configService.get<string>('aws.region') ?? 'us-east-1',
-        credentials: { accessKeyId, secretAccessKey },
-      })
+      this.resend = new Resend(apiKey)
     }
   }
 
   /**
-   * Envia e-mail via SES.
-   * Em modo dev (sem credenciais), loga o conteúdo no console.
+   * Envia e-mail via Resend.
+   * Em modo dev (sem API key), loga o conteúdo no console.
    */
   async send(params: {
     to: string
@@ -49,21 +41,17 @@ export class EmailService {
     const pixelUrl = `${this.appUrl}/api/v1/track/open/${trackingToken}`
     const trackedHtml = this.injectTrackingPixel(html, pixelUrl)
 
-    if (!this.isConfigured || !this.ses) {
+    if (!this.isConfigured || !this.resend) {
       this.logger.debug(`[DEV] Simulando envio para ${to} — assunto: "${subject}"`)
       return
     }
 
-    const input: SendEmailCommandInput = {
-      Source: `"${this.fromName}" <${this.fromEmail}>`,
-      Destination: { ToAddresses: [`"${toName}" <${to}>`] },
-      Message: {
-        Subject: { Data: subject, Charset: 'UTF-8' },
-        Body: { Html: { Data: trackedHtml, Charset: 'UTF-8' } },
-      },
-    }
-
-    await this.ses.send(new SendEmailCommand(input))
+    await this.resend.emails.send({
+      from: `${this.fromName} <${this.fromEmail}>`,
+      to: [`${toName} <${to}>`],
+      subject,
+      html: trackedHtml,
+    })
   }
 
   /** Injecta pixel 1×1 transparente antes de </body> */

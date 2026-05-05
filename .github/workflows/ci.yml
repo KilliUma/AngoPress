@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop, staging]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  lint-and-build:
+    name: Lint + Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Lint (API)
+        run: cd apps/api && npm run lint
+
+      - name: Lint (Web)
+        run: cd apps/web && npm run lint
+
+      - name: Typecheck (API)
+        run: cd apps/api && npx tsc --noEmit
+
+      - name: Typecheck (Web)
+        run: cd apps/web && npm run typecheck
+
+      - name: Build (Web)
+        run: cd apps/web && npm run build
+
+  unit-tests:
+    name: Unit Tests (API)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run unit tests
+        run: cd apps/api && npx jest --testPathPattern="\.spec\.ts$" --no-coverage --passWithNoTests
+        env:
+          NODE_ENV: test

@@ -21,7 +21,6 @@
 
   body {
     @apply bg-neutral-50 text-neutral-900 antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -35,3 +34,11 @@
     scrollbar-color: theme('colors.neutral.300') transparent;
   }
 }
+
+/* ── Network background animations ─────────────────────────────── */
+@keyframes netPulse { 0%,100% { opacity:0.55; transform:scale(1);   } 50% { opacity:1;    transform:scale(1.55); } }
+@keyframes netRing  { 0%      { opacity:0.7;  transform:scale(1);   } 100% { opacity:0;   transform:scale(3);    } }
+@keyframes netEdge  { 0%,100% { opacity:0.25; } 50% { opacity:0.85; } }
+.net-node { transform-box: fill-box; transform-origin: center; animation: netPulse 3.5s ease-in-out infinite; }
+.net-ring  { transform-box: fill-box; transform-origin: center; animation: netRing  3.5s ease-out infinite; }
+.net-edge  { animation: netEdge 5s ease-in-out infinite; }

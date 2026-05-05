@@ -190,7 +190,7 @@ function ShareButtons({ url, title, compact = false }: ShareProps) {
 
   return (
     <div className="flex items-center gap-3 flex-wrap">
-      <span className="text-xs font-semibold uppercase tracking-widest text-white/30">
+      <span className="text-xs font-semibold uppercase tracking-widest text-neutral-500">
         Partilhar
       </span>
       {buttons.map((b) => (
@@ -235,7 +235,7 @@ function ArticleThumb({ article }: { article: NewsArticlePreview }) {
       </div>
       <div className="min-w-0">
         {date && <p className="text-[10px] text-brand-400 font-semibold mb-0.5">{date}</p>}
-        <p className="text-xs text-white/70 group-hover:text-white transition-colors leading-snug line-clamp-2">
+        <p className="text-xs text-neutral-700 group-hover:text-neutral-900 transition-colors leading-snug line-clamp-2">
           {article.title}
         </p>
       </div>
@@ -251,9 +251,9 @@ function RelatedCard({ article }: { article: NewsArticlePreview }) {
   return (
     <Link
       href={`/noticias/${article.slug}`}
-      className="group flex flex-col rounded-xl overflow-hidden border border-white/[0.07] bg-white/[0.02] hover:border-brand-500/30 transition-all duration-200"
+      className="group flex flex-col rounded-xl overflow-hidden border border-neutral-200 bg-white hover:border-brand-300 transition-all duration-200 shadow-sm"
     >
-      <div className="relative h-36 bg-white/[0.04]">
+      <div className="relative h-36 bg-neutral-100">
         {article.imageUrl ? (
           <Image
             src={article.imageUrl}
@@ -272,8 +272,8 @@ function RelatedCard({ article }: { article: NewsArticlePreview }) {
         )}
       </div>
       <div className="p-3">
-        {date && <p className="text-[10px] text-white/30 mb-1">{date}</p>}
-        <p className="text-xs text-white/70 group-hover:text-white transition-colors leading-snug line-clamp-2 font-medium">
+        {date && <p className="text-[10px] text-neutral-500 mb-1">{date}</p>}
+        <p className="text-xs text-neutral-700 group-hover:text-neutral-900 transition-colors leading-snug line-clamp-2 font-medium">
           {article.title}
         </p>
       </div>
@@ -296,13 +296,13 @@ function PrevNextNav({
       {prev ? (
         <Link
           href={`/noticias/${prev.slug}`}
-          className="group flex flex-col gap-2 p-4 rounded-xl border border-white/[0.07] bg-white/[0.02] hover:border-brand-500/30 hover:bg-white/[0.04] transition-all duration-200"
+          className="group flex flex-col gap-2 p-4 rounded-xl border border-neutral-200 bg-white hover:border-brand-300 hover:bg-brand-50/30 transition-all duration-200"
         >
-          <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-white/30">
+          <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-neutral-500">
             <IconArrowLeft className="w-3.5 h-3.5" />
             Notícia anterior
           </span>
-          <p className="text-sm text-white/70 group-hover:text-white transition-colors line-clamp-2 font-medium leading-snug">
+          <p className="text-sm text-neutral-700 group-hover:text-neutral-900 transition-colors line-clamp-2 font-medium leading-snug">
             {prev.title}
           </p>
         </Link>
@@ -313,13 +313,13 @@ function PrevNextNav({
       {next ? (
         <Link
           href={`/noticias/${next.slug}`}
-          className="group flex flex-col items-end gap-2 p-4 rounded-xl border border-white/[0.07] bg-white/[0.02] hover:border-brand-500/30 hover:bg-white/[0.04] transition-all duration-200 text-right"
+          className="group flex flex-col items-end gap-2 p-4 rounded-xl border border-neutral-200 bg-white hover:border-brand-300 hover:bg-brand-50/30 transition-all duration-200 text-right"
         >
-          <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-white/30">
+          <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-neutral-500">
             Próxima notícia
             <IconArrowRight className="w-3.5 h-3.5" />
           </span>
-          <p className="text-sm text-white/70 group-hover:text-white transition-colors line-clamp-2 font-medium leading-snug">
+          <p className="text-sm text-neutral-700 group-hover:text-neutral-900 transition-colors line-clamp-2 font-medium leading-snug">
             {next.title}
           </p>
         </Link>
@@ -355,7 +355,7 @@ export default async function NewsArticlePage({ params }: Props) {
   const categories = Array.from(categoryMap.entries()).sort((a, b) => b[1] - a[1])
 
   return (
-    <main className="min-h-screen bg-[rgb(var(--surface-0))] text-white">
+    <main className="min-h-screen bg-[rgb(var(--surface))] text-neutral-900">
       {/* ───── HERO ───── */}
       <div className="relative w-full h-72 sm:h-[30rem] overflow-hidden">
         {article.imageUrl ? (
@@ -372,7 +372,7 @@ export default async function NewsArticlePage({ params }: Props) {
         )}
 
         {/* Gradiente base: escurece o rodapé (para o título) */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[rgb(var(--surface-0))] via-black/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[rgb(var(--surface))] via-black/55 to-transparent" />
 
         {/* Overlay do topo: garante contraste para a breadcrumb */}
         <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/70 to-transparent" />
@@ -433,37 +433,37 @@ export default async function NewsArticlePage({ params }: Props) {
           {/* ── Coluna principal (2/3) */}
           <div className="lg:col-span-2 space-y-8">
             {/* Barra de partilha */}
-            <div className="flex items-center justify-between flex-wrap gap-3 pb-4 border-b border-white/[0.07]">
+            <div className="flex items-center justify-between flex-wrap gap-3 pb-4 border-b border-neutral-200">
               <ShareButtons url={pageUrl} title={article.title} />
             </div>
 
             {/* Corpo do artigo */}
-            <div className="bg-white/[0.02] border border-white/[0.07] rounded-2xl p-6 sm:p-8">
+            <div className="bg-white border border-neutral-200 rounded-2xl p-6 sm:p-8 shadow-sm">
               {article.content ? (
                 <div
-                  className="prose prose-invert prose-base max-w-none
-                    prose-p:text-white/65 prose-p:leading-relaxed
-                    prose-headings:text-white prose-headings:font-bold
+                  className="prose prose-base max-w-none
+                    prose-p:text-neutral-700 prose-p:leading-relaxed
+                    prose-headings:text-neutral-900 prose-headings:font-bold
                     prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3
                     prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-2
-                    prose-a:text-brand-400 prose-a:no-underline hover:prose-a:underline
-                    prose-strong:text-white/85
-                    prose-ul:text-white/65 prose-ol:text-white/65
+                    prose-a:text-brand-600 prose-a:no-underline hover:prose-a:underline
+                    prose-strong:text-neutral-900
+                    prose-ul:text-neutral-700 prose-ol:text-neutral-700
                     prose-li:marker:text-brand-400
-                    prose-blockquote:border-l-brand-500 prose-blockquote:text-white/50 prose-blockquote:not-italic
-                    prose-hr:border-white/10
+                    prose-blockquote:border-l-brand-500 prose-blockquote:text-neutral-600 prose-blockquote:not-italic
+                    prose-hr:border-neutral-200
                     prose-img:rounded-xl prose-img:w-full"
                   dangerouslySetInnerHTML={{ __html: article.content }}
                 />
               ) : article.excerpt ? (
-                <p className="text-white/65 text-base leading-relaxed">{article.excerpt}</p>
+                <p className="text-neutral-700 text-base leading-relaxed">{article.excerpt}</p>
               ) : (
-                <p className="text-white/30 italic text-sm">Conteúdo não disponível.</p>
+                <p className="text-neutral-500 italic text-sm">Conteúdo não disponível.</p>
               )}
 
               {/* Link para fonte original */}
               {article.url && (
-                <div className="mt-8 pt-6 border-t border-white/[0.07]">
+                <div className="mt-8 pt-6 border-t border-neutral-200">
                   <a
                     href={article.url}
                     target="_blank"
@@ -478,8 +478,8 @@ export default async function NewsArticlePage({ params }: Props) {
             </div>
 
             {/* CTA de partilha */}
-            <div className="rounded-2xl border border-brand-700/30 bg-brand-900/30 p-6 text-center">
-              <p className="text-sm font-semibold text-white/70 mb-4">
+            <div className="rounded-2xl border border-brand-200 bg-brand-50 p-6 text-center">
+              <p className="text-sm font-semibold text-neutral-700 mb-4">
                 Gostou da notícia? Partilhe!
               </p>
               <div className="flex items-center justify-center gap-3 flex-wrap">
@@ -490,7 +490,7 @@ export default async function NewsArticlePage({ params }: Props) {
             {/* Navegação prev / next */}
             {(article.prev || article.next) && (
               <div>
-                <h2 className="text-xs font-bold uppercase tracking-widest text-white/30 mb-4">
+                <h2 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-4">
                   Outras notícias
                 </h2>
                 <PrevNextNav prev={article.prev} next={article.next} />
@@ -500,7 +500,7 @@ export default async function NewsArticlePage({ params }: Props) {
             {/* Artigos relacionados */}
             {article.related.length > 0 && (
               <div>
-                <h2 className="text-xs font-bold uppercase tracking-widest text-white/30 mb-4">
+                <h2 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-4">
                   Notícias relacionadas
                 </h2>
                 <div className="grid sm:grid-cols-3 gap-4">
@@ -517,7 +517,7 @@ export default async function NewsArticlePage({ params }: Props) {
             {/* Botão voltar */}
             <Link
               href="/noticias"
-              className="flex items-center gap-2 w-full px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] text-sm text-white/60 hover:text-white font-medium transition-all duration-150"
+              className="flex items-center gap-2 w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white hover:bg-neutral-100 text-sm text-neutral-700 hover:text-neutral-900 font-medium transition-all duration-150"
             >
               <IconArrowLeft />
               Voltar às notícias
@@ -525,8 +525,8 @@ export default async function NewsArticlePage({ params }: Props) {
 
             {/* Notícias recentes */}
             {article.recent.length > 0 && (
-              <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-white/30 mb-4">
+              <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-4">
                   Notícias recentes
                 </h3>
                 <ul className="space-y-4">
@@ -541,8 +541,8 @@ export default async function NewsArticlePage({ params }: Props) {
 
             {/* Categorias */}
             {categories.length > 0 && (
-              <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-white/30 mb-4">
+              <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-4">
                   Categorias
                 </h3>
                 <ul className="space-y-1.5">
@@ -550,9 +550,9 @@ export default async function NewsArticlePage({ params }: Props) {
                     <li key={cat}>
                       <Link
                         href={`/noticias?categoria=${encodeURIComponent(cat)}`}
-                        className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/[0.04] transition-colors group"
+                        className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-neutral-100 transition-colors group"
                       >
-                        <span className="text-sm text-white/60 group-hover:text-white transition-colors">
+                        <span className="text-sm text-neutral-700 group-hover:text-neutral-900 transition-colors">
                           {cat}
                         </span>
                         <span className="text-[10px] font-bold bg-brand-500/20 text-brand-400 rounded-full px-2 py-0.5">

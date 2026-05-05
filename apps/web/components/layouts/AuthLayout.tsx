@@ -1,6 +1,9 @@
 'use client'
 
+import type { CSSProperties } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
+import { NetworkBackground } from './NetworkBackground'
 
 const FEATURES = [
   {
@@ -86,55 +89,37 @@ const FEATURES = [
 ]
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
+  const NETWORK_STYLE = {
+    '--net-edge': 'rgb(255 255 255 / 0.28)',
+    '--net-dot-outer': 'rgb(255 255 255 / 0.65)',
+    '--net-dot-core': 'rgb(255 255 255 / 0.95)',
+    '--net-travel': 'rgb(255 255 255 / 0.92)',
+  } as CSSProperties
+
   return (
     <div className="min-h-screen flex">
       {/* ── Painel esquerdo (brand) ── */}
-      <div className="hidden lg:flex lg:w-1/2 bg-brand-800 flex-col justify-between p-12 relative overflow-hidden">
-        {/* Fundos decorativos — mantidos do design system */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full bg-brand-700/40 blur-3xl" />
-          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-brand-900/60 blur-2xl" />
-          <div
-            className="absolute inset-0 opacity-5"
-            style={{
-              backgroundImage:
-                'linear-gradient(#D99D99 1px, transparent 1px), linear-gradient(90deg, #D99D99 1px, transparent 1px)',
-              backgroundSize: '50px 50px',
-            }}
-          />
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand-600 to-brand-900 flex-col justify-between p-12 relative overflow-hidden">
+        {/* Rede animada como fundo decorativo */}
+        <div className="absolute inset-0 opacity-40" style={NETWORK_STYLE}>
+          <NetworkBackground />
         </div>
 
         {/* Logo */}
-        <Link href="/" className="relative z-10 flex items-center gap-3">
-          <span className="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-xl bg-white/10 border border-white/20 backdrop-blur-sm">
-            <svg viewBox="0 0 36 36" className="w-7 h-7">
-              <circle
-                cx="18"
-                cy="18"
-                r="16"
-                fill="none"
-                stroke="#D99D99"
-                strokeWidth="2.5"
-                strokeDasharray="72 30"
-                strokeLinecap="round"
-              />
-              <text
-                x="50%"
-                y="55%"
-                textAnchor="middle"
-                dominantBaseline="middle"
-                style={{
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: 17,
-                  fontWeight: 900,
-                  fill: '#fff',
-                }}
-              >
-                A
-              </text>
-            </svg>
-          </span>
-          <span className="font-bold text-white text-xl tracking-tight">AngoPress</span>
+        <Link
+          href="/"
+          className="relative z-10 inline-flex items-center"
+          aria-label="Voltar ao início"
+        >
+          <Image
+            src="/logo.png"
+            alt="AngoPress"
+            width={240}
+            height={64}
+            className="w-auto object-contain"
+            style={{ height: '10rem' }}
+            priority
+          />
         </Link>
 
         {/* Conteúdo central */}
@@ -191,34 +176,15 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
       {/* ── Painel direito (formulário) ── */}
       <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-12 bg-neutral-50">
         <div className="lg:hidden mb-8 text-center">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <svg viewBox="0 0 36 36" className="w-9 h-9">
-              <circle
-                cx="18"
-                cy="18"
-                r="16"
-                fill="none"
-                stroke="#8A0018"
-                strokeWidth="2.5"
-                strokeDasharray="72 30"
-                strokeLinecap="round"
-              />
-              <text
-                x="50%"
-                y="55%"
-                textAnchor="middle"
-                dominantBaseline="middle"
-                style={{
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: 17,
-                  fontWeight: 900,
-                  fill: '#8A0018',
-                }}
-              >
-                A
-              </text>
-            </svg>
-            <span className="font-bold text-brand-700 text-xl tracking-tight">AngoPress</span>
+          <Link href="/" className="inline-flex items-center" aria-label="Voltar ao início">
+            <Image
+              src="/logo.png"
+              alt="AngoPress"
+              width={210}
+              height={56}
+              className="h-10 w-auto object-contain"
+              priority
+            />
           </Link>
         </div>
         <div className="w-full max-w-sm">{children}</div>

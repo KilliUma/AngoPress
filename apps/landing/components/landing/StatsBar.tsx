@@ -18,19 +18,19 @@ export function StatsBar({ stats }: Props) {
   ]
 
   return (
-    <section className="relative py-12 px-4 sm:px-6 bg-brand-600">
+    <section className="relative py-12 px-4 sm:px-6 bg-gray-50 border-y border-gray-100">
       <div className="relative max-w-4xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-brand-500/40">
+        <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-200">
           {STATS.map(({ value, label }, i) => (
             <div
               key={label}
               className="reveal flex flex-col items-center py-6 px-4 gap-2 text-center"
               style={{ transitionDelay: `${i * 80}ms` }}
             >
-              <p className="text-4xl sm:text-5xl font-black text-white leading-none tabular-nums">
+              <p className="text-4xl sm:text-5xl font-black text-brand-600 leading-none tabular-nums">
                 {value}
               </p>
-              <p className="text-xs text-brand-200 font-medium leading-snug max-w-[100px]">
+              <p className="text-xs text-gray-500 font-medium leading-snug max-w-[100px]">
                 {label}
               </p>
             </div>

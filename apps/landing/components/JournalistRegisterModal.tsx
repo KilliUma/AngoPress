@@ -154,8 +154,10 @@ export type JournalistRegisterModalVariant = 'nav' | 'card' | 'cta' | 'footer'
 
 export function JournalistRegisterModal({
   variant = 'card',
+  navClassName,
 }: {
   variant?: JournalistRegisterModalVariant
+  navClassName?: string
 }) {
   const [open, setOpen] = useState(false)
   const [state, setState] = useState<FormState>({ status: 'idle' })
@@ -280,7 +282,10 @@ export function JournalistRegisterModal({
       {variant === 'nav' && (
         <button
           onClick={handleOpen}
-          className="px-4 py-2 text-[15px] font-semibold text-gray-600 hover:text-gray-950 rounded-lg hover:bg-gray-100/70 transition-all duration-150 tracking-[-0.01em] whitespace-nowrap"
+          className={
+            navClassName ??
+            'px-4 py-2 text-[15px] font-semibold text-brand-600 hover:text-brand-700 hover:bg-brand-50 rounded-lg transition-all duration-150 tracking-[-0.01em] whitespace-nowrap'
+          }
         >
           Sou jornalista
         </button>

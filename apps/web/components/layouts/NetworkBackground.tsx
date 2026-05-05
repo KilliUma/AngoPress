@@ -103,7 +103,6 @@ export function NetworkBackground() {
 
       function tick(now: number) {
         const t = Math.min((now - start) / duration, 1)
-        // Ease in-out quad
         const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2
         circle.setAttribute('cx', String(a.x + (b.x - a.x) * ease))
         circle.setAttribute('cy', String(a.y + (b.y - a.y) * ease))
@@ -148,7 +147,6 @@ export function NetworkBackground() {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Edges with staggered fade animation */}
         {EDGES.map(([a, b], i) => (
           <line
             key={i}
@@ -163,7 +161,6 @@ export function NetworkBackground() {
           />
         ))}
 
-        {/* Nodes: ring pulse + core pulse */}
         {NODES.map((n, i) => (
           <g key={i}>
             <circle
@@ -188,10 +185,8 @@ export function NetworkBackground() {
           </g>
         ))}
 
-        {/* Some nodes show journalist avatars to reinforce a human network */}
         {JOURNALIST_NODE_INDEXES.map((nodeIndex, i) => {
           const n = NODES[nodeIndex]
-
           return (
             <g key={`journalist-${nodeIndex}`} transform={`translate(${n.x}, ${n.y})`}>
               <circle
@@ -202,17 +197,11 @@ export function NetworkBackground() {
                 style={{ animationDelay: `${(i * 0.31) % 3.5}s` }}
                 className="net-ring"
               />
-              <circle
-                cx="0"
-                cy="-2.4"
-                r="2.1"
-                fill="var(--net-avatar, var(--brand-700, #8A0018))"
-                opacity="0.95"
-              />
+              <circle cx="0" cy="-2.4" r="2.1" fill="var(--net-avatar, #8A0018)" opacity="0.95" />
               <path
                 d="M -4.2 4.4 C -3.1 1.6 3.1 1.6 4.2 4.4"
                 fill="none"
-                stroke="var(--net-avatar, var(--brand-700, #8A0018))"
+                stroke="var(--net-avatar, #8A0018)"
                 strokeWidth="1.6"
                 strokeLinecap="round"
                 opacity="0.95"
@@ -221,10 +210,8 @@ export function NetworkBackground() {
           )
         })}
 
-        {/* A few extra nodes show grouped user icons */}
         {GROUP_NODE_INDEXES.map((nodeIndex, i) => {
           const n = NODES[nodeIndex]
-
           return (
             <g key={`group-${nodeIndex}`} transform={`translate(${n.x}, ${n.y})`}>
               <circle
@@ -235,33 +222,25 @@ export function NetworkBackground() {
                 style={{ animationDelay: `${(i * 0.37) % 3.5}s` }}
                 className="net-ring"
               />
-
               <circle
                 cx="-2.8"
                 cy="-2.2"
                 r="1.55"
-                fill="var(--net-avatar, var(--brand-700, #8A0018))"
+                fill="var(--net-avatar, #8A0018)"
                 opacity="0.92"
               />
               <circle
                 cx="2.8"
                 cy="-2.2"
                 r="1.55"
-                fill="var(--net-avatar, var(--brand-700, #8A0018))"
+                fill="var(--net-avatar, #8A0018)"
                 opacity="0.92"
               />
-              <circle
-                cx="0"
-                cy="-0.8"
-                r="1.75"
-                fill="var(--net-avatar, var(--brand-700, #8A0018))"
-                opacity="0.96"
-              />
-
+              <circle cx="0" cy="-0.8" r="1.75" fill="var(--net-avatar, #8A0018)" opacity="0.96" />
               <path
                 d="M -6 4.6 C -4.7 2.2 -1.3 2.2 0 4.6"
                 fill="none"
-                stroke="var(--net-avatar, var(--brand-700, #8A0018))"
+                stroke="var(--net-avatar, #8A0018)"
                 strokeWidth="1.35"
                 strokeLinecap="round"
                 opacity="0.9"
@@ -269,7 +248,7 @@ export function NetworkBackground() {
               <path
                 d="M 0 4.6 C 1.3 2.2 4.7 2.2 6 4.6"
                 fill="none"
-                stroke="var(--net-avatar, var(--brand-700, #8A0018))"
+                stroke="var(--net-avatar, #8A0018)"
                 strokeWidth="1.35"
                 strokeLinecap="round"
                 opacity="0.9"

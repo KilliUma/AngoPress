@@ -1,25 +1,25 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses'
+import { Resend } from 'resend'
 
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name)
-  private readonly ses: SESClient
+  private readonly resend: Resend | null = null
+  private readonly isConfigured: boolean
   private readonly fromAddress: string
 
   constructor(private readonly config: ConfigService) {
-    this.ses = new SESClient({
-      region: this.config.get<string>('aws.region') ?? 'us-east-1',
-      credentials: {
-        accessKeyId: this.config.get<string>('aws.accessKeyId') ?? '',
-        secretAccessKey: this.config.get<string>('aws.secretAccessKey') ?? '',
-      },
-    })
+    const apiKey = this.config.get<string>('resend.apiKey') ?? ''
+    const fromName = this.config.get<string>('resend.fromName') ?? 'AngoPress'
+    const fromEmail = this.config.get<string>('resend.fromEmail') ?? 'noreply@angopress.ao'
 
-    const fromName = this.config.get<string>('aws.sesFromName') ?? 'AngoPress'
-    const fromEmail = this.config.get<string>('aws.sesFromEmail') ?? 'noreply@angopress.ao'
     this.fromAddress = `${fromName} <${fromEmail}>`
+    this.isConfigured = apiKey !== '' && !apiKey.startsWith('re_placeholder')
+
+    if (this.isConfigured) {
+      this.resend = new Resend(apiKey)
+    }
   }
 
   async sendSubscriptionActivated(opts: {
@@ -84,19 +84,20 @@ export class MailService {
     const text = `Olá ${toName},\n\nA sua subscrição do plano ${planName} foi activada com sucesso.\nEnvios disponíveis: ${sendsPerMonth}/mês\nVálido até: ${expiresFormatted}\n\nAceda à plataforma em: ${process.env.APP_URL ?? 'http://localhost:5173'}/subscription`
 
     try {
-      await this.ses.send(
-        new SendEmailCommand({
-          Source: this.fromAddress,
-          Destination: { ToAddresses: [toEmail] },
-          Message: {
-            Subject: { Data: `✅ Plano ${planName} activado — AngoPress` },
-            Body: {
-              Html: { Data: html },
-              Text: { Data: text },
-            },
-          },
-        }),
-      )
+      if (!this.isConfigured || !this.resend) {
+        this.logger.debug(
+          `[DEV] Simulando envio de activação para ${toEmail} — plano: "${planName}"`,
+        )
+        return
+      }
+
+      await this.resend.emails.send({
+        from: this.fromAddress,
+        to: [toEmail],
+        subject: `✅ Plano ${planName} activado — AngoPress`,
+        html,
+        text,
+      })
       this.logger.log(`Email de activação enviado para ${toEmail}`)
     } catch (err) {
       // Email falhou mas não deve bloquear o fluxo

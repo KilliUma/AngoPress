@@ -4,13 +4,13 @@ import './globals.css'
 import { ScrollReveal } from '@/components/ScrollReveal'
 
 const inter = Inter({
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
   variable: '--font-body',
   display: 'swap',
 })
 
 const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
   variable: '--font-display',
   display: 'swap',
   weight: ['400', '500', '600', '700'],
@@ -35,9 +35,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-AO" className="light">
+    <html lang="pt-AO" className={`light ${inter.variable} ${spaceGrotesk.variable}`}>
       <head />
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
+      <body className="font-sans antialiased">
         <ScrollReveal />
         {children}
       </body>

@@ -43,6 +43,45 @@ export class PressReleasesService {
     })
     return data
   }
+
+  async getPublicList(query: QueryPressReleaseDto) {
+    const { search, page = 1, limit = 12 } = query
+    const skip = (page - 1) * limit
+
+    const where: Prisma.PressReleaseWhereInput = {
+      status: PressReleaseStatus.PUBLISHED,
+    }
+
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { summary: { contains: search, mode: 'insensitive' } },
+      ]
+    }
+
+    const [data, total] = await Promise.all([
+      this.prisma.pressRelease.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { publishedAt: 'desc' },
+        select: {
+          id: true,
+          title: true,
+          summary: true,
+          publishedAt: true,
+          user: { select: { name: true, company: true } },
+        },
+      }),
+      this.prisma.pressRelease.count({ where }),
+    ])
+
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    }
+  }
+
   // ─── Listagem ──────────────────────────────────────────────────
   async findAll(userId: string, userRole: string, query: QueryPressReleaseDto) {
     const { search, status, page = 1, limit = 20 } = query

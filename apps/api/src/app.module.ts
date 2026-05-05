@@ -25,6 +25,7 @@ import databaseConfig from '@/config/database.config'
 import jwtConfig from '@/config/jwt.config'
 import awsConfig from '@/config/aws.config'
 import redisConfig from '@/config/redis.config'
+import resendConfig from '@/config/resend.config'
 
 @Module({
   imports: [
@@ -32,7 +33,7 @@ import redisConfig from '@/config/redis.config'
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
-      load: [appConfig, databaseConfig, jwtConfig, awsConfig, redisConfig],
+      load: [appConfig, databaseConfig, jwtConfig, awsConfig, redisConfig, resendConfig],
     }),
 
     // Rate limiting global

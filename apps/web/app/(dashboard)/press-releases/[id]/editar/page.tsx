@@ -263,8 +263,17 @@ export default function EditPressReleasePage() {
               {uploading ? <Loader2 size={12} className="animate-spin" /> : <Paperclip size={12} />}
               Adicionar ficheiro
             </button>
-            <input ref={fileRef} type="file" className="hidden" onChange={handleFileUpload} />
+            <input
+              ref={fileRef}
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.docx"
+              className="hidden"
+              onChange={handleFileUpload}
+            />
           </div>
+          <p className="mb-2 text-xs text-neutral-500">
+            Tipos permitidos: PDF, JPG, PNG, GIF, WEBP e DOCX. Tamanho maximo por ficheiro: 20 MB.
+          </p>
           {attachments.length === 0 ? (
             <p className="text-sm text-neutral-400 italic">Sem anexos</p>
           ) : (

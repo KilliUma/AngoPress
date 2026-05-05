@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { NetworkBackground } from './NetworkBackground'
 import type { HeroContent } from '@/lib/cms'
 import { HERO_FALLBACK } from '@/lib/cms'
@@ -13,6 +14,14 @@ interface Props {
   stats?: HeroStats
   content?: HeroContent
 }
+
+const HERO_NETWORK_STYLE = {
+  '--net-edge': 'rgb(255 255 255 / 0.28)',
+  '--net-dot-outer': 'rgb(255 255 255 / 0.65)',
+  '--net-dot-core': 'rgb(255 255 255 / 0.95)',
+  '--net-travel': 'rgb(255 255 255 / 0.92)',
+  '--net-avatar': 'rgb(255 255 255 / 0.92)',
+} as CSSProperties
 
 const DASHBOARD_ROWS = [
   {
@@ -135,13 +144,15 @@ export function HeroSection({ stats, content }: Props) {
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden pt-20 pb-16 px-4 sm:px-6">
       {/* Base background */}
-      <div className="absolute inset-0 bg-[rgb(var(--surface))]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-brand-600 to-brand-900" />
 
       {/* Animated network of connections */}
-      <NetworkBackground />
+      <div className="absolute inset-0 opacity-50" style={HERO_NETWORK_STYLE}>
+        <NetworkBackground />
+      </div>
 
       {/* Grid overlay */}
-      <div className="absolute inset-0 grid-bg opacity-35 pointer-events-none" />
+      <div className="absolute inset-0 grid-bg opacity-10 pointer-events-none" />
 
       {/* Radial spotlight — top centre */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] pointer-events-none">
@@ -149,7 +160,7 @@ export function HeroSection({ stats, content }: Props) {
       </div>
 
       {/* Soft vignette — bottom */}
-      <div className="absolute bottom-0 inset-x-0 h-56 bg-gradient-to-t from-[rgb(var(--surface))] to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 inset-x-0 h-56 bg-gradient-to-t from-brand-950/80 to-transparent pointer-events-none" />
 
       {/* ── Content ── */}
       <div className="relative max-w-6xl mx-auto w-full">
@@ -158,7 +169,7 @@ export function HeroSection({ stats, content }: Props) {
           <div className="order-2 lg:order-1">
             {/* Status badge */}
             <div className="animate-fade-up" style={{ animationDelay: '0s' }}>
-              <span className="inline-flex items-center gap-2 text-[11px] font-semibold text-gray-600 bg-brand-50 border border-brand-100 px-4 py-1.5 rounded-full mb-8 tracking-wide">
+              <span className="inline-flex items-center gap-2 text-[11px] font-semibold text-white/80 bg-white/15 border border-white/25 px-4 py-1.5 rounded-full mb-8 tracking-wide">
                 <span className="relative flex h-1.5 w-1.5">
                   <span className="animate-ping2 absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
@@ -172,14 +183,14 @@ export function HeroSection({ stats, content }: Props) {
               className="font-display text-[3.5rem] sm:text-[4rem] lg:text-[4.5rem] font-bold leading-[1.04] tracking-tight mb-6 animate-fade-up"
               style={{ animationDelay: '0.1s' }}
             >
-              <span className="text-gray-900">{cms.headlineLine1}</span>
+              <span className="text-white">{cms.headlineLine1}</span>
               <br />
-              <span className="text-gradient">{cms.headlineLine2}</span>
+              <span className="text-gradient-gold">{cms.headlineLine2}</span>
             </h1>
 
             {/* Subtitle */}
             <p
-              className="text-[1.0625rem] text-gray-500 max-w-[480px] mb-10 leading-[1.7] animate-fade-up"
+              className="text-[1.0625rem] text-white/70 max-w-[480px] mb-10 leading-[1.7] animate-fade-up"
               style={{ animationDelay: '0.18s' }}
             >
               {cms.subtitle}
@@ -192,7 +203,7 @@ export function HeroSection({ stats, content }: Props) {
             >
               <a
                 href={primaryHref}
-                className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-bold bg-brand-600 hover:bg-brand-500 text-white rounded-xl transition-all duration-200 shadow-lg shadow-brand-700/30 ring-1 ring-brand-400/15 hover:ring-brand-400/30"
+                className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-bold bg-white hover:bg-white/90 text-brand-700 rounded-xl transition-all duration-200 shadow-lg shadow-black/30"
               >
                 {cms.ctaPrimaryLabel}
                 <svg
@@ -211,7 +222,7 @@ export function HeroSection({ stats, content }: Props) {
               </a>
               <a
                 href={cms.ctaSecondaryUrl}
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold text-gray-600 hover:text-gray-900 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 rounded-xl transition-all duration-150"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold text-white/80 hover:text-white border border-white/25 hover:border-white/40 hover:bg-white/10 rounded-xl transition-all duration-150"
               >
                 <svg
                   className="w-4 h-4 opacity-70"
@@ -250,9 +261,9 @@ export function HeroSection({ stats, content }: Props) {
                     </div>
                   ))}
               </div>
-              <p className="text-xs text-gray-500 leading-snug">
-                <span className="text-gray-900 font-semibold">{journalistsLabel}</span> jornalistas
-                já na plataforma
+              <p className="text-xs text-white/70 leading-snug">
+                <span className="text-white font-semibold">{journalistsLabel}</span> jornalistas já
+                na plataforma
               </p>
             </div>
           </div>

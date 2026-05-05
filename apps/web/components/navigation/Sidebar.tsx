@@ -108,7 +108,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               alt="AngoPress"
               width={120}
               height={34}
-              className="object-contain w-auto h-16"
+              className="object-contain w-auto"
+              style={{ height: '8rem' }}
               priority
             />
             {isAdmin && (
