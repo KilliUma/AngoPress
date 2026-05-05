@@ -133,7 +133,7 @@ function JournalistModal({
   const isPending = createMutation.isPending || updateMutation.isPending
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-neutral-200">
           <h2 className="text-lg font-semibold text-neutral-900">
@@ -144,54 +144,54 @@ function JournalistModal({
           </button>
         </div>
         <form onSubmit={onSubmit} className="p-6 space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Nome *</label>
+              <label className="block mb-1 text-sm font-medium text-neutral-700">Nome *</label>
               <input
                 {...register('name', { required: 'Nome obrigatório' })}
-                className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-3 py-2 text-sm border rounded-lg border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="Nome completo"
               />
-              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+              {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Email *</label>
+              <label className="block mb-1 text-sm font-medium text-neutral-700">Email *</label>
               <input
                 {...register('email', { required: 'Email obrigatório' })}
                 type="email"
-                className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-3 py-2 text-sm border rounded-lg border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="email@redaccao.ao"
               />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+              {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
+              <label className="block mb-1 text-sm font-medium text-neutral-700">
                 Veículo / Redacção *
               </label>
               <input
                 {...register('outlet', { required: 'Veículo obrigatório' })}
-                className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-3 py-2 text-sm border rounded-lg border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="Jornal de Angola"
               />
               {errors.outlet && (
-                <p className="text-red-500 text-xs mt-1">{errors.outlet.message}</p>
+                <p className="mt-1 text-xs text-red-500">{errors.outlet.message}</p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Função</label>
+              <label className="block mb-1 text-sm font-medium text-neutral-700">Função</label>
               <input
                 {...register('jobTitle')}
-                className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-3 py-2 text-sm border rounded-lg border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="Repórter de Economia"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
-                Tipo de média *
+              <label className="block mb-1 text-sm font-medium text-neutral-700">
+                Tipo de mídia *
               </label>
               <select
                 {...register('mediaType', { required: 'Tipo obrigatório' })}
-                className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-3 py-2 text-sm border rounded-lg border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
               >
                 <option value="">Seleccionar...</option>
                 {MEDIA_TYPES.map((t) => (
@@ -201,37 +201,37 @@ function JournalistModal({
                 ))}
               </select>
               {errors.mediaType && (
-                <p className="text-red-500 text-xs mt-1">{errors.mediaType.message}</p>
+                <p className="mt-1 text-xs text-red-500">{errors.mediaType.message}</p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Telefone</label>
+              <label className="block mb-1 text-sm font-medium text-neutral-700">Telefone</label>
               <input
                 {...register('phone')}
-                className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-3 py-2 text-sm border rounded-lg border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="+244 923 456 789"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Cidade</label>
+              <label className="block mb-1 text-sm font-medium text-neutral-700">Cidade</label>
               <input
                 {...register('city')}
-                className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-3 py-2 text-sm border rounded-lg border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="Luanda"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Província</label>
+              <label className="block mb-1 text-sm font-medium text-neutral-700">Província</label>
               <input
                 {...register('province')}
-                className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-3 py-2 text-sm border rounded-lg border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 placeholder="Luanda"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-2">
+            <label className="block mb-2 text-sm font-medium text-neutral-700">
               Áreas de cobertura
             </label>
             <div className="flex flex-wrap gap-2">
@@ -276,7 +276,7 @@ function JournalistModal({
             <button
               type="submit"
               disabled={isPending}
-              className="flex items-center gap-2 px-5 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 disabled:opacity-60 transition-colors"
+              className="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-brand-600 hover:bg-brand-700 disabled:opacity-60"
             >
               {isPending && <Loader2 size={14} className="animate-spin" />}
               {isEdit ? 'Guardar alterações' : 'Criar jornalista'}
@@ -335,7 +335,7 @@ export default function JournalistsPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between flex-wrap gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-neutral-900">Jornalistas</h1>
           <p className="text-neutral-500 text-sm mt-0.5">Base de dados de jornalistas angolanos</p>
@@ -364,22 +364,24 @@ export default function JournalistsPage() {
               </button>
             </>
           )}
-          <button
-            onClick={() => {
-              setEditTarget(undefined)
-              setModalOpen(true)
-            }}
-            className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors"
-          >
-            <Plus size={16} /> Novo jornalista
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => {
+                setEditTarget(undefined)
+                setModalOpen(true)
+              }}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-brand-600 hover:bg-brand-700"
+            >
+              <Plus size={16} /> Novo jornalista
+            </button>
+          )}
         </div>
       </div>
 
       {/* Filtros */}
-      <div className="flex items-center gap-3 flex-wrap">
+      <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+          <Search size={15} className="absolute -translate-y-1/2 left-3 top-1/2 text-neutral-400" />
           <input
             value={searchInput}
             onChange={(e) => {
@@ -387,7 +389,7 @@ export default function JournalistsPage() {
               setPage(1)
             }}
             placeholder="Pesquisar nome, email ou veículo..."
-            className="w-full pl-9 pr-4 py-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full py-2 pr-4 text-sm border rounded-lg pl-9 border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <select
@@ -396,7 +398,7 @@ export default function JournalistsPage() {
             setMediaTypeFilter(e.target.value as MediaType | '')
             setPage(1)
           }}
-          className="border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="px-3 py-2 text-sm border rounded-lg border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <option value="">Todos os meios</option>
           {MEDIA_TYPES.map((t) => (
@@ -412,11 +414,11 @@ export default function JournalistsPage() {
             setPage(1)
           }}
           placeholder="Filtrar por cidade..."
-          className="border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 w-40"
+          className="w-40 px-3 py-2 text-sm border rounded-lg border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
         <button
           onClick={() => refetch()}
-          className="p-2 text-neutral-500 hover:text-brand-600 hover:bg-neutral-100 rounded-lg transition-colors"
+          className="p-2 transition-colors rounded-lg text-neutral-500 hover:text-brand-600 hover:bg-neutral-100"
           title="Recarregar"
         >
           <RefreshCw size={16} />
@@ -424,7 +426,7 @@ export default function JournalistsPage() {
       </div>
 
       {/* Tabela */}
-      <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
+      <div className="overflow-hidden bg-white border rounded-xl border-neutral-200">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 size={24} className="animate-spin text-brand-600" />
@@ -433,37 +435,37 @@ export default function JournalistsPage() {
           <div className="flex flex-col items-center justify-center py-20 text-neutral-400">
             <Users size={40} className="mb-3" />
             <p className="font-medium">Nenhum jornalista encontrado</p>
-            <p className="text-sm mt-1">Adicione o primeiro jornalista à base de dados</p>
+            <p className="mt-1 text-sm">Adicione o primeiro jornalista à base de dados</p>
           </div>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-neutral-200 bg-neutral-50 text-neutral-500 text-xs uppercase tracking-wide">
-                <th className="text-left px-4 py-3">Nome</th>
-                <th className="text-left px-4 py-3 hidden md:table-cell">Veículo</th>
-                <th className="text-left px-4 py-3 hidden lg:table-cell">Meio</th>
-                <th className="text-left px-4 py-3 hidden xl:table-cell">Áreas</th>
-                <th className="text-left px-4 py-3">Estado</th>
-                <th className="text-right px-4 py-3">Acções</th>
+              <tr className="text-xs tracking-wide uppercase border-b border-neutral-200 bg-neutral-50 text-neutral-500">
+                <th className="px-4 py-3 text-left">Nome</th>
+                <th className="hidden px-4 py-3 text-left md:table-cell">Veículo</th>
+                <th className="hidden px-4 py-3 text-left lg:table-cell">Meio</th>
+                <th className="hidden px-4 py-3 text-left xl:table-cell">Áreas</th>
+                <th className="px-4 py-3 text-left">Estado</th>
+                {isAdmin && <th className="px-4 py-3 text-right">Acções</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-100">
               {data.data.map((j) => (
-                <tr key={j.id} className="hover:bg-neutral-50 transition-colors">
+                <tr key={j.id} className="transition-colors hover:bg-neutral-50">
                   <td className="px-4 py-3">
                     <p className="font-medium text-neutral-900">{j.name}</p>
                     <p className="text-xs text-neutral-500">{j.email}</p>
                   </td>
-                  <td className="px-4 py-3 text-neutral-600 hidden md:table-cell">
+                  <td className="hidden px-4 py-3 text-neutral-600 md:table-cell">
                     <p>{j.outlet}</p>
                     {j.jobTitle && <p className="text-xs text-neutral-400">{j.jobTitle}</p>}
                   </td>
-                  <td className="px-4 py-3 hidden lg:table-cell">
+                  <td className="hidden px-4 py-3 lg:table-cell">
                     <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-700">
                       {MEDIA_TYPE_LABELS[j.mediaType]}
                     </span>
                   </td>
-                  <td className="px-4 py-3 hidden xl:table-cell">
+                  <td className="hidden px-4 py-3 xl:table-cell">
                     <div className="flex flex-wrap gap-1">
                       {j.coverageArea.slice(0, 3).map((a) => (
                         <span
@@ -498,19 +500,19 @@ export default function JournalistsPage() {
                       {j.isActive ? 'Activo' : 'Inactivo'}
                     </span>
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        onClick={() => {
-                          setEditTarget(j)
-                          setModalOpen(true)
-                        }}
-                        className="p-1.5 rounded hover:bg-neutral-100 text-neutral-500 hover:text-brand-600 transition-colors"
-                        title="Editar"
-                      >
-                        <Pencil size={14} />
-                      </button>
-                      {isAdmin && (
+                  {isAdmin && (
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => {
+                            setEditTarget(j)
+                            setModalOpen(true)
+                          }}
+                          className="p-1.5 rounded hover:bg-neutral-100 text-neutral-500 hover:text-brand-600 transition-colors"
+                          title="Editar"
+                        >
+                          <Pencil size={14} />
+                        </button>
                         <button
                           onClick={() => setDeleteTarget(j.id)}
                           className="p-1.5 rounded hover:bg-red-50 text-neutral-500 hover:text-red-600 transition-colors"
@@ -518,9 +520,9 @@ export default function JournalistsPage() {
                         >
                           <Trash2 size={14} />
                         </button>
-                      )}
-                    </div>
-                  </td>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -562,13 +564,13 @@ export default function JournalistsPage() {
 
       {/* Confirmar eliminação */}
       {deleteTarget && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-sm">
-            <h3 className="font-semibold text-neutral-900 mb-2">Confirmar eliminação</h3>
-            <p className="text-sm text-neutral-500 mb-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="w-full max-w-sm p-6 bg-white shadow-xl rounded-xl">
+            <h3 className="mb-2 font-semibold text-neutral-900">Confirmar eliminação</h3>
+            <p className="mb-5 text-sm text-neutral-500">
               Esta acção é irreversível. O jornalista será removido permanentemente.
             </p>
-            <div className="flex gap-3 justify-end">
+            <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteTarget(null)}
                 className="px-4 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-800"
@@ -581,7 +583,7 @@ export default function JournalistsPage() {
                   setDeleteTarget(null)
                 }}
                 disabled={deleteMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 disabled:opacity-60"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-60"
               >
                 {deleteMutation.isPending && <Loader2 size={14} className="animate-spin" />}
                 Eliminar
@@ -593,8 +595,8 @@ export default function JournalistsPage() {
 
       {/* Modal importar CSV */}
       {importOpen && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="w-full max-w-lg bg-white shadow-xl rounded-2xl">
             <div className="flex items-center justify-between p-6 border-b border-neutral-200">
               <h2 className="text-lg font-semibold text-neutral-900">Importar Jornalistas (CSV)</h2>
               <button
@@ -611,11 +613,11 @@ export default function JournalistsPage() {
             <div className="p-6 space-y-4">
               <p className="text-sm text-neutral-600">
                 O CSV deve ter as colunas:{' '}
-                <code className="bg-neutral-100 px-1 rounded text-xs">
+                <code className="px-1 text-xs rounded bg-neutral-100">
                   name, email, outlet, mediaType
                 </code>{' '}
                 (obrigatórias) e opcionalmente{' '}
-                <code className="bg-neutral-100 px-1 rounded text-xs">
+                <code className="px-1 text-xs rounded bg-neutral-100">
                   jobTitle, coverageArea, city, province, country, phone, isActive
                 </code>
                 .
@@ -625,7 +627,7 @@ export default function JournalistsPage() {
                 PRINT, DIGITAL, PODCAST.
               </p>
               <div
-                className="border-2 border-dashed border-neutral-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 transition-colors"
+                className="p-8 text-center transition-colors border-2 border-dashed cursor-pointer border-neutral-300 rounded-xl hover:border-brand-400"
                 onClick={() => fileInputRef.current?.click()}
               >
                 {importFile ? (
@@ -648,11 +650,11 @@ export default function JournalistsPage() {
                 />
               </div>
               {importErrors.length > 0 && (
-                <div className="max-h-32 overflow-y-auto space-y-1">
+                <div className="space-y-1 overflow-y-auto max-h-32">
                   {importErrors.map((err) => (
                     <div
                       key={err.row}
-                      className="flex items-start gap-2 text-xs text-amber-700 bg-amber-50 rounded px-2 py-1"
+                      className="flex items-start gap-2 px-2 py-1 text-xs rounded text-amber-700 bg-amber-50"
                     >
                       <AlertCircle size={12} className="shrink-0 mt-0.5" />
                       Linha {err.row}: {err.message}
@@ -674,7 +676,7 @@ export default function JournalistsPage() {
                 <button
                   onClick={handleImport}
                   disabled={!importFile || importCsv.isPending}
-                  className="flex items-center gap-2 px-5 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 disabled:opacity-60 transition-colors"
+                  className="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-brand-600 hover:bg-brand-700 disabled:opacity-60"
                 >
                   {importCsv.isPending && <Loader2 size={14} className="animate-spin" />}
                   Importar

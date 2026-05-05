@@ -25,17 +25,17 @@ export default function NavBarAnimated({ appUrl }: Props) {
           : 'bg-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div className="flex items-center justify-between h-16 px-4 mx-auto max-w-7xl sm:px-6">
         <a href="/" className="flex items-center gap-2.5 group">
-          <span className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-900/50 flex-shrink-0 group-hover:bg-brand-500 transition-colors duration-200">
+          <span className="flex items-center justify-center flex-shrink-0 w-8 h-8 transition-colors duration-200 rounded-lg shadow-lg bg-brand-600 shadow-brand-900/50 group-hover:bg-brand-500">
             <span
-              className="text-white font-black text-base leading-none"
+              className="text-base font-black leading-none text-white"
               style={{ fontFamily: 'Inter, sans-serif' }}
             >
               A
             </span>
           </span>
-          <span className="font-bold text-white text-lg tracking-tight">
+          <span className="text-lg font-bold tracking-tight text-white">
             Ango<span className="text-brand-400">Press</span>
           </span>
         </a>
@@ -65,7 +65,7 @@ export default function NavBarAnimated({ appUrl }: Props) {
           <JournalistRegisterModal variant="nav" />
           <a
             href={`${appUrl}/login`}
-            className="hidden sm:inline-flex items-center px-4 py-2 text-sm font-medium text-white border border-white/10 rounded-lg hover:bg-white/5 hover:border-white/20 transition-all duration-150"
+            className="items-center hidden px-4 py-2 text-sm font-medium text-white transition-all duration-150 border rounded-lg sm:inline-flex border-white/10 hover:bg-white/5 hover:border-white/20"
           >
             Entrar
           </a>

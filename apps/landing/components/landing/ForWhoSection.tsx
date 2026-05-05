@@ -43,28 +43,28 @@ function CheckRow({ text, light }: { text: string; light?: boolean }) {
 export function ForWhoSection() {
   const APP_URL = process.env.APP_URL ?? 'http://localhost:5173'
   return (
-    <section id="para-quem" className="relative py-28 px-4 sm:px-6 overflow-hidden">
+    <section id="para-quem" className="relative px-4 overflow-hidden py-28 sm:px-6">
       <div className="absolute inset-0 bg-gray-50" />
-      <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
+      <div className="absolute inset-0 pointer-events-none grid-bg opacity-40" />
 
       <div className="relative max-w-6xl mx-auto">
-        <div className="text-center mb-16 reveal">
+        <div className="mb-16 text-center reveal">
           <SectionLabel>Para quem é?</SectionLabel>
-          <h2 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight mt-3 mb-4">
+          <h2 className="mt-3 mb-4 text-4xl font-black tracking-tight text-gray-900 sm:text-5xl">
             A plataforma certa para cada perfil
           </h2>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-5">
+        <div className="grid gap-5 md:grid-cols-2">
           {/* Empresas */}
           <AnimateIn variant="left">
-            <div className="relative rounded-2xl p-8 overflow-hidden h-full flex flex-col bg-gradient-to-br from-brand-600 to-brand-900 border-0">
+            <div className="relative flex flex-col h-full p-8 overflow-hidden border-0 rounded-2xl bg-gradient-to-br from-brand-600 to-brand-900">
               <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-brand-400/10 rounded-full blur-3xl" />
+                <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-brand-400/10 blur-3xl" />
               </div>
 
               <div className="relative z-10 flex flex-col h-full">
-                <div className="w-11 h-11 rounded-xl bg-white/15 border border-white/25 flex items-center justify-center mb-6">
+                <div className="flex items-center justify-center mb-6 border w-11 h-11 rounded-xl bg-white/15 border-white/25">
                   <svg
                     className="w-5 h-5 text-white"
                     fill="none"
@@ -83,21 +83,21 @@ export function ForWhoSection() {
                 <span className="text-[10px] font-bold uppercase tracking-widest text-brand-200 mb-2">
                   Para Empresas &amp; Assessorias
                 </span>
-                <h3 className="text-2xl font-black text-white mb-3 leading-tight">
+                <h3 className="mb-3 text-2xl font-black leading-tight text-white">
                   Profissionalize a sua comunicação
                 </h3>
 
-                <ul className="space-y-3 mb-10 flex-1">
+                <ul className="flex-1 mb-10 space-y-3">
                   {EMPRESA_BENEFITS.map((b) => (
-                    <CheckRow key={b} text={b} />
+                    <CheckRow key={b} text={b} light />
                   ))}
                 </ul>
 
                 <a
                   href={`${APP_URL}/cadastro`}
-                  className="inline-flex items-center justify-center gap-2 w-full py-3.5 text-sm font-bold bg-brand-600 hover:bg-brand-500 text-white rounded-xl transition-all duration-150 shadow-lg shadow-brand-900/50"
+                  className="inline-flex items-center justify-center gap-2 w-full py-3.5 text-sm font-bold bg-white text-brand-700 hover:bg-brand-50 rounded-xl transition-all duration-150 shadow-lg"
                 >
-                  Criar conta de empresa
+                  Criar conta
                   <svg
                     className="w-4 h-4"
                     fill="none"
@@ -118,13 +118,13 @@ export function ForWhoSection() {
 
           {/* Jornalistas */}
           <AnimateIn variant="right">
-            <div className="relative rounded-2xl p-8 overflow-hidden h-full flex flex-col bg-white border border-gray-100 shadow-sm">
+            <div className="relative flex flex-col h-full p-8 overflow-hidden bg-white border border-gray-100 shadow-sm rounded-2xl">
               <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-violet-100/50 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-violet-100/50 blur-3xl" />
               </div>
 
               <div className="relative z-10 flex flex-col h-full">
-                <div className="w-11 h-11 rounded-xl bg-violet-50 border border-violet-200 flex items-center justify-center mb-6">
+                <div className="flex items-center justify-center mb-6 border w-11 h-11 rounded-xl bg-violet-50 border-violet-200">
                   <svg
                     className="w-5 h-5 text-violet-600"
                     fill="none"
@@ -143,13 +143,13 @@ export function ForWhoSection() {
                 <span className="text-[10px] font-bold uppercase tracking-widest text-violet-600 mb-2">
                   Para Jornalistas
                 </span>
-                <h3 className="text-2xl font-black text-gray-900 mb-3 leading-tight">
+                <h3 className="mb-3 text-2xl font-black leading-tight text-gray-900">
                   Receba press releases relevantes
                 </h3>
 
-                <ul className="space-y-3 mb-10 flex-1">
+                <ul className="flex-1 mb-10 space-y-3">
                   {JORNALISTA_BENEFITS.map((b) => (
-                    <CheckRow key={b} text={b} light />
+                    <CheckRow key={b} text={b} />
                   ))}
                 </ul>
 

@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { JournalistRegisterModal } from '@/components/JournalistRegisterModal'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.angopress.ao'
@@ -26,16 +27,14 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
           <div className="col-span-2">
-            <a href="/" className="flex items-center gap-2.5 mb-4 group w-fit">
-              <div className="relative w-8 h-8 flex-shrink-0">
-                <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600" />
-                <span className="relative flex items-center justify-center w-full h-full text-white font-black text-base">
-                  A
-                </span>
-              </div>
-              <span className="font-bold text-white group-hover:text-brand-200 text-base tracking-tight transition-colors duration-200">
-                Ango<span className="text-brand-300">Press</span>
-              </span>
+            <a href="/" className="flex items-center mb-4 w-fit group">
+              <Image
+                src="/logo-white.png"
+                alt="AngoPress"
+                width={140}
+                height={40}
+                className="h-8 w-auto object-contain transition-opacity duration-200 group-hover:opacity-75"
+              />
             </a>
             <p className="text-sm text-brand-200/50 leading-relaxed mb-5 max-w-xs">
               Plataforma Digital de Comunicação e Mailing de Imprensa. Conectando marcas e

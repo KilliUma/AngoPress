@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { clsx } from 'clsx'
 import {
@@ -31,33 +32,17 @@ export function AdminSidebar() {
       {/* Logo */}
       <div className="h-14 flex items-center px-5 border-b border-neutral-700 shrink-0">
         <Link href="/admin" className="flex items-center gap-2">
-          <svg viewBox="0 0 36 36" className="w-7 h-7 shrink-0">
-            <circle
-              cx="18"
-              cy="18"
-              r="16"
-              fill="none"
-              stroke="#D99D99"
-              strokeWidth="2.5"
-              strokeDasharray="72 30"
-              strokeLinecap="round"
-            />
-            <text
-              x="50%"
-              y="55%"
-              textAnchor="middle"
-              dominantBaseline="middle"
-              style={{
-                fontFamily: 'Inter, sans-serif',
-                fontSize: 17,
-                fontWeight: 900,
-                fill: '#fff',
-              }}
-            >
-              A
-            </text>
-          </svg>
-          <span className="font-bold text-white text-base">Admin</span>
+          <Image
+            src="/logo-white.png"
+            alt="AngoPress"
+            width={120}
+            height={34}
+            className="h-7 w-auto object-contain"
+            priority
+          />
+          <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider ml-1">
+            Admin
+          </span>
         </Link>
       </div>
 

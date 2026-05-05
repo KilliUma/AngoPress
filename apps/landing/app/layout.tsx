@@ -21,6 +21,10 @@ export const metadata: Metadata = {
   description:
     'Distribua os seus press releases para os principais jornalistas angolanos com rastreamento de aberturas, cliques e bounces em tempo real.',
   keywords: ['press release', 'angola', 'jornalistas', 'assessoria de imprensa', 'angopress'],
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-icon.png',
+  },
   openGraph: {
     title: 'AngoPress',
     description: 'Distribua press releases para os melhores jornalistas de Angola.',

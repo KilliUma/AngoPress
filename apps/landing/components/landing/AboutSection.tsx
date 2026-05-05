@@ -52,29 +52,29 @@ export function AboutSection({ stats, content }: Props) {
   const cms = content ?? ABOUT_FALLBACK
   const pillars = cms.pillars.length ? cms.pillars : ABOUT_FALLBACK.pillars
   return (
-    <section id="sobre" className="relative py-28 px-4 sm:px-6 overflow-hidden">
+    <section id="sobre" className="relative px-4 overflow-hidden py-28 sm:px-6">
       {/* background */}
       <div className="absolute inset-0 bg-white" />
-      <div className="absolute inset-0 grid-bg opacity-30 pointer-events-none" />
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-      <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+      <div className="absolute inset-0 pointer-events-none grid-bg opacity-30" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
       <div className="relative max-w-6xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-16 items-start">
+        <div className="grid items-start gap-16 lg:grid-cols-2">
           {/* Left — content + stats */}
           <div className="reveal">
             <SectionLabel>{cms.sectionLabel}</SectionLabel>
-            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight leading-tight mt-3 mb-5">
+            <h2 className="mt-3 mb-5 text-4xl font-black leading-tight tracking-tight text-gray-900 sm:text-5xl">
               {cms.title}
             </h2>
-            <div className="space-y-4 text-base text-gray-600 leading-relaxed mb-10">
+            <div className="mb-10 space-y-4 text-base leading-relaxed text-gray-600">
               <p dangerouslySetInnerHTML={{ __html: cms.paragraph1 }} />
               <p dangerouslySetInnerHTML={{ __html: cms.paragraph2 }} />
               <p dangerouslySetInnerHTML={{ __html: cms.paragraph3 }} />
             </div>
 
             {/* Stats cards */}
-            <div className="grid grid-cols-3 gap-3">
+            {/*    <div className="grid grid-cols-3 gap-3">
               {[
                 {
                   value: stats ? fmtNum(stats.totalJournalists) : '2.500+',
@@ -91,25 +91,25 @@ export function AboutSection({ stats, content }: Props) {
               ].map(({ value, label }, i) => (
                 <div
                   key={label}
-                  className="bg-gray-50 border border-gray-100 rounded-2xl p-4 flex flex-col gap-1"
+                  className="flex flex-col gap-1 p-4 border border-gray-100 bg-gray-50 rounded-2xl"
                   style={{ transitionDelay: `${i * 80}ms` }}
                 >
                   <p className="text-2xl font-black text-gray-900 tabular-nums">{value}</p>
-                  <p className="text-xs text-gray-500 font-medium leading-snug">{label}</p>
+                  <p className="text-xs font-medium leading-snug text-gray-500">{label}</p>
                 </div>
               ))}
-            </div>
+            </div> */}
           </div>
 
           {/* Right — pillars */}
-          <div className="grid sm:grid-cols-2 gap-5">
+          <div className="grid gap-5 sm:grid-cols-2">
             {pillars.map(({ title, description, accent }, i) => {
               const { icon: iconCls, ring, dot } = ACCENT[accent] ?? ACCENT['brand']
               const iconPath = PILLAR_ICONS[accent] ?? PILLAR_ICONS['brand']
               return (
                 <div
                   key={i}
-                  className="reveal card-hover bg-white border border-gray-100 shadow-sm hover:shadow-md rounded-2xl p-6 flex flex-col gap-4"
+                  className="flex flex-col gap-4 p-6 bg-white border border-gray-100 shadow-sm reveal card-hover hover:shadow-md rounded-2xl"
                   style={{ transitionDelay: `${i * 80}ms` }}
                 >
                   <div
@@ -128,9 +128,9 @@ export function AboutSection({ stats, content }: Props) {
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
-                      <h3 className="font-bold text-gray-900 text-sm">{title}</h3>
+                      <h3 className="text-sm font-bold text-gray-900">{title}</h3>
                     </div>
-                    <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
+                    <p className="text-sm leading-relaxed text-gray-600">{description}</p>
                   </div>
                 </div>
               )

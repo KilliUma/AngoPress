@@ -64,7 +64,7 @@ function DashboardMockup({ stats }: { stats?: HeroStats }) {
       <div className="absolute -inset-8 bg-gradient-radial from-brand-600/20 to-transparent blur-3xl pointer-events-none rounded-full" />
       <div
         className="relative border border-white/[0.08] rounded-2xl overflow-hidden animate-scale-in shadow-2xl shadow-black/60"
-        style={{ animationDelay: '0.5s', background: 'rgb(var(--surface-1))' }}
+        style={{ animationDelay: '0.5s', background: 'rgb(13, 13, 20)' }}
       >
         {/* Window chrome */}
         <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.06]">

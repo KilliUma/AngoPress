@@ -1,3 +1,7 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { JournalistRegisterModal } from '@/components/JournalistRegisterModal'
 
 const NAV_LINKS = [
@@ -5,68 +9,179 @@ const NAV_LINKS = [
   ['Sobre', '#sobre'],
   ['Como funciona', '#como-funciona'],
   ['Para quem é?', '#para-quem'],
-  ['Notícias', '#noticias'],
+  ['Notícias', '/noticias'],
   ['Preços', '#precos'],
 ]
 
 export function NavBar() {
-  const ASSESSOR_LOGIN_URL = 'https://ango-press-web-flame.vercel.app/login/'
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const ASSESSOR_LOGIN_URL = 'https://angopress.vercel.app/login'
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
-    <header className="fixed top-0 inset-x-0 z-50">
-      <div className="absolute inset-0 bg-white/95 backdrop-blur-xl border-b border-gray-100" />
+    <>
+      {/* Accent line at top */}
+      <div className="fixed inset-x-0 top-0 z-50 h-[2px] bg-gradient-to-r from-transparent via-brand-600 to-transparent" />
 
-      <div className="relative max-w-7xl mx-auto px-5 sm:px-8 h-[64px] flex items-center justify-between gap-4">
-        {/* Logo */}
-        <a href="/" className="flex items-center gap-2.5 group flex-shrink-0">
-          <div className="relative w-8 h-8 flex-shrink-0">
-            <div className="absolute inset-0 rounded-[10px] bg-gradient-to-br from-brand-500 to-brand-700 shadow-md shadow-brand-700/30 group-hover:shadow-brand-600/40 transition-shadow duration-300" />
-            <span className="relative flex items-center justify-center w-full h-full text-white font-black text-[15px] tracking-tight">
-              A
-            </span>
-          </div>
-          <span className="font-display font-bold text-[15px] tracking-tight text-gray-800 group-hover:text-gray-900 transition-colors duration-200">
-            Ango<span className="text-brand-600">Press</span>
-          </span>
-        </a>
+      <header className="fixed inset-x-0 top-[2px] z-40">
+        <div
+          className={`absolute inset-0 transition-all duration-300 ${
+            scrolled
+              ? 'bg-white/98 backdrop-blur-2xl border-b border-gray-200 shadow-md shadow-gray-100'
+              : 'bg-white/90 backdrop-blur-xl border-b border-gray-100'
+          }`}
+        />
 
-        {/* Nav */}
-        <nav className="hidden lg:flex items-center gap-0 flex-1 justify-center">
-          {NAV_LINKS.map(([label, href]) => (
-            <a
-              key={label}
-              href={href}
-              className="relative px-3.5 py-2 text-[13px] font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-150 group"
-            >
-              {label}
-              <span className="absolute inset-x-3.5 bottom-1.5 h-px bg-brand-600 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-200 rounded-full" />
-            </a>
-          ))}
-          <JournalistRegisterModal variant="nav" />
-        </nav>
-
-        {/* Actions */}
-        <div className="flex  items-center gap-1.5 flex-shrink-0">
-          <a
-            href={ASSESSOR_LOGIN_URL}
-            className="group inline-flex ml-4 items-center gap-1.5 px-4 py-2 text-[13px] font-bold bg-brand-600 hover:bg-brand-500 text-white rounded-lg transition-all duration-200 shadow-md shadow-brand-800/25 hover:shadow-brand-700/40 ring-1 ring-brand-500/20 hover:ring-brand-400/40"
-          >
-            Sou Assessor
-            <svg
-              className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-150"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2.5}
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
-              />
-            </svg>
+        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 h-[72px] flex items-center">
+          {/* ── Logo ── */}
+          <a href="/" className="flex items-center flex-shrink-0 group">
+            <Image
+              src="/logo.png"
+              alt="AngoPress"
+              width={180}
+              height={50}
+              className="object-contain transition-opacity duration-200 group-hover:opacity-80"
+              style={{ width: '15rem' }}
+              priority
+            />
           </a>
+
+          {/* ── Nav links (desktop) — centered ── */}
+          <nav className="absolute items-center hidden gap-1 -translate-x-1/2 lg:flex left-1/2">
+            {NAV_LINKS.map(([label, href]) => (
+              <a
+                key={label}
+                href={href}
+                className="px-4 py-2 text-[15px] font-semibold text-gray-600 hover:text-gray-950 rounded-lg transition-all duration-150 hover:bg-gray-100/70 tracking-[-0.01em] whitespace-nowrap"
+              >
+                {label}
+              </a>
+            ))}
+            <JournalistRegisterModal variant="nav" />
+          </nav>
+
+          {/* ── Actions (desktop) ── */}
+          <div className="items-center flex-shrink-0 hidden gap-3 ml-auto lg:flex">
+            {/* Entrar — filled */}
+            <a
+              href={ASSESSOR_LOGIN_URL}
+              className="group inline-flex items-center gap-2 px-5 py-2.5 text-[13.5px] font-semibold bg-brand-600 hover:bg-brand-700 text-white rounded-xl transition-all duration-200 shadow-md shadow-brand-600/20 hover:shadow-brand-600/35 hover:shadow-lg"
+            >
+              Entrar
+              <svg
+                className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-150"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                />
+              </svg>
+            </a>
+          </div>
+
+          {/* ── Hamburger (mobile) ── */}
+          <button
+            type="button"
+            onClick={() => setMobileOpen((v) => !v)}
+            className="p-2 ml-auto text-gray-600 transition-colors rounded-lg lg:hidden hover:text-gray-900 hover:bg-gray-100"
+            aria-label={mobileOpen ? 'Fechar menu' : 'Abrir menu'}
+          >
+            {mobileOpen ? (
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                />
+              </svg>
+            )}
+          </button>
+        </div>
+      </header>
+
+      {/* ── Mobile drawer ── */}
+      <div
+        className={`fixed inset-x-0 top-[68px] z-30 lg:hidden transition-all duration-300 origin-top ${
+          mobileOpen
+            ? 'opacity-100 scale-y-100 pointer-events-auto'
+            : 'opacity-0 scale-y-95 pointer-events-none'
+        }`}
+      >
+        <div className="bg-white border-b border-gray-100 shadow-xl">
+          <nav className="max-w-7xl mx-auto px-5 pt-3 pb-5 flex flex-col gap-0.5">
+            {NAV_LINKS.map(([label, href]) => (
+              <a
+                key={label}
+                href={href}
+                onClick={() => setMobileOpen(false)}
+                className="px-4 py-3 text-[14px] font-medium text-gray-700 hover:text-gray-950 hover:bg-gray-50 rounded-xl transition-colors"
+              >
+                {label}
+              </a>
+            ))}
+
+            <div className="h-px my-3 bg-gray-100" />
+
+            <div className="flex flex-col gap-2">
+              <JournalistRegisterModal variant="nav" />
+              <a
+                href={ASSESSOR_LOGIN_URL}
+                className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white transition-colors shadow-md bg-brand-600 hover:bg-brand-700 rounded-xl shadow-brand-600/20"
+              >
+                Entrar como assessor
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2.5}
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                  />
+                </svg>
+              </a>
+            </div>
+          </nav>
         </div>
       </div>
-    </header>
+
+      {/* Mobile backdrop */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-20 bg-black/10 backdrop-blur-sm lg:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+    </>
   )
 }

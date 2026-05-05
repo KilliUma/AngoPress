@@ -74,76 +74,6 @@ html.light .grid-bg-flow {
 /* ── Section glow spotlight (HeroSection) ───────────────────────── */
 html.light .hero-spotlight { background: radial-gradient(ellipse at center, rgba(155,0,27,.08) 0%, transparent 70%); }
 
-/* ── White text → dark text ──────────────────────────────────────── */
-html.light .text-white     { color: rgb(14,10,18); }
-html.light .text-white\/90 { color: rgb(14 10 18 / .9); }
-html.light .text-white\/80 { color: rgb(14 10 18 / .8); }
-html.light .text-white\/75 { color: rgb(14 10 18 / .75); }
-html.light .text-white\/70 { color: rgb(14 10 18 / .7); }
-html.light .text-white\/60 { color: rgb(14 10 18 / .6); }
-html.light .text-white\/55 { color: rgb(14 10 18 / .55); }
-html.light .text-white\/50 { color: rgb(14 10 18 / .5); }
-html.light .text-white\/45 { color: rgb(14 10 18 / .45); }
-html.light .text-white\/40 { color: rgb(14 10 18 / .4); }
-html.light .text-white\/35 { color: rgb(14 10 18 / .35); }
-html.light .text-white\/30 { color: rgb(14 10 18 / .3); }
-html.light .text-white\/25 { color: rgb(14 10 18 / .25); }
-html.light .text-white\/20 { color: rgb(14 10 18 / .2); }
-
-/* ── White border → dark border ─────────────────────────────────── */
-html.light .border-white\/\[0\.05\]  { border-color: rgba(0,0,0,.05); }
-html.light .border-white\/\[0\.06\]  { border-color: rgba(0,0,0,.06); }
-html.light .border-white\/\[0\.07\]  { border-color: rgba(0,0,0,.07); }
-html.light .border-white\/\[0\.08\]  { border-color: rgba(0,0,0,.08); }
-html.light .border-white\/\[0\.09\]  { border-color: rgba(0,0,0,.09); }
-html.light .border-white\/\[0\.1\]   { border-color: rgba(0,0,0,.1);  }
-html.light .border-white\/\[0\.12\]  { border-color: rgba(0,0,0,.12); }
-html.light .border-white\/\[0\.13\]  { border-color: rgba(0,0,0,.13); }
-html.light .border-white\/\[0\.15\]  { border-color: rgba(0,0,0,.15); }
-
-/* ── White bg utilities → light-on-light equivalent ─────────────── */
-html.light .bg-white\/\[0\.025\] { background: rgba(0,0,0,.02);  }
-html.light .bg-white\/\[0\.03\]  { background: rgba(0,0,0,.025); }
-html.light .bg-white\/\[0\.04\]  { background: rgba(0,0,0,.03);  }
-html.light .bg-white\/\[0\.05\]  { background: rgba(0,0,0,.04);  }
-html.light .bg-white\/\[0\.06\]  { background: rgba(0,0,0,.05);  }
-html.light .bg-white\/\[0\.08\]  { background: rgba(0,0,0,.06);  }
-html.light .bg-white\/\[0\.1\]   { background: rgba(0,0,0,.07);  }
-html.light .bg-white\/\[0\.2\]   { background: rgba(0,0,0,.08);  }
-html.light .bg-white\/\[0\.02\]  { background: rgba(0,0,0,.015); }
-
-/* ── divide-white → divide-dark ─────────────────────────────────── */
-html.light .divide-white\/\[0\.07\] > :not([hidden]) ~ :not([hidden]) { border-color: rgba(0,0,0,.07); }
-
-/* ── Hover bg overrides ──────────────────────────────────────────── */
-html.light .hover\:bg-white\/\[0\.04\]:hover { background: rgba(0,0,0,.04); }
-html.light .hover\:bg-white\/\[0\.06\]:hover { background: rgba(0,0,0,.05); }
-html.light .hover\:bg-white\/\[0\.1\]:hover  { background: rgba(0,0,0,.07); }
-
-/* ── Hover border overrides ──────────────────────────────────────── */
-html.light .hover\:border-white\/20:hover  { border-color: rgba(0,0,0,.15); }
-html.light .hover\:border-white\/\[0\.12\]:hover { border-color: rgba(0,0,0,.12); }
-html.light .hover\:border-white\/\[0\.13\]:hover { border-color: rgba(0,0,0,.13); }
-
-/* ── Hover text overrides ────────────────────────────────────────── */
-html.light .hover\:text-white:hover      { color: rgb(14,10,18); }
-html.light .hover\:text-white\/90:hover  { color: rgb(14 10 18 / .9); }
-html.light .hover\:text-white\/70:hover  { color: rgb(14 10 18 / .7); }
-
-/* ── Gradient adjustments ────────────────────────────────────────── */
-html.light .from-brand-900\/60 {
-  --tw-gradient-from: rgb(253 241 243 / .6) var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(253 241 243 / 0) var(--tw-gradient-to-position);
-}
-html.light .from-brand-900\/80 {
-  --tw-gradient-from: rgb(253 241 243 / .8) var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(253 241 243 / 0) var(--tw-gradient-to-position);
-}
-html.light .from-brand-900\/40 {
-  --tw-gradient-from: rgb(253 241 243 / .4) var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(253 241 243 / 0) var(--tw-gradient-to-position);
-}
-
 /* ── Divider glow ────────────────────────────────────────────────── */
 html.light .divider-glow {
   background: linear-gradient(90deg, transparent 0%, rgba(155,0,27,.25) 50%, transparent 100%);
@@ -158,8 +88,6 @@ html.light .border-y {
   border-top-color: rgba(0,0,0,.05);
   border-bottom-color: rgba(0,0,0,.05);
 }
-
-
 
 /* ── Scroll reveal ─────────────────────────────────────────────── */
 .reveal {

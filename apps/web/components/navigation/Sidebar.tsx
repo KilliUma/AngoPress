@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { clsx } from 'clsx'
 import {
@@ -85,7 +86,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Overlay mobile */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-20 lg:hidden"
+          className="fixed inset-0 z-20 bg-black/50 lg:hidden"
           onClick={onClose}
           aria-hidden="true"
         />
@@ -100,23 +101,19 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         )}
       >
         {/* ── Logo ── */}
-        <div className="h-16 flex items-center justify-between px-5 border-b border-neutral-200 shrink-0">
+        <div className="flex items-center justify-between h-16 px-5 border-b border-neutral-200 shrink-0">
           <Link href={homeHref} className="flex items-center gap-3" onClick={onClose}>
-            <span className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center shrink-0">
-              <span className="text-white font-extrabold text-sm">A</span>
-            </span>
-            <div className="flex flex-col">
-              <span className="text-neutral-900 font-bold text-sm leading-tight">AngoPress</span>
-              {isAdmin ? (
-                <span className="text-[10px] font-bold text-brand-400 uppercase tracking-wider">
-                  Administração
-                </span>
-              ) : (
-                <span className="text-[10px] text-neutral-500 tracking-wide">
-                  Plataforma de Imprensa
-                </span>
-              )}
-            </div>
+            <Image
+              src="/logo.png"
+              alt="AngoPress"
+              width={120}
+              height={34}
+              className="object-contain w-auto h-16"
+              priority
+            />
+            {isAdmin && (
+              <span className="text-[10px] font-bold text-brand-400 uppercase tracking-wider"></span>
+            )}
           </Link>
           <button
             type="button"
@@ -129,7 +126,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         {/* ── Nav ── */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
+        <nav className="flex-1 px-3 py-4 space-y-6 overflow-y-auto">
           {sections.map((section) => (
             <div key={section.label}>
               <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest px-3 mb-1.5">
@@ -170,11 +167,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         {/* ── User footer ── */}
         <div className="px-3 py-4 border-t border-neutral-200 shrink-0">
           <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-100 transition-colors cursor-default">
-            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white font-bold text-xs shrink-0">
+            <div className="flex items-center justify-center w-8 h-8 text-xs font-bold text-white rounded-full bg-brand-600 shrink-0">
               {user?.name?.[0]?.toUpperCase() ?? 'U'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-neutral-900 truncate">
+              <p className="text-sm font-semibold truncate text-neutral-900">
                 {user?.name ?? 'Utilizador'}
               </p>
               <p className="text-[11px] text-neutral-500 truncate">
