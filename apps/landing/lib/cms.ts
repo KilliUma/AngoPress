@@ -415,7 +415,8 @@ export async function getLandingContent(): Promise<LandingContent> {
         paymentDescription: pr.payment_description ?? PRICING_FALLBACK.paymentDescription,
       },
     }
-  } catch {
+  } catch (err) {
+    console.error('[cms] getLandingContent falhou, a usar fallback:', err)
     return {
       hero: HERO_FALLBACK,
       about: ABOUT_FALLBACK,
@@ -461,7 +462,8 @@ export async function getNewsArticle(slug: string): Promise<NewsArticleFull | nu
       related: Array.isArray(art.related) ? art.related.map(mapArticlePreview) : [],
       recent: Array.isArray(art.recent) ? art.recent.map(mapArticlePreview) : [],
     }
-  } catch {
+  } catch (err) {
+    console.error('[cms] getNewsArticle falhou:', err)
     return null
   }
 }
@@ -499,7 +501,8 @@ export async function getAllNews(page = 1, perPage = 12): Promise<NewsListResult
       page: raw.page ?? page,
       perPage: raw.per_page ?? perPage,
     }
-  } catch {
+  } catch (err) {
+    console.error('[cms] getAllNews falhou:', err)
     return {
       articles: NEWS_FALLBACK.articles,
       total: NEWS_FALLBACK.articles.length,
