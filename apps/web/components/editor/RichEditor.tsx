@@ -172,6 +172,23 @@ export default function RichEditor({ value, onChange, placeholder, className }: 
         <div className="w-px h-5 bg-neutral-300 mx-1" />
 
         <ToolbarButton
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          active={editor.isActive('bold')}
+          title="Negrito"
+        >
+          <Bold size={15} />
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          active={editor.isActive('italic')}
+          title="Itálico"
+        >
+          <Italic size={15} />
+        </ToolbarButton>
+
+        <div className="w-px h-5 bg-neutral-300 mx-1" />
+
+        <ToolbarButton
           onClick={() => editor.chain().focus().toggleUnderline().run()}
           active={editor.isActive('underline')}
           title="Sublinhado"
