@@ -1,4 +1,5 @@
 // Tipos e funções para consumir conteúdo gerido no WordPress
+import https from 'https'
 
 export interface HeroContent {
   badge: string
@@ -291,6 +292,40 @@ export const JOURNALIST_CTA_FALLBACK: JournalistCtaContent = {
 }
 
 // ── Fetch ────────────────────────────────────────────────────────
+
+// O servidor WP em escf.ao usa um certificado assinado por uma CA interna
+// (CN=www.maptss.local) não confiada pelo Node.js. Usamos o módulo https
+// nativo com rejectUnauthorized:false exclusivamente para estas chamadas WP.
+function wpGet(
+  url: string,
+): Promise<{ ok: boolean; status: number; json: () => Promise<unknown> }> {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error('WP request timeout')), 8000)
+
+    const req = https.get(url, { rejectUnauthorized: false }, (res) => {
+      clearTimeout(timeout)
+      const status = res.statusCode ?? 0
+      const ok = status >= 200 && status < 300
+      const chunks: Buffer[] = []
+      res.on('data', (chunk: Buffer) => chunks.push(chunk))
+      res.on('end', () => {
+        const body = Buffer.concat(chunks).toString('utf-8')
+        resolve({
+          ok,
+          status,
+          json: async () => JSON.parse(body) as unknown,
+        })
+      })
+      res.on('error', reject)
+    })
+
+    req.on('error', (err) => {
+      clearTimeout(timeout)
+      reject(err)
+    })
+  })
+}
+
 async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs = 8000) {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), timeoutMs)
@@ -301,7 +336,7 @@ async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs = 8000
   }
 }
 
-async function fetchWp(base: string, route: string, revalidate: number) {
+async function fetchWp(base: string, route: string, _revalidate: number) {
   const normalizedBase = base.replace(/\/$/, '')
   const normalizedRoute = route.startsWith('/') ? route : `/${route}`
   const [routePath, routeQuery = ''] = normalizedRoute.split('?')
@@ -311,11 +346,11 @@ async function fetchWp(base: string, route: string, revalidate: number) {
   // WordPress em subdirectório raramente tem /wp-json acessível —
   // tentamos primeiro ?rest_route= (mais rápido) e só depois /wp-json.
   const restRouteUrl = `${normalizedBase}/?${queryParams.toString()}`
-  const restRouteRes = await fetchWithTimeout(restRouteUrl, { next: { revalidate } })
+  const restRouteRes = await wpGet(restRouteUrl)
   if (restRouteRes.ok) return restRouteRes
 
   const primaryUrl = `${normalizedBase}/wp-json${routePath}${routeQuery ? `?${routeQuery}` : ''}`
-  return fetchWithTimeout(primaryUrl, { next: { revalidate } })
+  return wpGet(primaryUrl)
 }
 
 export async function getLandingContent(): Promise<LandingContent> {
