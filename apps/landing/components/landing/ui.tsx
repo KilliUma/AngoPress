@@ -18,8 +18,8 @@ export function CheckIcon({
 
 export function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="inline-flex items-center gap-2 text-[10px] font-bold text-brand-400 uppercase tracking-widest">
-      <span className="w-5 h-px bg-brand-500" />
+    <p className="inline-flex items-center gap-2 text-[10px] font-bold text-brand-600 uppercase tracking-widest">
+      <span className="w-5 h-px bg-brand-600" />
       {children}
     </p>
   )

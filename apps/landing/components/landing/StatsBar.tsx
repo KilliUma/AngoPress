@@ -18,11 +18,9 @@ export function StatsBar({ stats }: Props) {
   ]
 
   return (
-    <section className="relative py-12 px-4 sm:px-6">
-      <div className="absolute inset-0 bg-white/[0.02] border-y border-white/[0.05]" />
-
+    <section className="relative py-12 px-4 sm:px-6 bg-brand-600">
       <div className="relative max-w-4xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-white/[0.07]">
+        <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-brand-500/40">
           {STATS.map(({ value, label }, i) => (
             <div
               key={label}
@@ -32,7 +30,7 @@ export function StatsBar({ stats }: Props) {
               <p className="text-4xl sm:text-5xl font-black text-white leading-none tabular-nums">
                 {value}
               </p>
-              <p className="text-xs text-white/35 font-medium leading-snug max-w-[100px]">
+              <p className="text-xs text-brand-200 font-medium leading-snug max-w-[100px]">
                 {label}
               </p>
             </div>

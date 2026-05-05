@@ -65,8 +65,8 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
       <div
         className={`relative flex flex-col h-full rounded-2xl p-7 transition-all duration-300 card-hover ${
           isPro
-            ? 'bg-gradient-to-b from-brand-900/80 to-[rgb(var(--surface-1))] border border-brand-500/40 shadow-2xl shadow-brand-900/50 ring-1 ring-brand-400/10'
-            : 'bg-white/[0.03] border border-white/[0.07] hover:border-white/[0.12]'
+            ? 'bg-gradient-to-b from-brand-700 to-brand-900 border border-brand-600/50 shadow-2xl shadow-brand-900/40 ring-1 ring-brand-400/20'
+            : 'bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-200'
         }`}
       >
         {isPro && (
@@ -80,26 +80,30 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
 
         <div className="mb-6 relative">
           <p
-            className={`font-bold text-xs uppercase tracking-widest mb-1 ${isPro ? 'text-brand-400' : 'text-white/30'}`}
+            className={`font-bold text-xs uppercase tracking-widest mb-1 ${isPro ? 'text-brand-200' : 'text-gray-400'}`}
           >
             {plan.name}
           </p>
           {plan.description && (
-            <p className={`text-xs mb-3 ${isPro ? 'text-brand-300/60' : 'text-white/25'}`}>
+            <p className={`text-xs mb-3 ${isPro ? 'text-brand-200/70' : 'text-gray-400'}`}>
               {plan.description}
             </p>
           )}
           {isFree ? (
             <div className="flex items-baseline gap-1">
-              <span className="text-4xl font-black text-white">Grátis</span>
+              <span className={`text-4xl font-black ${isPro ? 'text-white' : 'text-gray-900'}`}>
+                Grátis
+              </span>
             </div>
           ) : (
             <div className="flex items-baseline gap-1">
-              <span className="text-4xl font-black text-white">{formatKz(plan.price)}</span>
-              <span className={`text-sm ${isPro ? 'text-brand-400' : 'text-white/30'}`}>/mês</span>
+              <span className={`text-4xl font-black ${isPro ? 'text-white' : 'text-gray-900'}`}>
+                {formatKz(plan.price)}
+              </span>
+              <span className={`text-sm ${isPro ? 'text-brand-200' : 'text-gray-400'}`}>/mês</span>
             </div>
           )}
-          <p className={`text-xs mt-1.5 ${isPro ? 'text-brand-400/70' : 'text-white/25'}`}>
+          <p className={`text-xs mt-1.5 ${isPro ? 'text-brand-200/70' : 'text-gray-400'}`}>
             {plan.maxSendsMonth === -1 ? 'Envios ilimitados' : `${plan.maxSendsMonth} envios/mês`}
             {plan.maxJournalists !== -1 && ` · até ${plan.maxJournalists} jornalistas`}
           </p>
@@ -109,9 +113,9 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
           {plan.features.map((feature) => (
             <li key={feature} className="flex items-start gap-2.5">
               <CheckIcon
-                className={`w-4 h-4 flex-shrink-0 mt-0.5 ${isPro ? 'text-brand-400' : 'text-white/30'}`}
+                className={`w-4 h-4 flex-shrink-0 mt-0.5 ${isPro ? 'text-brand-300' : 'text-brand-500'}`}
               />
-              <span className={`text-sm ${isPro ? 'text-white/70' : 'text-white/40'}`}>
+              <span className={`text-sm ${isPro ? 'text-white/80' : 'text-gray-600'}`}>
                 {feature}
               </span>
             </li>
@@ -122,8 +126,8 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
           href={`${APP_URL}/cadastro?plan=${plan.id}`}
           className={`w-full inline-flex items-center justify-center px-5 py-3 rounded-xl text-sm font-bold transition-all duration-150 ${
             isPro
-              ? 'bg-brand-600 hover:bg-brand-500 text-white shadow-lg shadow-brand-900/50 glow-brand-xs'
-              : 'bg-white/[0.06] hover:bg-white/[0.1] text-white/60 hover:text-white border border-white/[0.08]'
+              ? 'bg-brand-500 hover:bg-brand-400 text-white shadow-lg shadow-brand-900/50 glow-brand-xs'
+              : 'bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 border border-gray-200'
           }`}
         >
           {isFree ? 'Começar grátis' : 'Escolher plano'}
@@ -139,17 +143,17 @@ export function PricingSection({ plans, content }: { plans: Plan[]; content?: Pr
 
   return (
     <section id="precos" className="relative py-28 px-4 sm:px-6 overflow-hidden">
-      <div className="absolute inset-0 bg-[rgb(var(--surface-1))]" />
-      <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
+      <div className="absolute inset-0 bg-white" />
+      <div className="absolute inset-0 grid-bg opacity-30 pointer-events-none" />
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
       <div className="relative max-w-6xl mx-auto">
         <div className="text-center mb-16 reveal">
           <SectionLabel>{cms.sectionLabel}</SectionLabel>
-          <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight mt-3 mb-4">
+          <h2 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight mt-3 mb-4">
             {cms.title}
           </h2>
-          <p className="text-base text-white/40 max-w-lg mx-auto">{cms.description}</p>
+          <p className="text-base text-gray-500 max-w-lg mx-auto">{cms.description}</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-5 items-stretch">
@@ -159,8 +163,8 @@ export function PricingSection({ plans, content }: { plans: Plan[]; content?: Pr
         </div>
 
         <AnimateIn variant="up" delay={300}>
-          <div className="mt-10 bg-brand-900/60 border border-brand-700/30 rounded-2xl p-6 flex gap-4 items-start">
-            <div className="w-10 h-10 rounded-xl bg-brand-500/15 border border-brand-500/25 text-brand-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+          <div className="mt-10 bg-brand-50 border border-brand-100 rounded-2xl p-6 flex gap-4 items-start">
+            <div className="w-10 h-10 rounded-xl bg-brand-100 border border-brand-200 text-brand-600 flex items-center justify-center flex-shrink-0 mt-0.5">
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -176,9 +180,9 @@ export function PricingSection({ plans, content }: { plans: Plan[]; content?: Pr
               </svg>
             </div>
             <div>
-              <p className="font-semibold text-white/80 mb-1">{cms.paymentTitle}</p>
+              <p className="font-semibold text-gray-900 mb-1">{cms.paymentTitle}</p>
               <p
-                className="text-sm text-white/40 leading-relaxed [&_strong]:text-white/60"
+                className="text-sm text-gray-500 leading-relaxed [&_strong]:text-gray-700"
                 dangerouslySetInnerHTML={{ __html: cms.paymentDescription }}
               />
             </div>

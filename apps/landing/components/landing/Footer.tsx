@@ -19,9 +19,8 @@ const LEGAL_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-[rgb(var(--surface))]" />
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
+    <footer className="relative overflow-hidden bg-brand-900">
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-brand-600/50 to-transparent" />
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
@@ -29,16 +28,16 @@ export function Footer() {
           <div className="col-span-2">
             <a href="/" className="flex items-center gap-2.5 mb-4 group w-fit">
               <div className="relative w-8 h-8 flex-shrink-0">
-                <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 shadow-lg shadow-brand-900/50" />
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600" />
                 <span className="relative flex items-center justify-center w-full h-full text-white font-black text-base">
                   A
                 </span>
               </div>
-              <span className="font-bold text-white/80 group-hover:text-white text-base tracking-tight transition-colors duration-200">
-                Ango<span className="text-brand-400">Press</span>
+              <span className="font-bold text-white group-hover:text-brand-200 text-base tracking-tight transition-colors duration-200">
+                Ango<span className="text-brand-300">Press</span>
               </span>
             </a>
-            <p className="text-sm text-white/25 leading-relaxed mb-5 max-w-xs">
+            <p className="text-sm text-brand-200/50 leading-relaxed mb-5 max-w-xs">
               Plataforma Digital de Comunicação e Mailing de Imprensa. Conectando marcas e
               jornalistas em Angola.
             </p>
@@ -46,7 +45,7 @@ export function Footer() {
 
           {/* Plataforma */}
           <div>
-            <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-4">
+            <p className="text-[10px] font-bold text-brand-400 uppercase tracking-widest mb-4">
               Plataforma
             </p>
             <ul className="space-y-2.5">
@@ -54,7 +53,7 @@ export function Footer() {
                 <li key={label}>
                   <a
                     href={href}
-                    className="text-sm text-white/35 hover:text-white/70 transition-colors duration-150"
+                    className="text-sm text-brand-200/60 hover:text-white transition-colors duration-150"
                   >
                     {label}
                   </a>
@@ -66,14 +65,14 @@ export function Footer() {
           {/* Para Jornalistas + Legal */}
           <div className="flex flex-col gap-8">
             <div>
-              <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-4">
+              <p className="text-[10px] font-bold text-brand-400 uppercase tracking-widest mb-4">
                 Para Jornalistas
               </p>
               <ul className="space-y-2.5">
                 <li>
                   <a
                     href={`${APP_URL}/cadastro-jornalista`}
-                    className="text-sm text-white/35 hover:text-white/70 transition-colors duration-150"
+                    className="text-sm text-brand-200/60 hover:text-white transition-colors duration-150"
                   >
                     Registar-se
                   </a>
@@ -81,7 +80,7 @@ export function Footer() {
               </ul>
             </div>
             <div>
-              <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-4">
+              <p className="text-[10px] font-bold text-brand-400 uppercase tracking-widest mb-4">
                 Legal
               </p>
               <ul className="space-y-2.5">
@@ -89,7 +88,7 @@ export function Footer() {
                   <li key={label}>
                     <a
                       href={href}
-                      className="text-sm text-white/35 hover:text-white/70 transition-colors duration-150"
+                      className="text-sm text-brand-200/60 hover:text-white transition-colors duration-150"
                     >
                       {label}
                     </a>
@@ -101,11 +100,11 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="pt-8 border-t border-white/[0.05] flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-white/20">
+        <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-brand-200/40">
             © {new Date().getFullYear()} AngoPress. Todos os direitos reservados.
           </p>
-          <p className="text-xs text-white/20">Feito em Angola 🇦🇴</p>
+          <p className="text-xs text-brand-200/40">Feito em Angola 🇦🇴</p>
         </div>
       </div>
     </footer>

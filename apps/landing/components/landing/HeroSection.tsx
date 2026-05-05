@@ -158,7 +158,7 @@ export function HeroSection({ stats, content }: Props) {
           <div className="order-2 lg:order-1">
             {/* Status badge */}
             <div className="animate-fade-up" style={{ animationDelay: '0s' }}>
-              <span className="inline-flex items-center gap-2 text-[11px] font-semibold text-white/55 bg-white/[0.04] border border-white/[0.09] px-4 py-1.5 rounded-full mb-8 tracking-wide">
+              <span className="inline-flex items-center gap-2 text-[11px] font-semibold text-gray-600 bg-brand-50 border border-brand-100 px-4 py-1.5 rounded-full mb-8 tracking-wide">
                 <span className="relative flex h-1.5 w-1.5">
                   <span className="animate-ping2 absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
@@ -172,14 +172,14 @@ export function HeroSection({ stats, content }: Props) {
               className="font-display text-[3.5rem] sm:text-[4rem] lg:text-[4.5rem] font-bold leading-[1.04] tracking-tight mb-6 animate-fade-up"
               style={{ animationDelay: '0.1s' }}
             >
-              <span className="text-white">{cms.headlineLine1}</span>
+              <span className="text-gray-900">{cms.headlineLine1}</span>
               <br />
               <span className="text-gradient">{cms.headlineLine2}</span>
             </h1>
 
             {/* Subtitle */}
             <p
-              className="text-[1.0625rem] text-white/45 max-w-[480px] mb-10 leading-[1.7] animate-fade-up"
+              className="text-[1.0625rem] text-gray-500 max-w-[480px] mb-10 leading-[1.7] animate-fade-up"
               style={{ animationDelay: '0.18s' }}
             >
               {cms.subtitle}
@@ -192,7 +192,7 @@ export function HeroSection({ stats, content }: Props) {
             >
               <a
                 href={primaryHref}
-                className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-bold bg-brand-600 hover:bg-brand-500 text-white rounded-xl transition-all duration-200 shadow-xl shadow-brand-900/50 ring-1 ring-brand-400/15 hover:ring-brand-400/30 hover:shadow-brand-700/50"
+                className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-bold bg-brand-600 hover:bg-brand-500 text-white rounded-xl transition-all duration-200 shadow-lg shadow-brand-700/30 ring-1 ring-brand-400/15 hover:ring-brand-400/30"
               >
                 {cms.ctaPrimaryLabel}
                 <svg
@@ -211,7 +211,7 @@ export function HeroSection({ stats, content }: Props) {
               </a>
               <a
                 href={cms.ctaSecondaryUrl}
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold text-white/55 hover:text-white/90 border border-white/[0.1] hover:border-white/20 hover:bg-white/[0.04] rounded-xl transition-all duration-150"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold text-gray-600 hover:text-gray-900 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 rounded-xl transition-all duration-150"
               >
                 <svg
                   className="w-4 h-4 opacity-70"
@@ -244,14 +244,14 @@ export function HeroSection({ stats, content }: Props) {
                   .map((l, i) => (
                     <div
                       key={i}
-                      className="w-7 h-7 rounded-full border-2 border-[rgb(var(--surface))] bg-gradient-to-br from-brand-600 to-brand-800 flex items-center justify-center text-[10px] font-bold text-white"
+                      className="w-7 h-7 rounded-full border-2 border-white bg-gradient-to-br from-brand-600 to-brand-800 flex items-center justify-center text-[10px] font-bold text-white"
                     >
                       {l}
                     </div>
                   ))}
               </div>
-              <p className="text-xs text-white/45 leading-snug">
-                <span className="text-white/75 font-semibold">{journalistsLabel}</span> jornalistas
+              <p className="text-xs text-gray-500 leading-snug">
+                <span className="text-gray-900 font-semibold">{journalistsLabel}</span> jornalistas
                 já na plataforma
               </p>
             </div>

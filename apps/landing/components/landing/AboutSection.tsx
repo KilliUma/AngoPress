@@ -27,24 +27,24 @@ const PILLAR_ICONS: Record<string, string> = {
 
 const ACCENT: Record<string, { icon: string; ring: string; dot: string }> = {
   brand: {
-    icon: 'text-brand-400',
-    ring: 'bg-brand-400/10 border-brand-400/20',
-    dot: 'bg-brand-400',
+    icon: 'text-brand-600',
+    ring: 'bg-brand-50 border-brand-200',
+    dot: 'bg-brand-500',
   },
   violet: {
-    icon: 'text-violet-400',
-    ring: 'bg-violet-400/10 border-violet-400/20',
-    dot: 'bg-violet-400',
+    icon: 'text-violet-600',
+    ring: 'bg-violet-50 border-violet-200',
+    dot: 'bg-violet-500',
   },
   emerald: {
-    icon: 'text-emerald-400',
-    ring: 'bg-emerald-400/10 border-emerald-400/20',
-    dot: 'bg-emerald-400',
+    icon: 'text-emerald-600',
+    ring: 'bg-emerald-50 border-emerald-200',
+    dot: 'bg-emerald-500',
   },
   amber: {
-    icon: 'text-amber-400',
-    ring: 'bg-amber-400/10 border-amber-400/20',
-    dot: 'bg-amber-400',
+    icon: 'text-amber-600',
+    ring: 'bg-amber-50 border-amber-200',
+    dot: 'bg-amber-500',
   },
 }
 
@@ -54,20 +54,20 @@ export function AboutSection({ stats, content }: Props) {
   return (
     <section id="sobre" className="relative py-28 px-4 sm:px-6 overflow-hidden">
       {/* background */}
-      <div className="absolute inset-0 bg-[rgb(var(--surface-1))]" />
-      <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
-      <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/[0.05] to-transparent" />
+      <div className="absolute inset-0 bg-white" />
+      <div className="absolute inset-0 grid-bg opacity-30 pointer-events-none" />
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+      <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
       <div className="relative max-w-6xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-16 items-start">
           {/* Left — content + stats */}
           <div className="reveal">
             <SectionLabel>{cms.sectionLabel}</SectionLabel>
-            <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight leading-tight mt-3 mb-5">
+            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight leading-tight mt-3 mb-5">
               {cms.title}
             </h2>
-            <div className="space-y-4 text-base text-white/45 leading-relaxed mb-10">
+            <div className="space-y-4 text-base text-gray-600 leading-relaxed mb-10">
               <p dangerouslySetInnerHTML={{ __html: cms.paragraph1 }} />
               <p dangerouslySetInnerHTML={{ __html: cms.paragraph2 }} />
               <p dangerouslySetInnerHTML={{ __html: cms.paragraph3 }} />
@@ -91,11 +91,11 @@ export function AboutSection({ stats, content }: Props) {
               ].map(({ value, label }, i) => (
                 <div
                   key={label}
-                  className="bg-white/[0.03] border border-white/[0.07] rounded-2xl p-4 flex flex-col gap-1"
+                  className="bg-gray-50 border border-gray-100 rounded-2xl p-4 flex flex-col gap-1"
                   style={{ transitionDelay: `${i * 80}ms` }}
                 >
-                  <p className="text-2xl font-black text-white tabular-nums">{value}</p>
-                  <p className="text-xs text-white/35 font-medium leading-snug">{label}</p>
+                  <p className="text-2xl font-black text-gray-900 tabular-nums">{value}</p>
+                  <p className="text-xs text-gray-500 font-medium leading-snug">{label}</p>
                 </div>
               ))}
             </div>
@@ -109,7 +109,7 @@ export function AboutSection({ stats, content }: Props) {
               return (
                 <div
                   key={i}
-                  className="reveal card-hover bg-white/[0.03] border border-white/[0.07] rounded-2xl p-6 flex flex-col gap-4"
+                  className="reveal card-hover bg-white border border-gray-100 shadow-sm hover:shadow-md rounded-2xl p-6 flex flex-col gap-4"
                   style={{ transitionDelay: `${i * 80}ms` }}
                 >
                   <div
@@ -128,9 +128,9 @@ export function AboutSection({ stats, content }: Props) {
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
-                      <h3 className="font-bold text-white text-sm">{title}</h3>
+                      <h3 className="font-bold text-gray-900 text-sm">{title}</h3>
                     </div>
-                    <p className="text-sm text-white/40 leading-relaxed">{description}</p>
+                    <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
                   </div>
                 </div>
               )

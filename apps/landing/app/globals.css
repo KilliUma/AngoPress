@@ -2,34 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Dark theme (default) ────────────────────────────────────────── */
+/* ── Theme ──────────────────────────────────────────────────────── */
 :root {
   --brand:        155, 0, 27;
   --brand-light:  244, 146, 153;
-  --surface:      8, 6, 10;
-  --surface-1:    14, 10, 18;
-  --surface-2:    20, 15, 26;
-  --border:       255, 255, 255, 0.07;
-  color-scheme: dark;
-  /* Network background */
-  --net-edge:       rgba(220, 60, 80, 0.45);
-  --net-dot-outer:  rgba(220, 60, 80, 0.14);
-  --net-dot-core:   rgba(255, 100, 120, 0.85);
-  --net-travel:     rgba(255, 140, 155, 0.9);
-}
-
-/* ── Light theme ─────────────────────────────────────────────────── */
-html.light {
-  --surface:   250, 249, 252;
-  --surface-1: 255, 255, 255;
-  --surface-2: 244, 242, 248;
-  --border:    0, 0, 0, 0.07;
+  --surface:      249, 250, 251;
+  --surface-1:    255, 255, 255;
+  --surface-2:    243, 244, 246;
+  --border:       0, 0, 0, 0.07;
   color-scheme: light;
   /* Network background */
-  --net-edge:       rgba(155, 0, 27, 0.20);
-  --net-dot-outer:  rgba(155, 0, 27, 0.08);
-  --net-dot-core:   rgba(155, 0, 27, 0.50);
-  --net-travel:     rgba(155, 0, 27, 0.70);
+  --net-edge:       rgba(155, 0, 27, 0.18);
+  --net-dot-outer:  rgba(155, 0, 27, 0.07);
+  --net-dot-core:   rgba(155, 0, 27, 0.45);
+  --net-travel:     rgba(155, 0, 27, 0.65);
 }
 
 html { scroll-behavior: smooth; }
@@ -43,14 +29,11 @@ h1, h2, h3, h4 {
 }
 
 body {
-  color: #f1eef4;
+  color: #111827;
   background: rgb(var(--surface));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background 0.25s ease, color 0.25s ease;
 }
-
-html.light body { color: rgb(14, 10, 18); }
 
 /* ── Selection ───────────────────────────────────────────────────── */
 ::selection { background: rgba(155,0,27,.35); color: #fff; }
@@ -258,24 +241,27 @@ html.light .border-y {
 
 /* ── Glass surfaces ──────────────────────────────────────────────── */
 .glass {
-  background: rgba(255,255,255,.03);
+  background: rgba(255,255,255,.85);
+  border-color: rgba(0,0,0,.07);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
 .glass-md {
-  background: rgba(255,255,255,.05);
+  background: rgba(255,255,255,.92);
+  border-color: rgba(0,0,0,.07);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
 }
 .glass-dark {
-  background: rgba(0,0,0,.4);
+  background: rgba(255,255,255,.95);
+  border-color: rgba(0,0,0,.07);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
 }
 
 /* ── Gradient text ───────────────────────────────────────────────── */
 .text-gradient {
-  background: linear-gradient(135deg, #f9c5c9 0%, #ec555f 45%, #9B001B 100%);
+  background: linear-gradient(135deg, #e84053 0%, #c9001f 45%, #8A0018 100%);
   background-size: 300% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -300,13 +286,13 @@ html.light .border-y {
 
 /* ── Borders ─────────────────────────────────────────────────────── */
 .border-glow   { border: 1px solid rgba(155,0,27,.4); }
-.border-subtle { border: 1px solid rgba(255,255,255,.07); }
+.border-subtle { border: 1px solid rgba(0,0,0,.07); }
 
 /* ── Grid line background ────────────────────────────────────────── */
 .grid-bg {
   background-image:
-    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+    linear-gradient(rgba(0,0,0,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,.05) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 .grid-bg-flow {

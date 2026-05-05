@@ -27,7 +27,7 @@ const FEATURE_ICON: Record<string, { icon: React.ReactNode; cls: string }> = {
         />
       </svg>
     ),
-    cls: 'text-brand-400 bg-brand-400/10 border border-brand-400/20',
+    cls: 'text-brand-600 bg-brand-50 border border-brand-200',
   },
   blue: {
     icon: (
@@ -45,7 +45,7 @@ const FEATURE_ICON: Record<string, { icon: React.ReactNode; cls: string }> = {
         />
       </svg>
     ),
-    cls: 'text-blue-400 bg-blue-400/10 border border-blue-400/20',
+    cls: 'text-blue-600 bg-blue-50 border border-blue-200',
   },
   violet: {
     icon: (
@@ -63,7 +63,7 @@ const FEATURE_ICON: Record<string, { icon: React.ReactNode; cls: string }> = {
         />
       </svg>
     ),
-    cls: 'text-violet-400 bg-violet-400/10 border border-violet-400/20',
+    cls: 'text-violet-600 bg-violet-50 border border-violet-200',
   },
   emerald: {
     icon: (
@@ -81,7 +81,7 @@ const FEATURE_ICON: Record<string, { icon: React.ReactNode; cls: string }> = {
         />
       </svg>
     ),
-    cls: 'text-emerald-400 bg-emerald-400/10 border border-emerald-400/20',
+    cls: 'text-emerald-600 bg-emerald-50 border border-emerald-200',
   },
   amber: {
     icon: (
@@ -99,7 +99,7 @@ const FEATURE_ICON: Record<string, { icon: React.ReactNode; cls: string }> = {
         />
       </svg>
     ),
-    cls: 'text-amber-400 bg-amber-400/10 border border-amber-400/20',
+    cls: 'text-amber-600 bg-amber-50 border border-amber-200',
   },
   cyan: {
     icon: (
@@ -117,7 +117,7 @@ const FEATURE_ICON: Record<string, { icon: React.ReactNode; cls: string }> = {
         />
       </svg>
     ),
-    cls: 'text-cyan-400 bg-cyan-400/10 border border-cyan-400/20',
+    cls: 'text-cyan-600 bg-cyan-50 border border-cyan-200',
   },
 }
 
@@ -132,15 +132,12 @@ export function HowItWorksSection({ content }: { content?: HowItWorksContent }) 
     : `${APP_URL}${cms.ctaUrl.startsWith('/') ? '' : '/'}${cms.ctaUrl}`
 
   return (
-    <section
-      id="como-funciona"
-      className="py-28 px-4 sm:px-6 bg-[rgb(var(--surface-2))] relative overflow-hidden"
-    >
+    <section id="como-funciona" className="py-28 px-4 sm:px-6 bg-gray-50 relative overflow-hidden">
       {/* Background texture */}
       <div
         className="absolute inset-0 opacity-[0.04] pointer-events-none"
         style={{
-          backgroundImage: 'radial-gradient(circle, #D99D99 1px, transparent 1px)',
+          backgroundImage: 'radial-gradient(circle, #9B001B 1px, transparent 1px)',
           backgroundSize: '28px 28px',
         }}
       />
@@ -153,12 +150,12 @@ export function HowItWorksSection({ content }: { content?: HowItWorksContent }) 
             <SectionLabel>{cms.sectionLabel}</SectionLabel>
           </AnimateIn>
           <AnimateIn variant="up" delay={80}>
-            <h2 className="text-4xl sm:text-5xl font-black text-white mb-4 leading-tight">
+            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 mb-4 leading-tight">
               {cms.title}
             </h2>
           </AnimateIn>
           <AnimateIn variant="up" delay={160}>
-            <p className="text-lg text-brand-300/70 max-w-lg mx-auto">{cms.subtitle}</p>
+            <p className="text-lg text-gray-500 max-w-lg mx-auto">{cms.subtitle}</p>
           </AnimateIn>
         </div>
 
@@ -168,7 +165,7 @@ export function HowItWorksSection({ content }: { content?: HowItWorksContent }) 
             const style = STEP_STYLE[step.accent] ?? STEP_STYLE.brand
             return (
               <AnimateIn key={i} variant="up" delay={i * 120}>
-                <div className="relative group p-7 rounded-2xl bg-brand-900/60 border border-brand-800/60 hover:border-brand-600/60 hover:bg-brand-800/60 transition-all duration-300 h-full">
+                <div className="relative group p-7 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-lg hover:border-brand-200 transition-all duration-300 h-full">
                   {/* Glow */}
                   <div
                     className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl blur-xl -z-10 shadow-2xl ${style.glow}`}
@@ -199,8 +196,8 @@ export function HowItWorksSection({ content }: { content?: HowItWorksContent }) 
                     </div>
                   )}
 
-                  <h3 className="font-bold text-white text-lg mb-2">{step.title}</h3>
-                  <p className="text-sm text-brand-300/70 leading-relaxed">{step.description}</p>
+                  <h3 className="font-bold text-gray-900 text-lg mb-2">{step.title}</h3>
+                  <p className="text-sm text-gray-500 leading-relaxed">{step.description}</p>
                 </div>
               </AnimateIn>
             )
@@ -209,22 +206,24 @@ export function HowItWorksSection({ content }: { content?: HowItWorksContent }) 
 
         {/* Features grid */}
         <AnimateIn variant="up">
-          <h3 className="text-2xl font-black text-white text-center mb-8">{cms.featuresTitle}</h3>
+          <h3 className="text-2xl font-black text-gray-900 text-center mb-8">
+            {cms.featuresTitle}
+          </h3>
         </AnimateIn>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
           {cms.features.map((feat, i) => {
             const fi = FEATURE_ICON[feat.accent] ?? FEATURE_ICON.brand
             return (
               <AnimateIn key={i} variant="up" delay={i * 60}>
-                <div className="group p-5 rounded-xl bg-white/[0.03] border border-white/[0.07] hover:bg-white/[0.06] hover:border-white/[0.12] transition-all duration-200 h-full flex gap-4 items-start">
+                <div className="group p-5 rounded-xl bg-white border border-gray-100 hover:shadow-md hover:border-brand-200 transition-all duration-200 h-full flex gap-4 items-start">
                   <div
                     className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${fi.cls}`}
                   >
                     {fi.icon}
                   </div>
                   <div>
-                    <p className="font-semibold text-white/80 text-sm mb-1">{feat.title}</p>
-                    <p className="text-xs text-white/35 leading-relaxed">{feat.description}</p>
+                    <p className="font-semibold text-gray-900 text-sm mb-1">{feat.title}</p>
+                    <p className="text-xs text-gray-500 leading-relaxed">{feat.description}</p>
                   </div>
                 </div>
               </AnimateIn>
