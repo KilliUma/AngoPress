@@ -227,7 +227,7 @@ export function JournalistRegisterModal({
     setState({ status: 'submitting' })
 
     try {
-      const apiUrl = process.env.API_URL ?? 'http://localhost:3001'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://angopress.vercel.app'
       const payload: Record<string, string | undefined> = {
         name: data.name,
         email: data.email,

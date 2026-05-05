@@ -8,10 +8,6 @@ const nextConfig = {
     }
     return config
   },
-  env: {
-    API_URL: process.env.API_URL ?? 'http://localhost:3001',
-    APP_URL: process.env.APP_URL ?? 'http://localhost:5173',
-  },
   images: {
     domains: ['escf.ao'],
     remotePatterns: [
