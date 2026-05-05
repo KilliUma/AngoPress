@@ -34,9 +34,11 @@ async function fetchFromCandidates<T>(paths: string[], revalidate: number): Prom
 
   for (const path of paths) {
     try {
+      // Timeout generoso (12s) para acomodar cold starts de serverless (Vercel → Vercel).
       const controller = new AbortController()
-      const t = setTimeout(() => controller.abort(), 3000)
+      const t = setTimeout(() => controller.abort(), 12000)
       const res = await fetch(`${base}${path}`, {
+        cache: revalidate === 0 ? 'no-store' : 'force-cache',
         next: { revalidate },
         signal: controller.signal,
       })
