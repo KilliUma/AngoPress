@@ -24,7 +24,6 @@ const RichEditor = dynamic(
 
 interface FormValues {
   title: string
-  summary: string
   scheduledAt: string
 }
 
@@ -56,7 +55,7 @@ export default function NewPressReleasePage() {
 
   // Guardar como rascunho e obter/actualizar o ID
   const saveAsDraft = async (silent = false) => {
-    const { title, summary } = getValues()
+    const { title } = getValues()
     if (!title.trim()) {
       if (!silent) toast.error('O título é obrigatório')
       return null
@@ -65,11 +64,11 @@ export default function NewPressReleasePage() {
     try {
       if (prId) {
         // actualizar rascunho existente
-        await api.put(`/press-releases/${prId}`, { title, summary, content, status: 'DRAFT' })
+        await api.put(`/press-releases/${prId}`, { title, content, status: 'DRAFT' })
         if (!silent) toast.success('Rascunho guardado')
         return prId
       } else {
-        const pr = await createMutation.mutateAsync({ title, summary, content, status: 'DRAFT' })
+        const pr = await createMutation.mutateAsync({ title, content, status: 'DRAFT' })
         setPrId(pr.id)
         if (!silent) toast.success('Rascunho guardado')
         return pr.id
@@ -82,7 +81,7 @@ export default function NewPressReleasePage() {
     }
   }
 
-  const handlePublish = handleSubmit(async ({ title, summary }) => {
+  const handlePublish = handleSubmit(async ({ title }) => {
     if (!content.trim()) {
       toast.error('O conteúdo não pode estar vazio')
       return
@@ -90,11 +89,11 @@ export default function NewPressReleasePage() {
     setSaving(true)
     try {
       if (prId) {
-        await api.put(`/press-releases/${prId}`, { title, summary, content })
+        await api.put(`/press-releases/${prId}`, { title, content })
         await api.post(`/press-releases/${prId}/publish`)
         toast.success('Press release publicado!')
       } else {
-        const pr = await createMutation.mutateAsync({ title, summary, content, status: 'DRAFT' })
+        const pr = await createMutation.mutateAsync({ title, content, status: 'DRAFT' })
         await api.post(`/press-releases/${pr.id}/publish`)
         toast.success('Press release publicado!')
       }
@@ -106,7 +105,7 @@ export default function NewPressReleasePage() {
     }
   })
 
-  const handleSchedule = handleSubmit(async ({ title, summary, scheduledAt }) => {
+  const handleSchedule = handleSubmit(async ({ title, scheduledAt }) => {
     if (!scheduledAt) {
       toast.error('Seleccione uma data para agendamento')
       return
@@ -120,7 +119,6 @@ export default function NewPressReleasePage() {
       if (prId) {
         await api.put(`/press-releases/${prId}`, {
           title,
-          summary,
           content,
           status: 'SCHEDULED',
           scheduledAt,
@@ -129,7 +127,6 @@ export default function NewPressReleasePage() {
       } else {
         await createMutation.mutateAsync({
           title,
-          summary,
           content,
           status: 'SCHEDULED',
           scheduledAt,
@@ -236,17 +233,6 @@ export default function NewPressReleasePage() {
             className="w-full text-lg border border-neutral-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500 placeholder:text-neutral-400"
           />
           {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
-        </div>
-
-        {/* Resumo */}
-        <div>
-          <label className="block text-sm font-medium text-neutral-700 mb-1">Resumo / Lead</label>
-          <textarea
-            {...register('summary')}
-            rows={2}
-            placeholder="Breve resumo do comunicado (opcional, aparece como prévia)..."
-            className="w-full border border-neutral-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 placeholder:text-neutral-400 resize-none"
-          />
         </div>
 
         {/* Editor */}

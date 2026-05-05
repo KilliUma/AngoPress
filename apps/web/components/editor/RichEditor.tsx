@@ -9,6 +9,11 @@ import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
 import Placeholder from '@tiptap/extension-placeholder'
+import Underline from '@tiptap/extension-underline'
+import Strikethrough from '@tiptap/extension-strike'
+import Highlight from '@tiptap/extension-highlight'
+import CodeBlock from '@tiptap/extension-code-block'
+import TextAlign from '@tiptap/extension-text-align'
 import {
   Bold,
   Italic,
@@ -23,6 +28,14 @@ import {
   Minus,
   Heading2,
   Heading3,
+  Strikethrough as StrikethroughIcon,
+  Underline as UnderlineIcon,
+  Highlighter,
+  Code,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignJustify,
 } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useCallback, useEffect } from 'react'
@@ -69,13 +82,18 @@ function ToolbarButton({
 export default function RichEditor({ value, onChange, placeholder, className }: RichEditorProps) {
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({ heading: { levels: [2, 3] } }),
+      StarterKit.configure({ heading: { levels: [2, 3] }, codeBlock: false }),
+      Underline,
+      Strikethrough,
+      Highlight.configure({ multicolor: true }),
+      CodeBlock.configure({ languageClassPrefix: 'language-' }),
       Image.configure({ inline: false, allowBase64: true }),
       Link.configure({ openOnClick: false, HTMLAttributes: { class: 'text-brand-600 underline' } }),
       Table.configure({ resizable: true }),
       TableRow,
       TableHeader,
       TableCell,
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Placeholder.configure({ placeholder: placeholder ?? 'Comece a escrever o press release...' }),
     ],
     content: value,
@@ -154,18 +172,63 @@ export default function RichEditor({ value, onChange, placeholder, className }: 
         <div className="w-px h-5 bg-neutral-300 mx-1" />
 
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          active={editor.isActive('bold')}
-          title="Negrito"
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          active={editor.isActive('underline')}
+          title="Sublinhado"
         >
-          <Bold size={15} />
+          <UnderlineIcon size={15} />
         </ToolbarButton>
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          active={editor.isActive('italic')}
-          title="Itálico"
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          active={editor.isActive('strike')}
+          title="Rasurado"
         >
-          <Italic size={15} />
+          <StrikethroughIcon size={15} />
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleHighlight().run()}
+          active={editor.isActive('highlight')}
+          title="Destaque"
+        >
+          <Highlighter size={15} />
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+          active={editor.isActive('codeBlock')}
+          title="Bloco de código"
+        >
+          <Code size={15} />
+        </ToolbarButton>
+
+        <div className="w-px h-5 bg-neutral-300 mx-1" />
+
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign('left').run()}
+          active={editor.isActive({ textAlign: 'left' })}
+          title="Alinhar à esquerda"
+        >
+          <AlignLeft size={15} />
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign('center').run()}
+          active={editor.isActive({ textAlign: 'center' })}
+          title="Alinhar ao centro"
+        >
+          <AlignCenter size={15} />
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign('right').run()}
+          active={editor.isActive({ textAlign: 'right' })}
+          title="Alinhar à direita"
+        >
+          <AlignRight size={15} />
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign('justify').run()}
+          active={editor.isActive({ textAlign: 'justify' })}
+          title="Justificar"
+        >
+          <AlignJustify size={15} />
         </ToolbarButton>
 
         <div className="w-px h-5 bg-neutral-300 mx-1" />
