@@ -280,9 +280,10 @@ export function JournalistRegisterModal({
       {variant === 'nav' && (
         <button
           onClick={handleOpen}
-          className="hidden sm:inline-flex text-sm font-medium text-brand-200 hover:text-white transition-colors"
+          className="relative px-3.5 py-2 text-[13px] font-medium text-white/45 hover:text-white/90 rounded-lg transition-colors duration-150 group"
         >
           Sou jornalista
+          <span className="absolute inset-x-3.5 bottom-1.5 h-px bg-brand-500 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-200 rounded-full" />
         </button>
       )}
 

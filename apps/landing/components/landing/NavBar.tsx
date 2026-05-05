@@ -1,5 +1,4 @@
 import { JournalistRegisterModal } from '@/components/JournalistRegisterModal'
-import { ThemeToggle } from '@/components/ThemeToggle'
 
 const NAV_LINKS = [
   ['Início', '/'],
@@ -43,12 +42,11 @@ export function NavBar() {
               <span className="absolute inset-x-3.5 bottom-1.5 h-px bg-brand-500 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-200 rounded-full" />
             </a>
           ))}
+          <JournalistRegisterModal variant="nav" />
         </nav>
 
         {/* Actions */}
         <div className="flex  items-center gap-1.5 flex-shrink-0">
-          <ThemeToggle />
-          <JournalistRegisterModal variant="nav" />
           {/* <a
             href={`${APP_URL}/login`}
             className="hidden sm:inline-flex items-center px-4 py-2 text-[13px] font-semibold text-white/65 hover:text-white/90 border border-white/[0.1] hover:border-white/20 hover:bg-white/[0.05] rounded-lg transition-all duration-150"
