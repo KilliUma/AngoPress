@@ -24,7 +24,6 @@ const RichEditor = dynamic(
 
 interface FormValues {
   title: string
-  summary: string
   scheduledAt: string
 }
 
@@ -53,7 +52,6 @@ export default function EditPressReleasePage() {
     if (pr) {
       reset({
         title: pr.title,
-        summary: pr.summary ?? '',
         scheduledAt: pr.scheduledAt ? new Date(pr.scheduledAt).toISOString().slice(0, 16) : '',
       })
       setContent(pr.content)
@@ -62,14 +60,14 @@ export default function EditPressReleasePage() {
   }, [pr, reset])
 
   const handleSaveDraft = async (silent = false) => {
-    const { title, summary } = getValues()
+    const { title } = getValues()
     if (!title.trim()) {
       if (!silent) toast.error('O título é obrigatório')
       return
     }
     setSaving(true)
     try {
-      await api.put(`/press-releases/${id}`, { title, summary, content, status: 'DRAFT' })
+      await api.put(`/press-releases/${id}`, { title, content, status: 'DRAFT' })
       if (!silent) toast.success('Rascunho guardado')
     } catch {
       if (!silent) toast.error('Erro ao guardar')
@@ -78,14 +76,14 @@ export default function EditPressReleasePage() {
     }
   }
 
-  const handlePublish = handleSubmit(async ({ title, summary }) => {
+  const handlePublish = handleSubmit(async ({ title }) => {
     if (!content.trim()) {
       toast.error('O conteúdo não pode estar vazio')
       return
     }
     setSaving(true)
     try {
-      await api.put(`/press-releases/${id}`, { title, summary, content })
+      await api.put(`/press-releases/${id}`, { title, content })
       await api.post(`/press-releases/${id}/publish`)
       toast.success('Press release publicado!')
       router.push('/press-releases')
@@ -96,7 +94,7 @@ export default function EditPressReleasePage() {
     }
   })
 
-  const handleSchedule = handleSubmit(async ({ title, summary, scheduledAt }) => {
+  const handleSchedule = handleSubmit(async ({ title, scheduledAt }) => {
     if (!scheduledAt) {
       toast.error('Seleccione uma data para agendamento')
       return
@@ -109,7 +107,6 @@ export default function EditPressReleasePage() {
     try {
       await api.put(`/press-releases/${id}`, {
         title,
-        summary,
         content,
         status: 'SCHEDULED',
         scheduledAt,
@@ -237,17 +234,6 @@ export default function EditPressReleasePage() {
             className="w-full text-lg border border-neutral-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500 placeholder:text-neutral-400"
           />
           {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
-        </div>
-
-        {/* Resumo */}
-        <div>
-          <label className="block text-sm font-medium text-neutral-700 mb-1">Resumo / Lead</label>
-          <textarea
-            {...register('summary')}
-            rows={2}
-            placeholder="Breve resumo do comunicado..."
-            className="w-full border border-neutral-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 placeholder:text-neutral-400 resize-none"
-          />
         </div>
 
         {/* Editor */}
