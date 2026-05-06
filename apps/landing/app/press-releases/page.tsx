@@ -37,27 +37,30 @@ interface PublicPressReleasesResponse {
   }
 }
 
-function resolveApiBaseUrl(): string {
+function resolveApiBaseUrls(): string[] {
+  const urls: string[] = []
+
   const apiUrl = process.env.API_URL?.trim()
-  if (apiUrl) return apiUrl.replace(/\/$/, '')
+  if (apiUrl) urls.push(apiUrl.replace(/\/$/, ''))
 
   const appUrl = process.env.APP_URL?.trim()
   if (appUrl) {
     try {
-      return new URL(appUrl).origin
+      urls.push(new URL(appUrl).origin)
     } catch {
-      // Ignora APP_URL inválido e usa fallback local.
+      // Ignora APP_URL inválido e segue para fallback.
     }
   }
 
-  return 'http://localhost:3001'
+  urls.push('http://localhost:3000', 'http://localhost:3001', 'https://angopress.vercel.app')
+  return [...new Set(urls)]
 }
 
 async function fetchPublicPressReleases(
   page: number,
   limit = 12,
 ): Promise<PublicPressReleasesResponse> {
-  const base = resolveApiBaseUrl()
+  const bases = resolveApiBaseUrls()
 
   // Endpoints em ordem de preferência
   const endpoints = [
@@ -70,47 +73,64 @@ async function fetchPublicPressReleases(
     { path: `/api/press-releases/public/featured`, label: 'Featured fallback', isFeatured: true },
   ]
 
-  for (const endpoint of endpoints) {
-    try {
-      const url = `${base}${endpoint.path}`
-      const res = await fetch(url, {
-        cache: endpoint.isFeatured ? 'force-cache' : 'force-cache',
-        next: { revalidate: endpoint.isFeatured ? 300 : 180 },
-      })
+  let firstEmpty: PublicPressReleasesResponse | null = null
 
-      if (!res.ok) {
-        console.warn(`[Press Releases] Endpoint ${endpoint.label} failed with status ${res.status}`)
+  for (const base of bases) {
+    for (const endpoint of endpoints) {
+      try {
+        const url = `${base}${endpoint.path}`
+        const res = await fetch(url, {
+          cache: endpoint.isFeatured ? 'force-cache' : 'force-cache',
+          next: { revalidate: endpoint.isFeatured ? 300 : 180 },
+        })
+
+        if (!res.ok) {
+          console.warn(
+            `[Press Releases] Endpoint ${endpoint.label} (${base}) failed with status ${res.status}`,
+          )
+          continue
+        }
+
+        const json = (await res.json()) as any
+
+        // Se é resposta de featured (array direto), converte para formato esperado
+        if (endpoint.isFeatured && Array.isArray(json)) {
+          const converted = {
+            data: json.slice(0, limit),
+            meta: {
+              total: json.length,
+              page: 1,
+              limit,
+              totalPages: 1,
+            },
+          }
+          if (converted.data.length > 0) return converted
+          if (!firstEmpty) firstEmpty = converted
+          continue
+        }
+
+        // Se é resposta padrão com data/meta
+        if (Array.isArray(json.data) && json.meta) {
+          if (json.data.length > 0) {
+            console.log(
+              `[Press Releases] Loaded from ${endpoint.label} (${base}): ${json.data.length} items`,
+            )
+            return json
+          }
+          if (!firstEmpty) firstEmpty = json
+          continue
+        }
+
+        console.warn(`[Press Releases] ${endpoint.label} (${base}) returned invalid format`)
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error)
+        console.warn(`[Press Releases] ${endpoint.label} (${base}) error: ${errorMsg}`)
         continue
       }
-
-      const json = (await res.json()) as any
-
-      // Se é resposta de featured (array direto), converte para formato esperado
-      if (endpoint.isFeatured && Array.isArray(json)) {
-        return {
-          data: json.slice(0, limit),
-          meta: {
-            total: json.length,
-            page: 1,
-            limit,
-            totalPages: 1,
-          },
-        }
-      }
-
-      // Se é resposta padrão com data/meta
-      if (Array.isArray(json.data) && json.meta) {
-        console.log(`[Press Releases] Loaded from ${endpoint.label}: ${json.data.length} items`)
-        return json
-      }
-
-      console.warn(`[Press Releases] ${endpoint.label} returned invalid format`)
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error)
-      console.warn(`[Press Releases] ${endpoint.label} error: ${errorMsg}`)
-      continue
     }
   }
+
+  if (firstEmpty) return firstEmpty
 
   // Se nenhum endpoint funcionou, retorna vazio (será mostrado mensagem de "nenhum publicado")
   console.warn('[Press Releases] All endpoints failed. No press releases available.')

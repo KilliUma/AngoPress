@@ -197,9 +197,7 @@ export default function DashboardPage() {
           </div>
           <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="mb-1 text-sm font-medium text-brand-200">
-                {greeting}, {firstName}!
-              </p>
+              <p className="mb-1 text-sm font-medium text-brand-200">Olá! 👋 {firstName}!</p>
               <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
                 Bem-vindo de volta à AngoPress
               </h1>

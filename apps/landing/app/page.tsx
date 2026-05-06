@@ -13,40 +13,51 @@ import { NewsSection } from '@/components/landing/NewsSection'
 import { JournalistCTASection } from '@/components/landing/JournalistCTASection'
 import { Footer } from '@/components/landing/Footer'
 
-function resolveApiBaseUrl(): string {
+function resolveApiBaseUrls(): string[] {
+  const urls: string[] = []
+
   const apiUrl = process.env.API_URL?.trim()
-  if (apiUrl) return apiUrl.replace(/\/$/, '')
+  if (apiUrl) urls.push(apiUrl.replace(/\/$/, ''))
 
   const appUrl = process.env.APP_URL?.trim()
   if (appUrl) {
     try {
-      return new URL(appUrl).origin
+      urls.push(new URL(appUrl).origin)
     } catch {
-      // Ignora APP_URL inválido e segue para fallback local.
+      // Ignora APP_URL inválido e segue para fallback.
     }
   }
 
-  return 'http://localhost:3001'
+  urls.push('http://localhost:3000', 'http://localhost:3001', 'https://angopress.vercel.app')
+  return [...new Set(urls)]
 }
 
-async function fetchFromCandidates<T>(paths: string[], revalidate: number): Promise<T | null> {
-  const base = resolveApiBaseUrl()
+async function fetchFromCandidates<T>(
+  paths: string[],
+  revalidate: number,
+  isValid?: (payload: T) => boolean,
+): Promise<T | null> {
+  const bases = resolveApiBaseUrls()
 
-  for (const path of paths) {
-    try {
-      // Timeout generoso (12s) para acomodar cold starts de serverless (Vercel → Vercel).
-      const controller = new AbortController()
-      const t = setTimeout(() => controller.abort(), 12000)
-      const res = await fetch(`${base}${path}`, {
-        cache: revalidate === 0 ? 'no-store' : 'force-cache',
-        next: { revalidate },
-        signal: controller.signal,
-      })
-      clearTimeout(t)
-      if (!res.ok) continue
-      return (await res.json()) as T
-    } catch {
-      // Tenta o próximo endpoint candidato.
+  for (const base of bases) {
+    for (const path of paths) {
+      try {
+        // Timeout generoso (12s) para acomodar cold starts de serverless (Vercel → Vercel).
+        const controller = new AbortController()
+        const t = setTimeout(() => controller.abort(), 12000)
+        const res = await fetch(`${base}${path}`, {
+          cache: revalidate === 0 ? 'no-store' : 'force-cache',
+          next: { revalidate },
+          signal: controller.signal,
+        })
+        clearTimeout(t)
+        if (!res.ok) continue
+        const payload = (await res.json()) as T
+        if (isValid && !isValid(payload)) continue
+        return payload
+      } catch {
+        // Tenta o próximo endpoint/base candidata.
+      }
     }
   }
 
@@ -76,6 +87,7 @@ async function getFeatured(): Promise<FeaturedPressRelease[]> {
   const data = await fetchFromCandidates<FeaturedPressRelease[]>(
     ['/api/v1/press-releases/public/featured', '/api/press-releases/public/featured'],
     300,
+    (payload) => Array.isArray(payload) && payload.length > 0,
   )
   return Array.isArray(data) ? data : []
 }
