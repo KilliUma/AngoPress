@@ -239,7 +239,6 @@ export function JournalistRegisterModal({
         city: data.city || undefined,
         message: data.message || undefined,
       }
-      // remover campos undefined
       Object.keys(payload).forEach((k) => payload[k] === undefined && delete payload[k])
 
       const res = await fetch(`${apiUrl}/api/v1/journalists/registrations`, {
@@ -276,9 +275,26 @@ export function JournalistRegisterModal({
     </svg>
   )
 
+  const inputBase =
+    'w-full h-11 px-3.5 border rounded-xl text-sm bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 placeholder:text-neutral-400'
+  const inputOk = 'border-neutral-200 hover:border-neutral-300'
+  const inputErr = 'border-red-400 bg-red-50/30 focus:ring-red-400 focus:border-red-400'
+
+  const ErrMsg = ({ msg }: { msg: string }) => (
+    <p className="flex items-center gap-1 text-xs text-red-500 mt-1.5">
+      <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fillRule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z"
+          clipRule="evenodd"
+        />
+      </svg>
+      {msg}
+    </p>
+  )
+
   return (
     <>
-      {/* ── Triggers ─────────────────────────────────────────────── */}
       {variant === 'nav' && (
         <button
           onClick={handleOpen}
@@ -290,7 +306,6 @@ export function JournalistRegisterModal({
           Sou jornalista
         </button>
       )}
-
       {variant === 'card' && (
         <button
           onClick={handleOpen}
@@ -300,7 +315,6 @@ export function JournalistRegisterModal({
           <ArrowIcon />
         </button>
       )}
-
       {variant === 'cta' && (
         <button
           onClick={handleOpen}
@@ -310,29 +324,26 @@ export function JournalistRegisterModal({
           <ArrowIcon />
         </button>
       )}
-
       {variant === 'footer' && (
         <button onClick={handleOpen} className="hover:text-white transition-colors text-left">
           Registar-se
         </button>
       )}
 
-      {/* ── Modal ────────────────────────────────────────────────── */}
       {open && (
         <div
-          className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4"
           onClick={(e) => e.target === e.currentTarget && handleClose()}
         >
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl w-full sm:max-w-lg max-h-[95dvh] sm:max-h-[90vh] flex flex-col overflow-hidden">
             {state.status === 'success' ? (
-              /* ── Estado de sucesso ── */
-              <div className="p-10 text-center">
-                <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+              <div className="p-10 text-center flex flex-col items-center">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center mb-5 shadow-lg shadow-green-200">
                   <svg
-                    className="w-7 h-7 text-green-600"
+                    className="w-10 h-10 text-white"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth={2}
+                    strokeWidth={2.5}
                     viewBox="0 0 24 24"
                   >
                     <path
@@ -342,270 +353,383 @@ export function JournalistRegisterModal({
                     />
                   </svg>
                 </div>
-                <h2 className="text-xl font-bold text-neutral-900 mb-2">Pedido enviado!</h2>
-                <p className="text-neutral-500 text-sm mb-6">
-                  O seu pedido de registo foi recebido. A nossa equipa irá analisá-lo e entrar em
-                  contacto em breve.
+                <h2 className="text-2xl font-bold text-neutral-900 mb-2">Pedido enviado!</h2>
+                <p className="text-neutral-500 text-sm leading-relaxed mb-8 max-w-xs">
+                  O seu pedido foi recebido com sucesso. A nossa equipa irá analisá-lo e entrar em
+                  contacto pelo e-mail indicado em breve.
                 </p>
                 <button
                   onClick={handleClose}
-                  className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 transition-colors"
+                  className="px-8 py-3 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 transition-colors shadow-md shadow-brand-200"
                 >
-                  Fechar
+                  Concluir
                 </button>
               </div>
             ) : (
-              /* ── Formulário ── */
               <>
-                <div className="flex items-start justify-between p-5 border-b border-neutral-200">
-                  <div>
-                    <h2 className="text-lg font-bold text-neutral-900">Registo de Jornalista</h2>
-                    <p className="text-xs text-neutral-500 mt-0.5">
-                      Submeta o seu pedido para integrar a nossa base de dados. A aprovação é feita
-                      pelo administrador.
-                    </p>
-                  </div>
-                  <button
-                    onClick={handleClose}
-                    className="ml-4 text-neutral-400 hover:text-neutral-600 flex-shrink-0"
-                    aria-label="Fechar"
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      viewBox="0 0 24 24"
+                <div className="relative flex-shrink-0">
+                  <div className="h-1.5 bg-gradient-to-r from-brand-700 via-brand-500 to-brand-600 rounded-t-3xl sm:rounded-t-2xl" />
+                  <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-neutral-100">
+                    <div className="flex items-start gap-3.5">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center mt-0.5">
+                        <svg
+                          className="w-5 h-5 text-brand-600"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={1.75}
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <h2 className="text-base font-bold text-neutral-900 leading-tight">
+                          Registo de Jornalista
+                        </h2>
+                        <p className="text-xs text-neutral-400 mt-0.5 leading-snug">
+                          Preencha os dados abaixo. A aprovação é feita pela nossa equipa.
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={handleClose}
+                      className="ml-3 flex-shrink-0 w-8 h-8 rounded-lg bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center text-neutral-500 hover:text-neutral-700 transition-colors"
+                      aria-label="Fechar"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                    </svg>
-                  </button>
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 18 18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-5 space-y-4">
+                <form
+                  onSubmit={handleSubmit}
+                  className="overflow-y-auto flex-1 px-6 py-5 space-y-5"
+                >
                   {state.status === 'error' && (
-                    <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
-                      {state.message}
+                    <div className="flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
+                      <svg
+                        className="w-4 h-4 flex-shrink-0 mt-0.5"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+                        />
+                      </svg>
+                      <span>{state.message}</span>
                     </div>
                   )}
 
-                  {/* Nome */}
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
-                      Nome completo <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      name="name"
-                      placeholder="Maria da Silva"
-                      className="w-full h-10 px-3 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    />
-                    {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
-                  </div>
+                  <fieldset>
+                    <legend className="flex items-center gap-2 text-[11px] font-bold text-neutral-400 uppercase tracking-widest mb-3">
+                      <span className="flex-1 h-px bg-neutral-100" />
+                      Identificação
+                      <span className="flex-1 h-px bg-neutral-100" />
+                    </legend>
+                    <div className="space-y-3.5">
+                      <div>
+                        <label className="block text-xs font-semibold text-neutral-600 uppercase tracking-wide mb-1.5">
+                          Nome completo <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          name="name"
+                          placeholder="Maria da Silva"
+                          className={`${inputBase} ${errors.name ? inputErr : inputOk}`}
+                        />
+                        {errors.name && <ErrMsg msg={errors.name} />}
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-neutral-600 uppercase tracking-wide mb-1.5">
+                          E-mail profissional <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          name="email"
+                          type="email"
+                          placeholder="maria@jornalangola.ao"
+                          className={`${inputBase} ${errors.email ? inputErr : inputOk}`}
+                        />
+                        {errors.email && <ErrMsg msg={errors.email} />}
+                      </div>
+                    </div>
+                  </fieldset>
 
-                  {/* E-mail */}
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
-                      E-mail profissional <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      name="email"
-                      type="email"
-                      placeholder="maria@jornalangola.ao"
-                      className="w-full h-10 px-3 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    />
-                    {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
-                  </div>
-
-                  {/* Veículo */}
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
-                      Órgão de comunicação / Veículo <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      name="outlet"
-                      placeholder="Jornal de Angola"
-                      className="w-full h-10 px-3 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    />
-                    {errors.outlet && <p className="text-xs text-red-500 mt-1">{errors.outlet}</p>}
-                  </div>
-
-                  {/* Tipo de Mídia — dropdown multi-select */}
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
-                      Tipo de Mídia <span className="text-red-500">*</span>
-                      <span className="ml-1 text-xs font-normal text-neutral-400">
-                        (pode escolher várias)
-                      </span>
-                    </label>
-                    <input type="hidden" name="mediaType" value={mediaTypeValue} />
-
-                    <div ref={dropdownRef} className="relative">
-                      {/* Botão trigger */}
-                      <button
-                        type="button"
-                        onClick={() => setDropdownOpen((o) => !o)}
-                        className={`w-full h-10 px-3 flex items-center justify-between border rounded-lg text-sm bg-white transition-colors ${
-                          errors.mediaType ? 'border-red-400' : 'border-neutral-300'
-                        } focus:outline-none focus:ring-2 focus:ring-brand-500`}
-                      >
-                        <span
-                          className={
-                            selectedAreas.size === 0 ? 'text-neutral-400' : 'text-neutral-700'
-                          }
-                        >
-                          {selectedAreas.size === 0
-                            ? 'Seleccione as áreas…'
-                            : `${selectedAreas.size} área${selectedAreas.size > 1 ? 's' : ''} seleccionada${selectedAreas.size > 1 ? 's' : ''}`}
-                        </span>
-                        <svg
-                          className={`w-4 h-4 text-neutral-400 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                          viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="m19 9-7 7-7-7" />
-                        </svg>
-                      </button>
-
-                      {/* Painel */}
-                      {dropdownOpen && (
-                        <div className="absolute z-10 mt-1 w-full bg-white border border-neutral-200 rounded-lg shadow-lg max-h-64 overflow-y-auto">
-                          {EDITORIAL_GROUPS.map((group) => (
-                            <div key={group.group}>
-                              <div className="sticky top-0 bg-neutral-50 px-3 py-1.5 border-b border-neutral-100">
-                                <span className="text-xs font-bold text-neutral-400 uppercase tracking-wide">
-                                  {group.group}
-                                </span>
-                              </div>
-                              {group.items.map((item) => (
-                                <label
-                                  key={item.value}
-                                  className="flex items-center gap-3 px-4 py-2 hover:bg-brand-50 cursor-pointer select-none"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    checked={selectedAreas.has(item.value)}
-                                    onChange={() => {
-                                      toggleArea(item.value)
-                                      if (item.value === 'OTHER') setMediaTypeCustom('')
-                                    }}
-                                    className="h-4 w-4 accent-brand-600 flex-shrink-0"
-                                  />
-                                  <span className="text-sm text-neutral-700">{item.label}</span>
-                                </label>
+                  <fieldset>
+                    <legend className="flex items-center gap-2 text-[11px] font-bold text-neutral-400 uppercase tracking-widest mb-3">
+                      <span className="flex-1 h-px bg-neutral-100" />
+                      Veículo & Cobertura
+                      <span className="flex-1 h-px bg-neutral-100" />
+                    </legend>
+                    <div className="space-y-3.5">
+                      <div>
+                        <label className="block text-xs font-semibold text-neutral-600 uppercase tracking-wide mb-1.5">
+                          Órgão / Veículo de comunicação <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          name="outlet"
+                          placeholder="Jornal de Angola"
+                          className={`${inputBase} ${errors.outlet ? inputErr : inputOk}`}
+                        />
+                        {errors.outlet && <ErrMsg msg={errors.outlet} />}
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-neutral-600 uppercase tracking-wide mb-1.5">
+                          Áreas de cobertura <span className="text-red-500">*</span>
+                          <span className="ml-1.5 normal-case font-normal text-neutral-400">
+                            (pode escolher várias)
+                          </span>
+                        </label>
+                        <input type="hidden" name="mediaType" value={mediaTypeValue} />
+                        <div ref={dropdownRef} className="relative">
+                          <button
+                            type="button"
+                            onClick={() => setDropdownOpen((o) => !o)}
+                            className={`w-full h-11 px-3.5 flex items-center justify-between border rounded-xl text-sm bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 ${errors.mediaType ? 'border-red-400 bg-red-50/30' : dropdownOpen ? 'border-brand-500 ring-2 ring-brand-500' : 'border-neutral-200 hover:border-neutral-300'}`}
+                          >
+                            <span
+                              className={
+                                selectedAreas.size === 0
+                                  ? 'text-neutral-400'
+                                  : 'text-neutral-700 font-medium'
+                              }
+                            >
+                              {selectedAreas.size === 0
+                                ? 'Seleccione as áreas...'
+                                : `${selectedAreas.size} área${selectedAreas.size > 1 ? 's' : ''} seleccionada${selectedAreas.size > 1 ? 's' : ''}`}
+                            </span>
+                            <svg
+                              className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth={2}
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="m19 9-7 7-7-7"
+                              />
+                            </svg>
+                          </button>
+                          {dropdownOpen && (
+                            <div className="absolute z-20 mt-1 w-full bg-white border border-neutral-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                              {EDITORIAL_GROUPS.map((group) => (
+                                <div key={group.group}>
+                                  <div className="sticky top-0 bg-neutral-50/95 backdrop-blur-sm px-3 py-2 border-b border-neutral-100">
+                                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
+                                      {group.group}
+                                    </span>
+                                  </div>
+                                  {group.items.map((item) => (
+                                    <label
+                                      key={item.value}
+                                      className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer select-none transition-colors ${selectedAreas.has(item.value) ? 'bg-brand-50' : 'hover:bg-neutral-50'}`}
+                                    >
+                                      <span
+                                        className={`flex-shrink-0 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${selectedAreas.has(item.value) ? 'bg-brand-600 border-brand-600' : 'border-neutral-300'}`}
+                                      >
+                                        {selectedAreas.has(item.value) && (
+                                          <svg
+                                            className="w-2.5 h-2.5 text-white"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth={3}
+                                            viewBox="0 0 24 24"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              d="m4.5 12.75 6 6 9-13.5"
+                                            />
+                                          </svg>
+                                        )}
+                                      </span>
+                                      <input
+                                        type="checkbox"
+                                        checked={selectedAreas.has(item.value)}
+                                        onChange={() => {
+                                          toggleArea(item.value)
+                                          if (item.value === 'OTHER') setMediaTypeCustom('')
+                                        }}
+                                        className="sr-only"
+                                      />
+                                      <span
+                                        className={`text-sm ${selectedAreas.has(item.value) ? 'text-brand-700 font-medium' : 'text-neutral-700'}`}
+                                      >
+                                        {item.label}
+                                      </span>
+                                    </label>
+                                  ))}
+                                </div>
                               ))}
                             </div>
-                          ))}
+                          )}
                         </div>
-                      )}
-                    </div>
-
-                    {/* Campo livre quando “Outra” está seleccionada */}
-                    {selectedAreas.has('OTHER') && (
-                      <input
-                        type="text"
-                        value={mediaTypeCustom}
-                        onChange={(e) => setMediaTypeCustom(e.target.value)}
-                        placeholder="Descreva a sua área de cobertura…"
-                        className="mt-2 w-full h-10 px-3 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                      />
-                    )}
-
-                    {/* Pills das seleccionadas */}
-                    {selectedAreas.size > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        {Array.from(selectedAreas).map((v) => {
-                          const label =
-                            v === 'OTHER'
-                              ? mediaTypeCustom.trim() || 'Outra'
-                              : (ALL_ITEMS.find((i) => i.value === v)?.label ?? v)
-                          return (
-                            <span
-                              key={v}
-                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-100 text-brand-700 text-xs font-medium"
-                            >
-                              {label}
-                              <button
-                                type="button"
-                                onClick={() => toggleArea(v)}
-                                className="hover:text-brand-900"
-                                aria-label={`Remover ${label}`}
-                              >
-                                ×
-                              </button>
-                            </span>
-                          )
-                        })}
+                        {selectedAreas.has('OTHER') && (
+                          <input
+                            type="text"
+                            value={mediaTypeCustom}
+                            onChange={(e) => setMediaTypeCustom(e.target.value)}
+                            placeholder="Descreva a sua área de cobertura..."
+                            className={`mt-2 ${inputBase} ${inputOk}`}
+                          />
+                        )}
+                        {selectedAreas.size > 0 && (
+                          <div className="mt-2.5 flex flex-wrap gap-1.5">
+                            {Array.from(selectedAreas).map((v) => {
+                              const label =
+                                v === 'OTHER'
+                                  ? mediaTypeCustom.trim() || 'Outra'
+                                  : (ALL_ITEMS.find((i) => i.value === v)?.label ?? v)
+                              return (
+                                <span
+                                  key={v}
+                                  className="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-semibold"
+                                >
+                                  {label}
+                                  <button
+                                    type="button"
+                                    onClick={() => toggleArea(v)}
+                                    className="w-4 h-4 rounded-full flex items-center justify-center hover:bg-brand-200 transition-colors"
+                                    aria-label={`Remover ${label}`}
+                                  >
+                                    <svg
+                                      className="w-2.5 h-2.5"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth={3}
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M6 18 18 6M6 6l12 12"
+                                      />
+                                    </svg>
+                                  </button>
+                                </span>
+                              )
+                            })}
+                          </div>
+                        )}
+                        {errors.mediaType && <ErrMsg msg={errors.mediaType} />}
                       </div>
-                    )}
-
-                    {errors.mediaType && (
-                      <p className="text-xs text-red-500 mt-1">{errors.mediaType}</p>
-                    )}
-                  </div>
-
-                  {/* Cargo + Cidade */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-1">
-                        Cargo
-                      </label>
-                      <input
-                        name="jobTitle"
-                        placeholder="Repórter"
-                        className="w-full h-10 px-3 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                      />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-1">
-                        Cidade
-                      </label>
-                      <input
-                        name="city"
-                        placeholder="Luanda"
-                        className="w-full h-10 px-3 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                      />
+                  </fieldset>
+
+                  <fieldset>
+                    <legend className="flex items-center gap-2 text-[11px] font-bold text-neutral-400 uppercase tracking-widest mb-3">
+                      <span className="flex-1 h-px bg-neutral-100" />
+                      Detalhes adicionais
+                      <span className="flex-1 h-px bg-neutral-100" />
+                    </legend>
+                    <div className="space-y-3.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                          <label className="block text-xs font-semibold text-neutral-600 uppercase tracking-wide mb-1.5">
+                            Cargo
+                          </label>
+                          <input
+                            name="jobTitle"
+                            placeholder="Repórter"
+                            className={`${inputBase} ${inputOk}`}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-neutral-600 uppercase tracking-wide mb-1.5">
+                            Cidade
+                          </label>
+                          <input
+                            name="city"
+                            placeholder="Luanda"
+                            className={`${inputBase} ${inputOk}`}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-neutral-600 uppercase tracking-wide mb-1.5">
+                          Mensagem{' '}
+                          <span className="normal-case font-normal text-neutral-400">
+                            (opcional)
+                          </span>
+                        </label>
+                        <textarea
+                          name="message"
+                          rows={3}
+                          placeholder="Apresente-se brevemente, as suas áreas de cobertura, etc."
+                          className="w-full px-3.5 py-2.5 border border-neutral-200 hover:border-neutral-300 rounded-xl text-sm bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 placeholder:text-neutral-400 resize-none"
+                        />
+                      </div>
                     </div>
-                  </div>
+                  </fieldset>
 
-                  {/* Mensagem */}
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
-                      Mensagem (opcional)
-                    </label>
-                    <textarea
-                      name="message"
-                      rows={3}
-                      placeholder="Apresente-se brevemente, as suas áreas de cobertura, etc."
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
-                    />
+                  <div className="pt-1 pb-1">
+                    <button
+                      type="submit"
+                      disabled={state.status === 'submitting'}
+                      className="w-full h-12 bg-gradient-to-r from-brand-700 to-brand-500 text-white font-bold rounded-xl text-sm hover:from-brand-800 hover:to-brand-600 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all shadow-md shadow-brand-200/60"
+                    >
+                      {state.status === 'submitting' ? (
+                        <>
+                          <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                            />
+                          </svg>
+                          A enviar pedido...
+                        </>
+                      ) : (
+                        <>
+                          Submeter pedido de registo
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2.5}
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                            />
+                          </svg>
+                        </>
+                      )}
+                    </button>
+                    <p className="text-center text-xs text-neutral-400 mt-3">
+                      Campos marcados com <span className="text-red-500">*</span> sao obrigatorios
+                    </p>
                   </div>
-
-                  <button
-                    type="submit"
-                    disabled={state.status === 'submitting'}
-                    className="w-full h-11 bg-brand-600 text-white font-semibold rounded-xl text-sm hover:bg-brand-700 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
-                  >
-                    {state.status === 'submitting' && (
-                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                        />
-                      </svg>
-                    )}
-                    Submeter pedido de registo
-                  </button>
                 </form>
               </>
             )}
