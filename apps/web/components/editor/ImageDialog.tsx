@@ -1,5 +1,7 @@
 'use client'
 
+/* eslint-disable @next/next/no-img-element */
+
 import { useState, useRef } from 'react'
 import { Upload, Image as ImageIcon, X } from 'lucide-react'
 import { clsx } from 'clsx'

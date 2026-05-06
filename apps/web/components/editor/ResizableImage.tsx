@@ -1,5 +1,7 @@
 'use client'
 
+/* eslint-disable @next/next/no-img-element */
+
 import { useState, useRef, useEffect } from 'react'
 import { AlignLeft, AlignCenter, AlignRight, Maximize2, X } from 'lucide-react'
 import { clsx } from 'clsx'
