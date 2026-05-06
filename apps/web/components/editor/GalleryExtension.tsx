@@ -1,6 +1,6 @@
 'use client'
 
-import { Node, mergeAttributes, type DOMOutputSpec } from '@tiptap/core'
+import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import GalleryNode from './GalleryNode'
 import type { GalleryImage, GalleryLayout, GalleryPreset } from './editorTypes'
@@ -101,7 +101,7 @@ export const GalleryExtension = Node.create({
     const preset = (HTMLAttributes['data-preset'] ?? 'uniform') as GalleryPreset
     const images = parseImages((HTMLAttributes['data-images'] as string | undefined) ?? '[]')
 
-    const items: DOMOutputSpec[] = images.map((image, index) => [
+    const items = images.map((image, index) => [
       'div',
       { style: getItemStyle(layout, preset, index) },
       ['img', { src: image.src, alt: 'Imagem da galeria', style: getImageStyle(image) }],

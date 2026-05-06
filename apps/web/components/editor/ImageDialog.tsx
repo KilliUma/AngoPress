@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Upload, Image as ImageIcon, Link as LinkIcon, X } from 'lucide-react'
+import { Upload, Image as ImageIcon, X } from 'lucide-react'
 import { clsx } from 'clsx'
 
 interface ImageDialogProps {

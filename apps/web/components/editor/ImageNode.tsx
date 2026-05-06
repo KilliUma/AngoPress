@@ -1,21 +1,23 @@
 'use client'
 
-import { NodeViewWrapper, NodeViewContent } from '@tiptap/react'
+import { NodeViewWrapper } from '@tiptap/react'
 import { ResizableImage } from './ResizableImage'
 import { useCallback } from 'react'
+import type { NodeViewProps } from '@tiptap/react'
 
-interface ImageNodeProps {
-  node: any
-  updateAttributes: (attrs: any) => void
-  selected: boolean
-  editor: any
+interface ImageAttrs {
+  src: string
+  alt?: string | null
+  title?: string | null
 }
 
-export default function ImageNode({ node, updateAttributes, selected, editor }: ImageNodeProps) {
-  const { src, alt, title } = node.attrs
+type ImageNodeProps = NodeViewProps
+
+export default function ImageNode({ node, updateAttributes, editor }: ImageNodeProps) {
+  const { src, title } = node.attrs as ImageAttrs
 
   // Parse style from title attribute (contains CSS styles)
-  const parseAlign = (styleStr: string): 'left' | 'center' | 'right' => {
+  const parseAlign = (styleStr?: string | null): 'left' | 'center' | 'right' => {
     if (!styleStr) return 'center'
     if (styleStr.includes('margin-right: auto;') && !styleStr.includes('margin-left: auto;'))
       return 'left'
@@ -26,7 +28,7 @@ export default function ImageNode({ node, updateAttributes, selected, editor }: 
     return 'center'
   }
 
-  const parseWidth = (styleStr: string): number => {
+  const parseWidth = (styleStr?: string | null): number => {
     if (!styleStr) return 100
     const match = styleStr.match(/width:\s*(\d+)%/)
     return match ? parseInt(match[1]) : 100

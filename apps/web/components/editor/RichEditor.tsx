@@ -92,7 +92,6 @@ export default function RichEditor({ value, onChange, placeholder, className }: 
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
   const [varsOpen, setVarsOpen] = useState(false)
   const varsRef = useRef<HTMLDivElement>(null)
-  const imageInputRef = useRef<HTMLInputElement>(null)
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -186,21 +185,6 @@ export default function RichEditor({ value, onChange, placeholder, className }: 
     setUrlInput(currentHref)
   }, [editor])
 
-  const insertImageFromFile = useCallback(
-    (file: File) => {
-      if (!editor || !file.type.startsWith('image/')) return
-
-      const reader = new FileReader()
-      reader.onload = () => {
-        const result = reader.result
-        if (typeof result !== 'string') return
-        editor.chain().focus().setImage({ src: result }).run()
-      }
-      reader.readAsDataURL(file)
-    },
-    [editor],
-  )
-
   const handleInsertImage = useCallback(
     (src: string, align: 'left' | 'center' | 'right' = 'center', width: number = 100) => {
       if (!editor) return
@@ -237,7 +221,7 @@ export default function RichEditor({ value, onChange, placeholder, className }: 
 
       editor.chain().focus().createParagraphNear().run()
     },
-    [editor, handleInsertImage],
+    [editor],
   )
 
   const applyUrl = useCallback(() => {

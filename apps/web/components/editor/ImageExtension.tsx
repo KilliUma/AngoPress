@@ -4,6 +4,20 @@ import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import ImageNode from './ImageNode'
 
+interface ImageCommandOptions {
+  src: string
+  alt?: string | null
+  title?: string | null
+}
+
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    image: {
+      setImage: (options: ImageCommandOptions) => ReturnType
+    }
+  }
+}
+
 export const ImageExtension = Node.create({
   name: 'image',
 
@@ -66,7 +80,7 @@ export const ImageExtension = Node.create({
   addCommands() {
     return {
       setImage:
-        (options: any) =>
+        (options: ImageCommandOptions) =>
         ({ commands }) => {
           return commands.insertContent({
             type: this.name,

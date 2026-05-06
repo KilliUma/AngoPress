@@ -1,23 +1,17 @@
 'use client'
 
 import { NodeViewWrapper } from '@tiptap/react'
+import type { NodeViewProps } from '@tiptap/react'
 import { Images, LayoutGrid, Rows3 } from 'lucide-react'
 import { useMemo } from 'react'
 import { clsx } from 'clsx'
 import { ResizableImage } from './ResizableImage'
 import type { GalleryImage, GalleryLayout, GalleryPreset } from './editorTypes'
 
-interface GalleryNodeProps {
-  node: {
-    attrs: {
-      images: string
-      layout: GalleryLayout
-      preset: GalleryPreset
-    }
-  }
-  selected: boolean
-  updateAttributes: (attrs: Record<string, unknown>) => void
-  deleteNode: () => void
+interface GalleryNodeAttrs {
+  images: string
+  layout: GalleryLayout
+  preset: GalleryPreset
 }
 
 const parseImages = (rawImages: string): GalleryImage[] => {
@@ -58,8 +52,9 @@ export default function GalleryNode({
   selected,
   updateAttributes,
   deleteNode,
-}: GalleryNodeProps) {
-  const images = useMemo(() => parseImages(node.attrs.images), [node.attrs.images])
+}: NodeViewProps) {
+  const attrs = node.attrs as GalleryNodeAttrs
+  const images = useMemo(() => parseImages(attrs.images), [attrs.images])
 
   const updateImage = (imageId: string, partial: Partial<GalleryImage>) => {
     const nextImages = images.map((image) =>
@@ -84,21 +79,21 @@ export default function GalleryNode({
       <section
         className={clsx(
           'rounded-[28px] border p-4 md:p-6 transition-shadow',
-          getPresetClassName(node.attrs.preset),
+          getPresetClassName(attrs.preset),
           selected ? 'shadow-[0_0_0_3px_rgba(152,11,44,0.18)]' : 'shadow-sm',
         )}
       >
         <div className="mb-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            {node.attrs.layout === 'stack' ? (
+            {attrs.layout === 'stack' ? (
               <Rows3 className="h-4 w-4" />
             ) : (
               <LayoutGrid className="h-4 w-4" />
             )}
             <p className="text-xs font-semibold uppercase tracking-[0.22em] opacity-70">
-              {node.attrs.preset === 'hero'
+              {attrs.preset === 'hero'
                 ? 'Hero Gallery'
-                : node.attrs.preset === 'editorial'
+                : attrs.preset === 'editorial'
                   ? 'Editorial Gallery'
                   : 'Galeria'}
             </p>
@@ -112,14 +107,11 @@ export default function GalleryNode({
           </button>
         </div>
 
-        <div className={clsx('grid gap-5', getGridClassName(node.attrs.layout))}>
+        <div className={clsx('grid gap-5', getGridClassName(attrs.layout))}>
           {images.map((image, index) => (
             <div
               key={image.id}
-              className={clsx(
-                'min-w-0',
-                getItemClassName(node.attrs.preset, node.attrs.layout, index),
-              )}
+              className={clsx('min-w-0', getItemClassName(attrs.preset, attrs.layout, index))}
             >
               <ResizableImage
                 src={image.src}
