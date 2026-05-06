@@ -174,7 +174,7 @@ export default async function NoticiasPage({ searchParams }: Props) {
         <div className="absolute inset-0 bg-gradient-to-t from-brand-950/80 via-transparent to-transparent" />
 
         {/* Breadcrumb */}
-        <div className="absolute top-[76px] inset-x-0 px-4 sm:px-6">
+        <div className="absolute top-[110px] inset-x-0 px-4 sm:px-6">
           <div className="max-w-6xl mx-auto">
             <nav className="flex items-center gap-1.5 text-xs text-white/70">
               <Link href="/" className="hover:text-white transition-colors">

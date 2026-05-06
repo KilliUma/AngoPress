@@ -58,27 +58,62 @@ async function fetchPublicPressReleases(
   limit = 12,
 ): Promise<PublicPressReleasesResponse> {
   const base = resolveApiBaseUrl()
-  const paths = [
-    `/api/v1/press-releases/public?page=${page}&limit=${limit}`,
-    `/api/press-releases/public?page=${page}&limit=${limit}`,
+
+  // Endpoints em ordem de preferência
+  const endpoints = [
+    // API backend (NestJS)
+    { path: `/api/v1/press-releases/public?page=${page}&limit=${limit}`, label: 'NestJS v1' },
+    { path: `/api/press-releases/public?page=${page}&limit=${limit}`, label: 'NestJS default' },
+    // Next.js middleware/route handlers em apps/web
+    { path: `/api/press-releases/public?page=${page}&limit=${limit}`, label: 'Next.js route' },
+    // Fallback: pega apenas os destacados (6 primeiros)
+    { path: `/api/press-releases/public/featured`, label: 'Featured fallback', isFeatured: true },
   ]
 
-  for (const path of paths) {
+  for (const endpoint of endpoints) {
     try {
-      const res = await fetch(`${base}${path}`, {
-        cache: 'force-cache',
-        next: { revalidate: 180 },
+      const url = `${base}${endpoint.path}`
+      const res = await fetch(url, {
+        cache: endpoint.isFeatured ? 'force-cache' : 'force-cache',
+        next: { revalidate: endpoint.isFeatured ? 300 : 180 },
       })
 
-      if (!res.ok) continue
+      if (!res.ok) {
+        console.warn(`[Press Releases] Endpoint ${endpoint.label} failed with status ${res.status}`)
+        continue
+      }
 
-      const json = (await res.json()) as PublicPressReleasesResponse
-      if (Array.isArray(json.data) && json.meta) return json
-    } catch {
-      // Tenta o próximo endpoint candidato.
+      const json = (await res.json()) as any
+
+      // Se é resposta de featured (array direto), converte para formato esperado
+      if (endpoint.isFeatured && Array.isArray(json)) {
+        return {
+          data: json.slice(0, limit),
+          meta: {
+            total: json.length,
+            page: 1,
+            limit,
+            totalPages: 1,
+          },
+        }
+      }
+
+      // Se é resposta padrão com data/meta
+      if (Array.isArray(json.data) && json.meta) {
+        console.log(`[Press Releases] Loaded from ${endpoint.label}: ${json.data.length} items`)
+        return json
+      }
+
+      console.warn(`[Press Releases] ${endpoint.label} returned invalid format`)
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error)
+      console.warn(`[Press Releases] ${endpoint.label} error: ${errorMsg}`)
+      continue
     }
   }
 
+  // Se nenhum endpoint funcionou, retorna vazio (será mostrado mensagem de "nenhum publicado")
+  console.warn('[Press Releases] All endpoints failed. No press releases available.')
   return {
     data: [],
     meta: { total: 0, page, limit, totalPages: 1 },
@@ -152,7 +187,7 @@ export default async function PressReleasesPage({ searchParams }: Props) {
         <div className="pointer-events-none absolute inset-0 grid-bg opacity-10" />
         <div className="absolute inset-0 bg-gradient-to-t from-brand-950/80 via-transparent to-transparent" />
 
-        <div className="absolute inset-x-0 top-[76px] px-4 sm:px-6">
+        <div className="absolute inset-x-0 top-[110px] px-4 sm:px-6">
           <div className="mx-auto max-w-6xl">
             <nav className="flex items-center gap-1.5 text-xs text-white/70">
               <Link href="/" className="transition-colors hover:text-white">

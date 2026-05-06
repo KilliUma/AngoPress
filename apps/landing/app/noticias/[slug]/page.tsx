@@ -378,7 +378,7 @@ export default async function NewsArticlePage({ params }: Props) {
         <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/70 to-transparent" />
 
         {/* Breadcrumb */}
-        <div className="absolute top-4 inset-x-0 px-4 sm:px-6">
+        <div className="absolute top-[110px] inset-x-0 px-4 sm:px-6">
           <div className="max-w-6xl mx-auto">
             <nav className="flex items-center gap-1.5 text-xs text-white/70">
               <Link href="/" className="hover:text-white transition-colors">

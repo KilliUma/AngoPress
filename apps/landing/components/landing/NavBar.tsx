@@ -35,7 +35,7 @@ export function NavBar({ transparentUntil = 12 }: { transparentUntil?: number })
         <div
           className={`absolute inset-0 transition-all duration-300 ${
             scrolled
-              ? 'bg-white/98 backdrop-blur-2xl border-b border-gray-200 shadow-md shadow-gray-100/80'
+              ? 'bg-white backdrop-blur-2xl border-b border-gray-200 shadow-md shadow-gray-100/80'
               : 'bg-transparent border-b border-white/10'
           }`}
         />
