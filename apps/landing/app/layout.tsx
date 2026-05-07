@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
+import { ScrollReveal } from '@/components/ScrollReveal'
 
 const inter = localFont({
   src: './fonts/inter-variable.woff2',

@@ -16,6 +16,7 @@ type ApiError = { response?: { data?: { message?: string } } }
 export default function LoginPage() {
   const { mutate: login, isPending, isError, error } = useLogin()
   const [showPassword, setShowPassword] = useState(false)
+  const [isRedirecting, setIsRedirecting] = useState(false)
   const {
     register,
     handleSubmit,
@@ -24,10 +25,26 @@ export default function LoginPage() {
 
   const serverMessage = (error as ApiError)?.response?.data?.message
 
-  const onSubmit = (data: LoginFormData) => login(data)
+  const onSubmit = (data: LoginFormData) => {
+    setIsRedirecting(true)
+    login(data, {
+      onError: () => setIsRedirecting(false),
+    })
+  }
+
+  const isEnteringSystem = isPending || isRedirecting
 
   return (
-    <div className="w-full">
+    <div className="relative w-full">
+      {isEnteringSystem && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-white/80 backdrop-blur-[2px]">
+          <div className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white px-4 py-3 shadow-sm">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-neutral-300 border-t-brand-600" />
+            <p className="text-sm font-medium text-neutral-700">A entrar no sistema...</p>
+          </div>
+        </div>
+      )}
+
       <div className="mb-8">
         <h2 className="text-2xl tracking-tight text-neutral-900 title-strong">
           Bem-vindo de volta
@@ -71,7 +88,7 @@ export default function LoginPage() {
                 pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Email inválido' },
               })}
               className="block w-full rounded-lg border border-neutral-200 bg-white py-2.5 pl-10 pr-3 text-sm text-neutral-900 shadow-sm placeholder:text-neutral-400 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 disabled:bg-neutral-50 transition-colors"
-              disabled={isPending}
+              disabled={isEnteringSystem}
             />
           </div>
           {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
@@ -95,7 +112,7 @@ export default function LoginPage() {
               placeholder="A sua password"
               {...register('password', { required: 'Password obrigatória' })}
               className="block w-full rounded-lg border border-neutral-200 bg-white py-2.5 pl-10 pr-11 text-sm text-neutral-900 shadow-sm placeholder:text-neutral-400 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 disabled:bg-neutral-50 transition-colors"
-              disabled={isPending}
+              disabled={isEnteringSystem}
             />
             <button
               type="button"
@@ -103,7 +120,7 @@ export default function LoginPage() {
               className="absolute inset-y-0 right-3 flex items-center text-neutral-400 transition-colors hover:text-neutral-600 focus:outline-none focus:text-brand-600"
               aria-label={showPassword ? 'Ocultar password' : 'Mostrar password'}
               aria-pressed={showPassword}
-              disabled={isPending}
+              disabled={isEnteringSystem}
             >
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
@@ -124,10 +141,10 @@ export default function LoginPage() {
 
         <button
           type="submit"
-          disabled={isPending}
+          disabled={isEnteringSystem}
           className="w-full rounded-xl bg-brand-600 px-4 py-3 text-sm font-bold text-white shadow-md shadow-brand-200 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 transition-colors"
         >
-          {isPending ? 'A entrar…' : 'Entrar na conta'}
+          {isEnteringSystem ? 'A entrar…' : 'Entrar na conta'}
         </button>
       </form>
     </div>
