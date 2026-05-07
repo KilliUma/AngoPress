@@ -74,6 +74,7 @@ const EDGES: [number, number][] = [
 
 const JOURNALIST_NODE_INDEXES = [1, 4, 9, 13, 18, 21]
 const GROUP_NODE_INDEXES = [2, 6, 11, 16, 22]
+const AVATAR_NODE_INDEXES = new Set([...JOURNALIST_NODE_INDEXES, ...GROUP_NODE_INDEXES])
 
 export function NetworkBackground() {
   const svgRef = useRef<SVGSVGElement>(null)
@@ -161,48 +162,51 @@ export function NetworkBackground() {
           />
         ))}
 
-        {NODES.map((n, i) => (
-          <g key={i}>
-            <circle
-              className="net-ring"
-              cx={n.x}
-              cy={n.y}
-              r={8}
-              fill="none"
-              stroke="var(--net-dot-core)"
-              strokeWidth="1.2"
-              style={{ animationDelay: `${(i * 0.41) % 3.5}s` }}
-            />
-            <circle cx={n.x} cy={n.y} r={5} fill="var(--net-dot-outer)" />
-            <circle
-              className="net-node"
-              cx={n.x}
-              cy={n.y}
-              r={2.5}
-              fill="var(--net-dot-core)"
-              style={{ animationDelay: `${(i * 0.23) % 3.5}s` }}
-            />
-          </g>
-        ))}
+        {NODES.map((n, i) => {
+          if (AVATAR_NODE_INDEXES.has(i)) return null
+          return (
+            <g key={i}>
+              <circle
+                className="net-ring"
+                cx={n.x}
+                cy={n.y}
+                r={8}
+                fill="none"
+                stroke="var(--net-dot-core)"
+                strokeWidth="1.2"
+                style={{ animationDelay: `${(i * 0.41) % 3.5}s` }}
+              />
+              <circle cx={n.x} cy={n.y} r={5} fill="var(--net-dot-outer)" />
+              <circle
+                className="net-node"
+                cx={n.x}
+                cy={n.y}
+                r={2.5}
+                fill="var(--net-dot-core)"
+                style={{ animationDelay: `${(i * 0.23) % 3.5}s` }}
+              />
+            </g>
+          )
+        })}
 
         {JOURNALIST_NODE_INDEXES.map((nodeIndex, i) => {
           const n = NODES[nodeIndex]
           return (
             <g key={`journalist-${nodeIndex}`} transform={`translate(${n.x}, ${n.y})`}>
               <circle
+                className="net-ring"
                 r={9.5}
-                fill="rgb(255 255 255 / 0.92)"
+                fill="none"
                 stroke="var(--net-dot-core)"
                 strokeWidth="1.4"
                 style={{ animationDelay: `${(i * 0.31) % 3.5}s` }}
-                className="net-ring"
               />
-              <circle cx="0" cy="-2.4" r="2.1" fill="var(--net-avatar, #8A0018)" opacity="0.95" />
+              <circle cx="0" cy="-3.1" r="2.7" fill="var(--net-avatar, #8A0018)" opacity="0.95" />
               <path
-                d="M -4.2 4.4 C -3.1 1.6 3.1 1.6 4.2 4.4"
+                d="M -5.5 5.7 C -4.0 2.1 4.0 2.1 5.5 5.7"
                 fill="none"
                 stroke="var(--net-avatar, #8A0018)"
-                strokeWidth="1.6"
+                strokeWidth="2.0"
                 strokeLinecap="round"
                 opacity="0.95"
               />
@@ -215,41 +219,35 @@ export function NetworkBackground() {
           return (
             <g key={`group-${nodeIndex}`} transform={`translate(${n.x}, ${n.y})`}>
               <circle
+                className="net-ring"
                 r={10.5}
-                fill="rgb(255 255 255 / 0.94)"
+                fill="none"
                 stroke="var(--net-dot-core)"
                 strokeWidth="1.4"
                 style={{ animationDelay: `${(i * 0.37) % 3.5}s` }}
-                className="net-ring"
               />
               <circle
-                cx="-2.8"
-                cy="-2.2"
-                r="1.55"
+                cx="-3.6"
+                cy="-2.9"
+                r="2.0"
                 fill="var(--net-avatar, #8A0018)"
                 opacity="0.92"
               />
-              <circle
-                cx="2.8"
-                cy="-2.2"
-                r="1.55"
-                fill="var(--net-avatar, #8A0018)"
-                opacity="0.92"
-              />
-              <circle cx="0" cy="-0.8" r="1.75" fill="var(--net-avatar, #8A0018)" opacity="0.96" />
+              <circle cx="3.6" cy="-2.9" r="2.0" fill="var(--net-avatar, #8A0018)" opacity="0.92" />
+              <circle cx="0" cy="-1.0" r="2.3" fill="var(--net-avatar, #8A0018)" opacity="0.96" />
               <path
-                d="M -6 4.6 C -4.7 2.2 -1.3 2.2 0 4.6"
+                d="M -7.8 6.0 C -6.1 2.9 -1.7 2.9 0 6.0"
                 fill="none"
                 stroke="var(--net-avatar, #8A0018)"
-                strokeWidth="1.35"
+                strokeWidth="1.7"
                 strokeLinecap="round"
                 opacity="0.9"
               />
               <path
-                d="M 0 4.6 C 1.3 2.2 4.7 2.2 6 4.6"
+                d="M 0 6.0 C 1.7 2.9 6.1 2.9 7.8 6.0"
                 fill="none"
                 stroke="var(--net-avatar, #8A0018)"
-                strokeWidth="1.35"
+                strokeWidth="1.7"
                 strokeLinecap="round"
                 opacity="0.9"
               />

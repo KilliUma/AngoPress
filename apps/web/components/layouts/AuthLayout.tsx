@@ -97,9 +97,9 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
   } as CSSProperties
 
   return (
-    <div className="min-h-screen flex">
+    <div className="flex min-h-screen">
       {/* ── Painel esquerdo (brand) ── */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand-600 to-brand-900 flex-col justify-between p-12 relative overflow-hidden">
+      <div className="relative flex-col hidden gap-6 p-12 overflow-hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand-600 to-brand-900">
         {/* Rede animada como fundo decorativo */}
         <div className="absolute inset-0 opacity-40" style={NETWORK_STYLE}>
           <NetworkBackground />
@@ -116,17 +116,17 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             alt="AngoPress"
             width={240}
             height={64}
-            className="w-auto object-contain"
-            style={{ height: '10rem' }}
+            className="object-contain w-auto"
+            style={{ height: '5rem' }}
             priority
           />
         </Link>
 
         {/* Conteúdo central */}
-        <div className="relative z-10 space-y-10">
+        <div className="relative z-10 space-y-8">
           {/* Headline */}
-          <div className="space-y-4">
-            <p className="inline-flex items-center gap-2 text-xs font-semibold text-white/70 uppercase tracking-widest">
+          <div className="mb-10 space-y-4">
+            <p className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-white/70">
               <span className="w-4 h-px bg-white/40" />
               Plataforma nº 1 em Angola
             </p>
@@ -135,7 +135,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
               <br />
               <span className="text-brand-300">aos jornalistas certos</span>
             </h2>
-            <p className="text-white/75 text-base leading-relaxed max-w-sm">
+            <p className="max-w-md mb-10 text-base leading-relaxed text-white/75">
               Crie, segmente e envie press releases para toda a imprensa angolana. Rastreie
               resultados em tempo real.
             </p>
@@ -145,11 +145,11 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
           <ul className="space-y-4">
             {FEATURES.map((f) => (
               <li key={f.title} className="flex items-start gap-4">
-                <span className="flex-shrink-0 w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-brand-200">
+                <span className="flex items-center justify-center flex-shrink-0 w-10 h-10 border rounded-xl bg-white/10 border-white/15 text-brand-200">
                   {f.icon}
                 </span>
                 <div>
-                  <p className="font-display text-sm font-semibold text-white">{f.title}</p>
+                  <p className="text-sm font-semibold text-white font-display">{f.title}</p>
                   <p className="text-xs text-white/65 leading-relaxed mt-0.5">{f.description}</p>
                 </div>
               </li>
@@ -158,15 +158,15 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Rodapé */}
-        <div className="relative z-10 flex items-center justify-between">
+        <div className="relative z-10 flex items-center justify-between mt-auto">
           <p className="text-xs text-white/40">
             © {new Date().getFullYear()} AngoPress. Todos os direitos reservados.
           </p>
           <div className="flex gap-4 text-xs text-white/50">
-            <Link href="/termos" className="hover:text-white/80 transition-colors">
+            <Link href="/termos" className="transition-colors hover:text-white/80">
               Termos
             </Link>
-            <Link href="/privacidade" className="hover:text-white/80 transition-colors">
+            <Link href="/privacidade" className="transition-colors hover:text-white/80">
               Privacidade
             </Link>
           </div>
@@ -174,15 +174,15 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* ── Painel direito (formulário) ── */}
-      <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-12 bg-neutral-50">
-        <div className="lg:hidden mb-8 text-center">
+      <div className="flex flex-col items-center justify-center flex-1 p-6 sm:p-12 bg-neutral-50">
+        <div className="mb-8 text-center lg:hidden">
           <Link href="/" className="inline-flex items-center" aria-label="Voltar ao início">
             <Image
               src="/logo.png"
               alt="AngoPress"
               width={210}
               height={56}
-              className="h-10 w-auto object-contain"
+              className="object-contain w-auto h-10"
               priority
             />
           </Link>
