@@ -1,4 +1,3 @@
-import { DashboardLayout } from '@/components/layouts/DashboardLayout'
 import type { LegalDocument } from '@/lib/cms'
 import type { LucideIcon } from 'lucide-react'
 import { Sparkles } from 'lucide-react'
@@ -20,8 +19,37 @@ export function LegalDocumentPage({
   contactPrefix,
 }: LegalDocumentPageProps) {
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
+    <div className="min-h-screen bg-neutral-50">
+      {/* Navbar pública */}
+      <header className="sticky top-0 z-30 border-b border-neutral-200 bg-white/80 backdrop-blur-md">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+          <Link href="/" className="text-base font-bold text-brand-700 tracking-tight">
+            AngoPress
+          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/termos"
+              className="text-sm text-neutral-500 hover:text-brand-600 transition-colors"
+            >
+              Termos de Uso
+            </Link>
+            <Link
+              href="/privacidade"
+              className="text-sm text-neutral-500 hover:text-brand-600 transition-colors"
+            >
+              Privacidade
+            </Link>
+            <Link
+              href="/login"
+              className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 transition-colors"
+            >
+              Entrar
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-5xl px-4 py-8 space-y-6">
         <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-brand-800 via-brand-700 to-brand-600 p-6 text-white shadow-xl shadow-brand-900/10 sm:p-8">
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
@@ -119,6 +147,6 @@ export function LegalDocumentPage({
           </article>
         </div>
       </div>
-    </DashboardLayout>
+    </div>
   )
 }
