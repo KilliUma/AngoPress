@@ -37,7 +37,7 @@ export default function ForgotPasswordPage() {
               />
             </svg>
           </div>
-          <h2 className="text-2xl font-extrabold text-neutral-900 mb-2">Verifique o seu e-mail</h2>
+          <h2 className="text-2xl text-neutral-900 mb-2 title-strong">Verifique o seu e-mail</h2>
           <p className="text-sm text-neutral-500 mb-8 leading-relaxed">
             Se o endereço existir na nossa base de dados, receberá as instruções de recuperação em
             breve.
@@ -65,7 +65,7 @@ export default function ForgotPasswordPage() {
       ) : (
         <>
           <div className="mb-8">
-            <h2 className="text-2xl font-extrabold text-neutral-900 tracking-tight">
+            <h2 className="text-2xl tracking-tight text-neutral-900 title-strong">
               Recuperar password
             </h2>
             <p className="mt-1.5 text-sm text-neutral-500">

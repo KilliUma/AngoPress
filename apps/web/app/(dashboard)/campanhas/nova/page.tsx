@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ArrowRight, Send, Calendar, Check } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Send, Calendar, Check, Sparkles } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { Card } from '@/components/ui/Card'
 import { useCreateCampaign } from '@/hooks/useCampaigns'
@@ -68,51 +68,74 @@ export default function NovaCampanhaPage() {
     setSelectedLists((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      {/* Header */}
-      <div>
-        <button
-          onClick={goBack}
-          className="flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-800 mb-4 transition-colors"
-        >
-          <ArrowLeft size={16} /> Voltar
-        </button>
-        <h1 className="text-2xl font-bold text-neutral-900">Nova Campanha</h1>
-        <p className="text-neutral-500 mt-1">Crie e configure o disparo de um press release.</p>
-      </div>
-
-      {/* Stepper */}
-      <div className="flex items-center gap-0">
-        {STEPS.map((s, i) => (
-          <div key={s.id} className="flex items-center flex-1 last:flex-none">
-            <div className="flex items-center gap-2">
-              <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
-                  s.id === step
-                    ? 'bg-brand-600 text-white'
-                    : currentIndex > i
-                      ? 'bg-emerald-500 text-white'
-                      : 'bg-neutral-100 text-neutral-400'
-                }`}
+    <div className="max-w-6xl mx-auto space-y-6">
+      {/* ── Banner de topo ── */}
+      <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-brand-800 via-brand-700 to-brand-600 p-6 text-white shadow-xl shadow-brand-900/10 sm:p-8">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute w-56 h-56 rounded-full -top-16 -right-16 bg-white/10 blur-3xl" />
+          <div className="absolute bottom-0 w-64 h-32 rounded-full left-1/4 bg-brand-950/25 blur-2xl" />
+          <div
+            className="absolute inset-0 opacity-[0.06]"
+            style={{
+              backgroundImage:
+                'linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)',
+              backgroundSize: '44px 44px',
+            }}
+          />
+        </div>
+        <div className="relative space-y-4">
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-2">
+              <button
+                onClick={goBack}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-100/80 hover:text-white transition-colors mb-1"
               >
-                {currentIndex > i ? <Check size={14} /> : i + 1}
-              </div>
-              <span
-                className={`text-sm font-medium ${
-                  s.id === step ? 'text-neutral-900' : 'text-neutral-400'
-                }`}
-              >
-                {s.label}
+                <ArrowLeft size={13} /> Campanhas
+              </button>
+              <span className="flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand-100 w-fit">
+                <Sparkles size={13} />
+                Disparo de email
               </span>
+              <h1 className="text-2xl tracking-tight sm:text-3xl title-strong">Nova Campanha</h1>
+              <p className="text-sm text-brand-100/80">
+                Configure o disparo de um press release para jornalistas.
+              </p>
             </div>
-            {i < STEPS.length - 1 && (
-              <div
-                className={`flex-1 h-px mx-3 ${currentIndex > i ? 'bg-emerald-300' : 'bg-neutral-200'}`}
-              />
-            )}
           </div>
-        ))}
-      </div>
+          {/* Stepper integrado no banner */}
+          <div className="flex items-center gap-0 pt-2">
+            {STEPS.map((s, i) => (
+              <div key={s.id} className="flex items-center flex-1 last:flex-none">
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+                      s.id === step
+                        ? 'bg-white text-brand-700'
+                        : currentIndex > i
+                          ? 'bg-emerald-400 text-white'
+                          : 'bg-white/20 text-white/60'
+                    }`}
+                  >
+                    {currentIndex > i ? <Check size={14} /> : i + 1}
+                  </div>
+                  <span
+                    className={`text-sm font-medium ${
+                      s.id === step ? 'text-white' : 'text-brand-100/60'
+                    }`}
+                  >
+                    {s.label}
+                  </span>
+                </div>
+                {i < STEPS.length - 1 && (
+                  <div
+                    className={`flex-1 h-px mx-3 ${currentIndex > i ? 'bg-emerald-400/50' : 'bg-white/20'}`}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <form onSubmit={onSubmit}>
         {/* Passo 1: Conteúdo */}
@@ -124,10 +147,10 @@ export default function NovaCampanhaPage() {
               </label>
               <input
                 {...register('name', { required: 'Nome obrigatório' })}
-                className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                className="w-full px-3 py-2 text-sm border rounded-lg border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 placeholder="Ex: Lançamento Produto Q1 2026"
               />
-              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+              {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
             </div>
 
             <div>
@@ -136,11 +159,11 @@ export default function NovaCampanhaPage() {
               </label>
               <input
                 {...register('subject', { required: 'Assunto obrigatório' })}
-                className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                className="w-full px-3 py-2 text-sm border rounded-lg border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 placeholder="Ex: [Press Release] Lançamento do novo produto"
               />
               {errors.subject && (
-                <p className="text-red-500 text-xs mt-1">{errors.subject.message}</p>
+                <p className="mt-1 text-xs text-red-500">{errors.subject.message}</p>
               )}
             </div>
 
@@ -150,7 +173,7 @@ export default function NovaCampanhaPage() {
               </label>
               <select
                 {...register('pressReleaseId', { required: 'Seleccione um press release' })}
-                className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 bg-white"
+                className="w-full px-3 py-2 text-sm bg-white border rounded-lg border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
               >
                 <option value="">-- Seleccionar press release --</option>
                 {pressReleases.map((pr) => (
@@ -160,10 +183,10 @@ export default function NovaCampanhaPage() {
                 ))}
               </select>
               {errors.pressReleaseId && (
-                <p className="text-red-500 text-xs mt-1">{errors.pressReleaseId.message}</p>
+                <p className="mt-1 text-xs text-red-500">{errors.pressReleaseId.message}</p>
               )}
               {pressReleases.length === 0 && (
-                <p className="text-amber-600 text-xs mt-1">
+                <p className="mt-1 text-xs text-amber-600">
                   Não tem press releases. Crie um primeiro.
                 </p>
               )}
@@ -174,7 +197,7 @@ export default function NovaCampanhaPage() {
                 type="button"
                 onClick={goNext}
                 disabled={!watch('name') || !watch('subject') || !watch('pressReleaseId')}
-                className="inline-flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-brand-600 hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Seguinte <ArrowRight size={16} />
               </button>
@@ -186,13 +209,13 @@ export default function NovaCampanhaPage() {
         {step === 'destinatarios' && (
           <Card className="space-y-5">
             <div>
-              <p className="text-sm font-medium text-neutral-700 mb-3">
+              <p className="mb-3 text-sm font-medium text-neutral-700">
                 Seleccione as listas de mailing <span className="text-red-500">*</span>
               </p>
               {mailingLists.length === 0 ? (
-                <p className="text-neutral-400 text-sm text-center py-6">
+                <p className="py-6 text-sm text-center text-neutral-400">
                   Não tem listas de mailing. Crie uma em{' '}
-                  <a href="/listas" className="text-brand-600 underline">
+                  <a href="/listas" className="underline text-brand-600">
                     Listas de Mailing
                   </a>
                   .
@@ -232,7 +255,7 @@ export default function NovaCampanhaPage() {
               <button
                 type="button"
                 onClick={goBack}
-                className="inline-flex items-center gap-2 border border-neutral-300 text-neutral-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-neutral-50 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border rounded-lg border-neutral-300 text-neutral-700 hover:bg-neutral-50"
               >
                 <ArrowLeft size={16} /> Anterior
               </button>
@@ -240,7 +263,7 @@ export default function NovaCampanhaPage() {
                 type="button"
                 onClick={goNext}
                 disabled={selectedLists.length === 0}
-                className="inline-flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-brand-600 hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Seguinte <ArrowRight size={16} />
               </button>
@@ -273,7 +296,7 @@ export default function NovaCampanhaPage() {
                   className={scheduleMode === 'now' ? 'text-brand-600' : 'text-neutral-400'}
                 />
                 <span className="text-sm font-medium text-neutral-800">Enviar agora</span>
-                <span className="text-xs text-neutral-500 text-center">
+                <span className="text-xs text-center text-neutral-500">
                   O email é enviado imediatamente
                 </span>
               </label>
@@ -297,7 +320,7 @@ export default function NovaCampanhaPage() {
                   className={scheduleMode === 'later' ? 'text-brand-600' : 'text-neutral-400'}
                 />
                 <span className="text-sm font-medium text-neutral-800">Agendar</span>
-                <span className="text-xs text-neutral-500 text-center">
+                <span className="text-xs text-center text-neutral-500">
                   Definir data e hora de envio
                 </span>
               </label>
@@ -311,14 +334,14 @@ export default function NovaCampanhaPage() {
                 <input
                   type="datetime-local"
                   {...register('scheduledAt')}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                  className="w-full px-3 py-2 text-sm border rounded-lg border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
               </div>
             )}
 
             {/* Resumo */}
-            <div className="bg-neutral-50 rounded-lg p-4 space-y-2 text-sm">
-              <p className="font-medium text-neutral-800 mb-2">Resumo</p>
+            <div className="p-4 space-y-2 text-sm rounded-lg bg-neutral-50">
+              <p className="mb-2 font-medium text-neutral-800">Resumo</p>
               <div className="flex justify-between text-neutral-600">
                 <span>Nome:</span>
                 <span className="font-medium text-neutral-900">{watch('name')}</span>
@@ -341,17 +364,17 @@ export default function NovaCampanhaPage() {
               <button
                 type="button"
                 onClick={goBack}
-                className="inline-flex items-center gap-2 border border-neutral-300 text-neutral-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-neutral-50 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border rounded-lg border-neutral-300 text-neutral-700 hover:bg-neutral-50"
               >
                 <ArrowLeft size={16} /> Anterior
               </button>
               <button
                 type="submit"
                 disabled={createCampaign.isPending}
-                className="inline-flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-brand-600 hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {createCampaign.isPending ? (
-                  <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                  <div className="w-4 h-4 border-2 rounded-full border-white/30 border-t-white animate-spin" />
                 ) : (
                   <Send size={16} />
                 )}

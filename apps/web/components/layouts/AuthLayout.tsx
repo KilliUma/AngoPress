@@ -130,7 +130,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
               <span className="w-4 h-px bg-white/40" />
               Plataforma nº 1 em Angola
             </p>
-            <h2 className="text-4xl font-extrabold text-white leading-[1.15] tracking-tight">
+            <h2 className="font-display text-4xl font-extrabold text-white leading-[1.15] tracking-tight">
               Conecte a sua marca
               <br />
               <span className="text-brand-300">aos jornalistas certos</span>
@@ -149,7 +149,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
                   {f.icon}
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-white">{f.title}</p>
+                  <p className="font-display text-sm font-semibold text-white">{f.title}</p>
                   <p className="text-xs text-white/65 leading-relaxed mt-0.5">{f.description}</p>
                 </div>
               </li>

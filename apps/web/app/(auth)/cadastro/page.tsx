@@ -32,7 +32,7 @@ export default function RegisterPage() {
   return (
     <div className="w-full">
       <div className="mb-8">
-        <h2 className="text-2xl font-extrabold text-neutral-900 tracking-tight">Criar conta</h2>
+        <h2 className="text-2xl tracking-tight text-neutral-900 title-strong">Criar conta</h2>
         <p className="mt-1.5 text-sm text-neutral-500">
           Já tem conta?{' '}
           <Link

@@ -805,4 +805,349 @@ add_action( 'rest_api_init', function () {
             'page'     => [ 'default' => 1,  'sanitize_callback' => 'absint' ],
         ],
     ] );
+
+    // ────────────────────────────────────────────────────────────
+    // GET /wp-json/angopress/v1/help  — conteúdo da página Ajuda
+    // ────────────────────────────────────────────────────────────
+    register_rest_route( 'angopress/v1', '/help', [
+        'methods'             => 'GET',
+        'callback'            => function () {
+            $d_help = angopress_help_defaults();
+
+            // ── FAQ: usar CPT angopress_faq se existirem posts publicados ──
+            $faq_posts = get_posts( [
+                'post_type'      => 'angopress_faq',
+                'post_status'    => 'publish',
+                'posts_per_page' => -1,
+                'orderby'        => 'meta_value_num date',
+                'meta_key'       => '_faq_order',
+                'order'          => 'ASC',
+            ] );
+
+            $faqs_grouped = [];
+            if ( count( $faq_posts ) > 0 ) {
+                foreach ( $faq_posts as $post ) {
+                    $category = get_post_meta( $post->ID, '_faq_category', true ) ?: 'Geral';
+                    $answer   = get_post_meta( $post->ID, '_faq_answer',   true ) ?: '';
+                    if ( ! isset( $faqs_grouped[ $category ] ) ) {
+                        $faqs_grouped[ $category ] = [];
+                    }
+                    $faqs_grouped[ $category ][] = [
+                        'question' => $post->post_title,
+                        'answer'   => $answer,
+                    ];
+                }
+                $faqs = [];
+                foreach ( $faqs_grouped as $cat => $items ) {
+                    $faqs[] = [ 'category' => $cat, 'items' => $items ];
+                }
+            } else {
+                $faqs = $d_help['faqs'];
+            }
+
+            // ── Guias e contactos: usar opções guardadas ou defaults ──
+            $opts    = get_option( 'angopress_help', [] );
+            $guides_raw = $opts['guides']  ?? null;
+            $guides  = $guides_raw  ? json_decode( $guides_raw,  true ) : $d_help['guides'];
+            if ( ! is_array( $guides ) ) $guides = $d_help['guides'];
+
+            $contact = [
+                'email'         => $opts['contact_email']          ?? $d_help['contact']['email'],
+                'email_label'   => $opts['contact_email_label']    ?? $d_help['contact']['email_label'],
+                'email_note'    => $opts['contact_email_note']     ?? $d_help['contact']['email_note'],
+                'whatsapp'      => $opts['contact_whatsapp']       ?? $d_help['contact']['whatsapp'],
+                'whatsapp_label'=> $opts['contact_whatsapp_label'] ?? $d_help['contact']['whatsapp_label'],
+                'whatsapp_note' => $opts['contact_whatsapp_note']  ?? $d_help['contact']['whatsapp_note'],
+            ];
+
+            return rest_ensure_response( [
+                'faqs'    => $faqs,
+                'guides'  => $guides,
+                'contact' => $contact,
+            ] );
+        },
+        'permission_callback' => '__return_true',
+    ] );
 } );
+
+// ────────────────────────────────────────────────────────────────
+// CPT: angopress_faq — Perguntas frequentes (página Ajuda)
+// ────────────────────────────────────────────────────────────────
+add_action( 'init', function () {
+    register_post_type( 'angopress_faq', [
+        'labels' => [
+            'name'          => 'FAQs Ajuda',
+            'singular_name' => 'FAQ',
+            'add_new_item'  => 'Adicionar Pergunta',
+            'edit_item'     => 'Editar Pergunta',
+            'menu_name'     => 'FAQs',
+        ],
+        'public'       => false,
+        'show_ui'      => true,
+        'show_in_menu' => 'angopress-landing',
+        'show_in_rest' => true,
+        'supports'     => [ 'title' ],
+        'rewrite'      => false,
+    ] );
+
+    foreach ( [ '_faq_category', '_faq_answer' ] as $key ) {
+        register_post_meta( 'angopress_faq', $key, [
+            'show_in_rest'  => true,
+            'single'        => true,
+            'type'          => 'string',
+            'auth_callback' => '__return_true',
+        ] );
+    }
+    register_post_meta( 'angopress_faq', '_faq_order', [
+        'show_in_rest'      => true,
+        'single'            => true,
+        'type'              => 'integer',
+        'auth_callback'     => '__return_true',
+    ] );
+} );
+
+add_action( 'add_meta_boxes', function () {
+    add_meta_box(
+        'angopress_faq_details',
+        'Detalhes da Pergunta',
+        'angopress_faq_meta_box_cb',
+        'angopress_faq',
+        'normal',
+        'high'
+    );
+} );
+
+function angopress_faq_meta_box_cb( WP_Post $post ): void {
+    wp_nonce_field( 'angopress_faq_meta', 'angopress_faq_nonce' );
+    $category = get_post_meta( $post->ID, '_faq_category', true ) ?: '';
+    $answer   = get_post_meta( $post->ID, '_faq_answer',   true ) ?: '';
+    $order    = get_post_meta( $post->ID, '_faq_order',    true ) ?: 0;
+    $cats = [ 'Press Releases', 'Campanhas', 'Jornalistas e Listas', 'Assinatura e Pagamento', 'Geral' ];
+    ?>
+    <table class="form-table" style="margin-top:0">
+        <tr>
+            <th><label for="faq_category">Categoria</label></th>
+            <td>
+                <select id="faq_category" name="faq_category" class="regular-text">
+                    <?php foreach ( $cats as $c ) : ?>
+                        <option value="<?= esc_attr( $c ) ?>" <?= selected( $category, $c, false ) ?>><?= esc_html( $c ) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th><label>Pergunta</label></th>
+            <td><p class="description">Use o <strong>Título</strong> do post como pergunta.</p></td>
+        </tr>
+        <tr>
+            <th><label for="faq_answer">Resposta</label></th>
+            <td><textarea id="faq_answer" class="large-text" rows="5" name="faq_answer"><?= esc_textarea( $answer ) ?></textarea></td>
+        </tr>
+        <tr>
+            <th><label for="faq_order">Ordem (dentro da categoria)</label></th>
+            <td><input id="faq_order" class="small-text" type="number" min="0" name="faq_order" value="<?= esc_attr( (string) $order ) ?>">
+            <p class="description">Número menor aparece primeiro. 0 = sem ordem definida.</p></td>
+        </tr>
+    </table>
+    <?php
+}
+
+add_action( 'save_post_angopress_faq', function ( int $post_id ): void {
+    if ( ! isset( $_POST['angopress_faq_nonce'] ) ) return;
+    if ( ! wp_verify_nonce( $_POST['angopress_faq_nonce'], 'angopress_faq_meta' ) ) return;
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
+    if ( ! current_user_can( 'edit_post', $post_id ) ) return;
+
+    update_post_meta( $post_id, '_faq_category', sanitize_text_field( $_POST['faq_category'] ?? 'Geral' ) );
+    update_post_meta( $post_id, '_faq_answer',   sanitize_textarea_field( $_POST['faq_answer'] ?? '' ) );
+    update_post_meta( $post_id, '_faq_order',    absint( $_POST['faq_order'] ?? 0 ) );
+} );
+
+// ────────────────────────────────────────────────────────────────
+// Defaults e save para guias/contactos da página Ajuda
+// ────────────────────────────────────────────────────────────────
+function angopress_help_defaults(): array {
+    return [
+        'faqs' => [
+            [
+                'category' => 'Press Releases',
+                'items' => [
+                    [ 'question' => 'Como criar um press release?', 'answer' => 'Aceda a "Press Releases" no menu lateral e clique em "Novo press release". Preencha o título, corpo do comunicado e selecione as categorias relevantes. Pode guardar como rascunho ou publicar imediatamente.' ],
+                    [ 'question' => 'Qual é o limite de press releases que posso criar?', 'answer' => 'O número de press releases que pode criar depende do seu plano de assinatura. Consulte a página "Meu Plano" para ver os limites do seu plano actual.' ],
+                    [ 'question' => 'Posso editar um press release já publicado?', 'answer' => 'Sim. Aceda ao press release e clique no botão de edição. Tenha em conta que alterações após publicação não são re-enviadas automaticamente para jornalistas.' ],
+                ],
+            ],
+            [
+                'category' => 'Campanhas',
+                'items' => [
+                    [ 'question' => 'Como funciona uma campanha de distribuição?', 'answer' => 'Uma campanha associa um press release a uma lista de mailing. Ao criar a campanha, seleciona o press release, a(s) lista(s) de destinatários e define a data/hora de envio. O sistema gere o envio de forma automática.' ],
+                    [ 'question' => 'A campanha foi enviada mas não vejo estatísticas. Porquê?', 'answer' => 'As estatísticas de abertura e cliques são actualizadas de forma assíncrona. Aguarde alguns minutos após o envio e recarregue a página de Analytics.' ],
+                    [ 'question' => 'Posso cancelar uma campanha agendada?', 'answer' => 'Sim, enquanto o estado for "Agendada" ou "Na fila". Aceda à campanha e use o botão de cancelamento. Após iniciar o envio (estado "A enviar"), não é possível cancelar.' ],
+                ],
+            ],
+            [
+                'category' => 'Jornalistas e Listas',
+                'items' => [
+                    [ 'question' => 'Como importar jornalistas via CSV?', 'answer' => 'Na página Jornalistas, clique em "Importar CSV". O ficheiro deve ter as colunas: name, email, outlet, mediaType, city. Pode exportar a lista actual para ver o formato correcto.' ],
+                    [ 'question' => 'Qual a diferença entre um jornalista e uma lista de mailing?', 'answer' => 'Os jornalistas são a base de dados de contactos. As listas de mailing são agrupamentos de jornalistas que usa para segmentar os envios das campanhas.' ],
+                    [ 'question' => 'Um jornalista pode estar em várias listas?', 'answer' => 'Sim. Um jornalista pode pertencer a múltiplas listas de mailing simultaneamente.' ],
+                ],
+            ],
+            [
+                'category' => 'Assinatura e Pagamento',
+                'items' => [
+                    [ 'question' => 'Como renovar a minha assinatura?', 'answer' => 'Aceda a "Meu Plano" e clique em "Solicitar renovação" no plano actual. A equipa AngoPress irá activar a renovação após confirmação do pagamento.' ],
+                    [ 'question' => 'Como faço o pagamento?', 'answer' => 'O pagamento é feito via transferência bancária para o IBAN indicado na página de assinatura. Após a transferência, envie o comprovativo para pagamentos@angopress.ao ou WhatsApp +244 923 000 000.' ],
+                    [ 'question' => 'O que acontece quando os envios do plano se esgotam?', 'answer' => 'Ao atingir o limite de envios do plano, não poderá criar novas campanhas até renovar ou actualizar o plano. O histórico e os dados ficam sempre acessíveis.' ],
+                ],
+            ],
+        ],
+        'guides' => [
+            [ 'icon' => 'FileText',  'title' => 'Criar o primeiro press release',  'desc' => 'Passo a passo para redigir e publicar o seu primeiro comunicado.' ],
+            [ 'icon' => 'List',      'title' => 'Organizar listas de mailing',      'desc' => 'Como segmentar jornalistas por área, meio e região.' ],
+            [ 'icon' => 'Megaphone', 'title' => 'Enviar a primeira campanha',       'desc' => 'Da criação ao envio: guia completo de distribuição.' ],
+            [ 'icon' => 'BarChart2', 'title' => 'Interpretar o Analytics',          'desc' => 'Entender métricas de abertura, cliques e rejeição.' ],
+        ],
+        'contact' => [
+            'email'          => 'suporte@angopress.ao',
+            'email_label'    => 'Email de suporte',
+            'email_note'     => 'Resposta em até 24 horas úteis',
+            'whatsapp'       => '+244923000000',
+            'whatsapp_label' => 'WhatsApp',
+            'whatsapp_note'  => 'Disponível das 08h às 18h (dias úteis)',
+        ],
+    ];
+}
+
+// ── Submenu "Ajuda" na secção AngoPress Landing ──
+add_action( 'admin_menu', function () {
+    add_submenu_page(
+        'angopress-landing',
+        'Página Ajuda',
+        'Página Ajuda',
+        'manage_options',
+        'angopress-help',
+        'angopress_help_page'
+    );
+}, 20 );
+
+function angopress_help_page(): void {
+    if ( ! current_user_can( 'manage_options' ) ) return;
+
+    if ( isset( $_POST['angopress_help_save'] ) && check_admin_referer( 'angopress_save_help' ) ) {
+        $d = angopress_help_defaults();
+
+        // ── Guias ──
+        $g_icons  = array_map( 'sanitize_text_field',    $_POST['guide_icon']  ?? [] );
+        $g_titles = array_map( 'sanitize_text_field',    $_POST['guide_title'] ?? [] );
+        $g_descs  = array_map( 'sanitize_textarea_field', $_POST['guide_desc'] ?? [] );
+        $guides   = [];
+        foreach ( $g_titles as $i => $t ) {
+            if ( trim( $t ) === '' ) continue;
+            $guides[] = [
+                'icon'  => $g_icons[ $i ]  ?? 'FileText',
+                'title' => $t,
+                'desc'  => $g_descs[ $i ]  ?? '',
+            ];
+        }
+
+        $opts = [
+            'guides'                => json_encode( $guides ?: $d['guides'] ),
+            'contact_email'         => sanitize_email( $_POST['contact_email']          ?? $d['contact']['email'] ),
+            'contact_email_label'   => sanitize_text_field( $_POST['contact_email_label']    ?? $d['contact']['email_label'] ),
+            'contact_email_note'    => sanitize_text_field( $_POST['contact_email_note']     ?? $d['contact']['email_note'] ),
+            'contact_whatsapp'      => sanitize_text_field( $_POST['contact_whatsapp']       ?? $d['contact']['whatsapp'] ),
+            'contact_whatsapp_label'=> sanitize_text_field( $_POST['contact_whatsapp_label'] ?? $d['contact']['whatsapp_label'] ),
+            'contact_whatsapp_note' => sanitize_text_field( $_POST['contact_whatsapp_note']  ?? $d['contact']['whatsapp_note'] ),
+        ];
+        update_option( 'angopress_help', $opts );
+        echo '<div class="notice notice-success is-dismissible"><p>✅ Conteúdo da página Ajuda guardado.</p></div>';
+    }
+
+    $d    = angopress_help_defaults();
+    $opts = get_option( 'angopress_help', [] );
+
+    $guides_raw = $opts['guides'] ?? null;
+    $guides     = $guides_raw ? json_decode( $guides_raw, true ) : $d['guides'];
+    if ( ! is_array( $guides ) ) $guides = $d['guides'];
+
+    $contact = [
+        'email'          => $opts['contact_email']          ?? $d['contact']['email'],
+        'email_label'    => $opts['contact_email_label']    ?? $d['contact']['email_label'],
+        'email_note'     => $opts['contact_email_note']     ?? $d['contact']['email_note'],
+        'whatsapp'       => $opts['contact_whatsapp']       ?? $d['contact']['whatsapp'],
+        'whatsapp_label' => $opts['contact_whatsapp_label'] ?? $d['contact']['whatsapp_label'],
+        'whatsapp_note'  => $opts['contact_whatsapp_note']  ?? $d['contact']['whatsapp_note'],
+    ];
+
+    $icon_opts = [ 'FileText' => 'FileText (Press Release)', 'Megaphone' => 'Megaphone (Campanha)', 'List' => 'List (Listas)', 'BarChart2' => 'BarChart2 (Analytics)', 'Users' => 'Users (Jornalistas)', 'BookOpen' => 'BookOpen (Guia)', 'CreditCard' => 'CreditCard (Assinatura)' ];
+    ?>
+    <div class="wrap">
+    <h1 style="display:flex;align-items:center;gap:8px;">
+        <span class="dashicons dashicons-sos" style="font-size:28px;"></span>
+        AngoPress — Página Ajuda (Dashboard)
+    </h1>
+    <p class="description">
+        As <strong>FAQs</strong> são geridas em <a href="<?= esc_url( admin_url( 'edit.php?post_type=angopress_faq' ) ) ?>">FAQs</a> (menu lateral).<br>
+        Aqui pode gerir os <strong>Guias rápidos</strong> e os <strong>contactos de suporte</strong>.<br>
+        As alterações ficam disponíveis no dashboard em até 5 minutos.
+    </p>
+    <form method="post" style="margin-top:24px;">
+        <?php wp_nonce_field( 'angopress_save_help' ); ?>
+
+        <!-- ── Guias ── -->
+        <h2 class="title" style="border-top:1px solid #ddd;padding-top:20px;">📋 Guias rápidos</h2>
+        <table class="form-table">
+            <?php foreach ( $guides as $i => $g ) : ?>
+            <tr>
+                <th>Guia <?= $i + 1 ?></th>
+                <td style="display:flex;flex-direction:column;gap:8px;">
+                    <select name="guide_icon[]">
+                        <?php foreach ( $icon_opts as $v => $l ) : ?>
+                            <option value="<?= esc_attr( $v ) ?>" <?= selected( $g['icon'] ?? 'FileText', $v, false ) ?>><?= esc_html( $l ) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <input placeholder="Título" class="large-text" name="guide_title[]" value="<?= esc_attr( $g['title'] ?? '' ) ?>">
+                    <textarea placeholder="Descrição curta" class="large-text" rows="2" name="guide_desc[]"><?= esc_textarea( $g['desc'] ?? '' ) ?></textarea>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </table>
+
+        <!-- ── Contactos ── -->
+        <h2 class="title" style="border-top:1px solid #ddd;padding-top:20px;">📞 Contactos de Suporte</h2>
+        <table class="form-table">
+            <tr>
+                <th><label>Email — Endereço</label></th>
+                <td><input class="regular-text" name="contact_email" type="email" value="<?= esc_attr( $contact['email'] ) ?>"></td>
+            </tr>
+            <tr>
+                <th><label>Email — Rótulo</label></th>
+                <td><input class="regular-text" name="contact_email_label" value="<?= esc_attr( $contact['email_label'] ) ?>">
+                <p class="description">Ex: "Email de suporte"</p></td>
+            </tr>
+            <tr>
+                <th><label>Email — Nota</label></th>
+                <td><input class="regular-text" name="contact_email_note" value="<?= esc_attr( $contact['email_note'] ) ?>">
+                <p class="description">Ex: "Resposta em até 24 horas úteis"</p></td>
+            </tr>
+            <tr>
+                <th><label>WhatsApp — Número</label></th>
+                <td><input class="regular-text" name="contact_whatsapp" value="<?= esc_attr( $contact['whatsapp'] ) ?>">
+                <p class="description">Só dígitos com prefixo do país: +244923000000</p></td>
+            </tr>
+            <tr>
+                <th><label>WhatsApp — Rótulo</label></th>
+                <td><input class="regular-text" name="contact_whatsapp_label" value="<?= esc_attr( $contact['whatsapp_label'] ) ?>"></td>
+            </tr>
+            <tr>
+                <th><label>WhatsApp — Nota</label></th>
+                <td><input class="regular-text" name="contact_whatsapp_note" value="<?= esc_attr( $contact['whatsapp_note'] ) ?>"></td>
+            </tr>
+        </table>
+
+        <?php submit_button( 'Guardar', 'primary large', 'angopress_help_save' ); ?>
+    </form>
+    </div>
+    <?php
+}

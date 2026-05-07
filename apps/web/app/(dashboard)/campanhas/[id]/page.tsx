@@ -13,6 +13,7 @@ import {
   Mail,
   MousePointerClick,
   AlertTriangle,
+  Sparkles,
 } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { useCampaign, useCampaignMetrics, useSendCampaign } from '@/hooks/useCampaigns'
@@ -55,8 +56,8 @@ function MetricCard({
   sub?: string
 }) {
   return (
-    <Card className="p-5 flex items-center gap-4">
-      <div className="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center text-brand-600 shrink-0">
+    <Card className="flex items-center gap-4 p-5">
+      <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-brand-50 text-brand-600 shrink-0">
         {icon}
       </div>
       <div>
@@ -82,7 +83,7 @@ export default function CampanhaDetailPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 rounded-full border-4 border-neutral-200 border-t-brand-600 animate-spin" />
+        <div className="w-8 h-8 border-4 rounded-full border-neutral-200 border-t-brand-600 animate-spin" />
       </div>
     )
   }
@@ -92,7 +93,7 @@ export default function CampanhaDetailPage() {
       <div className="flex flex-col items-center justify-center h-64 text-neutral-400">
         <AlertCircle size={32} className="mb-2" />
         <p>Campanha não encontrada.</p>
-        <Link href="/campanhas" className="mt-3 text-brand-600 text-sm underline">
+        <Link href="/campanhas" className="mt-3 text-sm underline text-brand-600">
           Voltar às campanhas
         </Link>
       </div>
@@ -128,51 +129,69 @@ export default function CampanhaDetailPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-        <div>
-          <button
-            onClick={() => router.back()}
-            className="flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-800 mb-3 transition-colors"
-          >
-            <ArrowLeft size={15} /> Campanhas
-          </button>
-          <h1 className="text-2xl font-bold text-neutral-900">{campaign.name}</h1>
-          <p className="text-neutral-500 text-sm mt-1">{campaign.subject}</p>
+    <div className="max-w-6xl space-y-6">
+      {/* ── Banner de topo ── */}
+      <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-brand-800 via-brand-700 to-brand-600 p-6 text-white shadow-xl shadow-brand-900/10 sm:p-8">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute w-56 h-56 rounded-full -top-16 -right-16 bg-white/10 blur-3xl" />
+          <div className="absolute bottom-0 w-64 h-32 rounded-full left-1/4 bg-brand-950/25 blur-2xl" />
+          <div
+            className="absolute inset-0 opacity-[0.06]"
+            style={{
+              backgroundImage:
+                'linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)',
+              backgroundSize: '44px 44px',
+            }}
+          />
         </div>
-        <div className="flex items-center gap-3 shrink-0">
-          <span
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${statusCfg.class}`}
-          >
-            {statusCfg.icon} {statusCfg.label}
-          </span>
-          {canSend && (
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-2">
             <button
-              onClick={handleSend}
-              disabled={sendCampaign.isPending}
-              className="inline-flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-40 transition-colors"
+              onClick={() => router.back()}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-100/80 hover:text-white transition-colors mb-1"
             >
-              {sendCampaign.isPending ? (
-                <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-              ) : (
-                <Send size={15} />
-              )}
-              Enviar Agora
+              <ArrowLeft size={13} /> Campanhas
             </button>
-          )}
+            <span className="flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand-100 w-fit">
+              <Sparkles size={13} />
+              Disparo de email
+            </span>
+            <h1 className="text-2xl tracking-tight sm:text-3xl title-strong">{campaign.name}</h1>
+            <p className="text-sm text-brand-100/80">{campaign.subject}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <span
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-white/25 bg-white/15 text-white`}
+            >
+              {statusCfg.icon} {statusCfg.label}
+            </span>
+            {canSend && (
+              <button
+                onClick={handleSend}
+                disabled={sendCampaign.isPending}
+                className="inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-2.5 text-sm font-bold text-brand-700 shadow-md hover:bg-neutral-50 disabled:opacity-40 transition-all"
+              >
+                {sendCampaign.isPending ? (
+                  <div className="w-4 h-4 border-2 rounded-full border-brand-300 border-t-brand-700 animate-spin" />
+                ) : (
+                  <Send size={15} />
+                )}
+                Enviar Agora
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Info Card */}
-      <Card className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5">
+      <Card className="grid grid-cols-2 gap-4 p-5 sm:grid-cols-4">
         <div>
           <p className="text-xs text-neutral-500 mb-0.5">Destinatários</p>
           <p className="text-lg font-bold text-neutral-900">{campaign.totalRecipients}</p>
         </div>
         <div>
           <p className="text-xs text-neutral-500 mb-0.5">Press Release</p>
-          <p className="text-sm font-medium text-neutral-900 truncate">
+          <p className="text-sm font-medium truncate text-neutral-900">
             {campaign.pressRelease?.title || '—'}
           </p>
         </div>
@@ -201,12 +220,12 @@ export default function CampanhaDetailPage() {
         <>
           {ACTIVE_STATUSES.includes(campaign.status) && (
             <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2.5">
-              <div className="w-3 h-3 rounded-full border-2 border-amber-500 border-t-transparent animate-spin" />
+              <div className="w-3 h-3 border-2 rounded-full border-amber-500 border-t-transparent animate-spin" />
               A actualizar métricas em tempo real…
             </div>
           )}
           {hasValidApiMetrics ? (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               <MetricCard
                 icon={<Mail size={18} />}
                 label="Entregues"
@@ -242,9 +261,9 @@ export default function CampanhaDetailPage() {
       {/* Estado vazio para drafts */}
       {campaign.status === 'DRAFT' && (
         <Card className="p-10 text-center">
-          <Send size={32} className="mx-auto text-neutral-300 mb-3" />
-          <p className="text-neutral-600 font-medium">Esta campanha ainda não foi enviada</p>
-          <p className="text-neutral-400 text-sm mt-1 mb-4">
+          <Send size={32} className="mx-auto mb-3 text-neutral-300" />
+          <p className="font-medium text-neutral-600">Esta campanha ainda não foi enviada</p>
+          <p className="mt-1 mb-4 text-sm text-neutral-400">
             Clique em &quot;Enviar Agora&quot; para disparar o press release para os destinatários.
           </p>
           <button

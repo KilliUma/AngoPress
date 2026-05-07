@@ -2,7 +2,18 @@
 
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Plus, List, Trash2, X, Loader2, Users, ChevronRight, UserMinus } from 'lucide-react'
+import {
+  Plus,
+  List,
+  Trash2,
+  X,
+  Loader2,
+  Users,
+  ChevronRight,
+  UserMinus,
+  Sparkles,
+  Pencil,
+} from 'lucide-react'
 import {
   useMailingLists,
   useMailingList,
@@ -238,33 +249,64 @@ export default function MailingListsPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Listas de Mailing</h1>
-          <p className="text-neutral-500 text-sm mt-0.5">
-            Agrupe jornalistas para as suas campanhas
-          </p>
+      {/* ── Banner ── */}
+      <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-brand-800 via-brand-700 to-brand-600 p-6 text-white shadow-xl shadow-brand-900/10 sm:p-8">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
+          <div className="absolute bottom-0 left-1/4 h-32 w-64 rounded-full bg-brand-950/25 blur-2xl" />
+          <div
+            className="absolute inset-0 opacity-[0.06]"
+            style={{
+              backgroundImage:
+                'linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)',
+              backgroundSize: '44px 44px',
+            }}
+          />
         </div>
-        <button
-          onClick={() => {
-            setEditListId(undefined)
-            setModalOpen(true)
-          }}
-          className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors"
-        >
-          <Plus size={16} /> Nova lista
-        </button>
-      </div>
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand-100">
+              <Sparkles size={13} />
+              Distribuição direcionada
+            </span>
+            <h1 className="text-2xl tracking-tight sm:text-3xl title-strong">Listas de Mailing</h1>
+            <p className="text-sm text-brand-100/80">Agrupe jornalistas para as suas campanhas</p>
+          </div>
+          <button
+            onClick={() => {
+              setEditListId(undefined)
+              setModalOpen(true)
+            }}
+            className="inline-flex items-center gap-2 self-start rounded-2xl bg-white px-5 py-2.5 text-sm font-bold text-brand-700 shadow-md hover:bg-neutral-50 transition-all shrink-0"
+          >
+            <Plus size={16} /> Nova lista
+          </button>
+        </div>
+      </section>
 
       {isLoading ? (
-        <div className="flex justify-center py-20">
-          <Loader2 size={24} className="animate-spin text-brand-600" />
+        <div className="flex flex-col items-center justify-center gap-3 py-20">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-neutral-200 border-t-brand-600" />
+          <p className="text-sm text-neutral-400">A carregar...</p>
         </div>
       ) : !lists?.length ? (
-        <div className="flex flex-col items-center justify-center py-20 text-neutral-400 bg-white rounded-xl border border-neutral-200">
-          <List size={40} className="mb-3" />
-          <p className="font-medium">Nenhuma lista criada</p>
-          <p className="text-sm mt-1">Crie a sua primeira lista de mailing</p>
+        <div className="flex flex-col items-center justify-center gap-4 rounded-[20px] border border-neutral-200 bg-white p-16 text-center shadow-sm">
+          <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-brand-50 text-brand-600">
+            <List size={30} />
+          </div>
+          <div>
+            <p className="font-display font-semibold text-neutral-900">Nenhuma lista criada</p>
+            <p className="mt-1 text-sm text-neutral-500">Crie a sua primeira lista de mailing</p>
+          </div>
+          <button
+            onClick={() => {
+              setEditListId(undefined)
+              setModalOpen(true)
+            }}
+            className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 transition-colors"
+          >
+            <Plus size={15} /> Nova lista
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -277,45 +319,50 @@ export default function MailingListsPage() {
             }) => (
               <div
                 key={list.id}
-                className="bg-white rounded-xl border border-neutral-200 p-5 flex flex-col gap-4 hover:shadow-sm transition-shadow"
+                className="group flex flex-col gap-4 rounded-[20px] border border-neutral-200/80 bg-white p-5 shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-neutral-900 truncate">{list.name}</h3>
-                    {list.description && (
-                      <p className="text-sm text-neutral-500 mt-1 line-clamp-2">
-                        {list.description}
-                      </p>
-                    )}
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+                    <List size={18} />
+                  </div>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => {
+                        setEditListId(list.id)
+                        setModalOpen(true)
+                      }}
+                      className="rounded-lg p-1.5 text-neutral-400 hover:bg-neutral-100 hover:text-brand-600 transition-colors"
+                      title="Editar"
+                    >
+                      <Pencil size={14} />
+                    </button>
+                    <button
+                      onClick={() => setDeleteTarget(list.id)}
+                      className="rounded-lg p-1.5 text-neutral-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                      title="Eliminar"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-neutral-500">
-                  <Users size={14} />
-                  <span>{list._count.contacts} contacto(s)</span>
+                <div className="flex-1">
+                  <h3 className="font-display font-semibold text-neutral-900 truncate">
+                    {list.name}
+                  </h3>
+                  {list.description && (
+                    <p className="mt-1 text-sm text-neutral-500 line-clamp-2">{list.description}</p>
+                  )}
                 </div>
-                <div className="flex items-center gap-2 border-t border-neutral-100 pt-3">
+                <div className="flex items-center justify-between border-t border-neutral-100 pt-3">
+                  <span className="flex items-center gap-1.5 text-xs text-neutral-500">
+                    <Users size={13} />
+                    {list._count.contacts} contacto(s)
+                  </span>
                   <button
                     onClick={() => setDetailListId(list.id)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-sm font-medium text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
+                    className="flex items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700 transition-colors"
                   >
-                    Gerir contactos <ChevronRight size={14} />
-                  </button>
-                  <button
-                    onClick={() => {
-                      setEditListId(list.id)
-                      setModalOpen(true)
-                    }}
-                    className="p-1.5 text-neutral-400 hover:text-brand-600 hover:bg-neutral-100 rounded-lg transition-colors"
-                    title="Editar"
-                  >
-                    <Plus size={14} className="rotate-45" />
-                  </button>
-                  <button
-                    onClick={() => setDeleteTarget(list.id)}
-                    className="p-1.5 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                    title="Eliminar"
-                  >
-                    <Trash2 size={14} />
+                    Gerir <ChevronRight size={14} />
                   </button>
                 </div>
               </div>

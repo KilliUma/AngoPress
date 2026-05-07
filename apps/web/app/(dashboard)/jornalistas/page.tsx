@@ -16,6 +16,7 @@ import {
   Upload,
   AlertCircle,
   CheckCircle2,
+  Sparkles,
 } from 'lucide-react'
 import { clsx } from 'clsx'
 import {
@@ -335,48 +336,67 @@ export default function JournalistsPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Jornalistas</h1>
-          <p className="text-neutral-500 text-sm mt-0.5">Base de dados de jornalistas angolanos</p>
+      {/* ── Banner ── */}
+      <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-brand-800 via-brand-700 to-brand-600 p-6 text-white shadow-xl shadow-brand-900/10 sm:p-8">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
+          <div className="absolute bottom-0 left-1/4 h-32 w-64 rounded-full bg-brand-950/25 blur-2xl" />
+          <div
+            className="absolute inset-0 opacity-[0.06]"
+            style={{
+              backgroundImage:
+                'linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)',
+              backgroundSize: '44px 44px',
+            }}
+          />
         </div>
-        <div className="flex items-center gap-2">
-          {isAdmin && (
-            <>
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand-100">
+              <Sparkles size={13} />
+              Base de dados
+            </span>
+            <h1 className="text-2xl tracking-tight sm:text-3xl title-strong">Jornalistas</h1>
+            <p className="text-sm text-brand-100/80">Base de dados de jornalistas angolanos</p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {isAdmin && (
+              <>
+                <button
+                  onClick={() => exportCsv.mutate()}
+                  disabled={exportCsv.isPending}
+                  className="flex items-center gap-1.5 rounded-2xl border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/20 disabled:opacity-60 transition-all"
+                  title="Exportar CSV"
+                >
+                  {exportCsv.isPending ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <Download size={14} />
+                  )}
+                  Exportar
+                </button>
+                <button
+                  onClick={() => setImportOpen(true)}
+                  className="flex items-center gap-1.5 rounded-2xl border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/20 transition-all"
+                >
+                  <Upload size={14} /> Importar CSV
+                </button>
+              </>
+            )}
+            {isAdmin && (
               <button
-                onClick={() => exportCsv.mutate()}
-                disabled={exportCsv.isPending}
-                className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium border border-neutral-300 rounded-lg text-neutral-700 hover:bg-neutral-50 disabled:opacity-60 transition-colors"
-                title="Exportar CSV"
+                onClick={() => {
+                  setEditTarget(undefined)
+                  setModalOpen(true)
+                }}
+                className="flex items-center gap-2 rounded-2xl bg-white px-5 py-2.5 text-sm font-bold text-brand-700 shadow-md hover:bg-neutral-50 transition-all"
               >
-                {exportCsv.isPending ? (
-                  <Loader2 size={14} className="animate-spin" />
-                ) : (
-                  <Download size={14} />
-                )}
-                Exportar
+                <Plus size={16} /> Novo jornalista
               </button>
-              <button
-                onClick={() => setImportOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium border border-neutral-300 rounded-lg text-neutral-700 hover:bg-neutral-50 transition-colors"
-              >
-                <Upload size={14} /> Importar CSV
-              </button>
-            </>
-          )}
-          {isAdmin && (
-            <button
-              onClick={() => {
-                setEditTarget(undefined)
-                setModalOpen(true)
-              }}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-brand-600 hover:bg-brand-700"
-            >
-              <Plus size={16} /> Novo jornalista
-            </button>
-          )}
+            )}
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Filtros */}
       <div className="flex flex-wrap items-center gap-3">
@@ -389,7 +409,7 @@ export default function JournalistsPage() {
               setPage(1)
             }}
             placeholder="Pesquisar nome, email ou veículo..."
-            className="w-full py-2 pr-4 text-sm border rounded-lg pl-9 border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full rounded-xl border border-neutral-200 bg-white py-2 pl-9 pr-3 text-sm shadow-sm placeholder:text-neutral-400 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 transition-colors"
           />
         </div>
         <select
@@ -398,7 +418,7 @@ export default function JournalistsPage() {
             setMediaTypeFilter(e.target.value as MediaType | '')
             setPage(1)
           }}
-          className="px-3 py-2 text-sm border rounded-lg border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 transition-colors"
         >
           <option value="">Todos os meios</option>
           {MEDIA_TYPES.map((t) => (
@@ -414,11 +434,11 @@ export default function JournalistsPage() {
             setPage(1)
           }}
           placeholder="Filtrar por cidade..."
-          className="w-40 px-3 py-2 text-sm border rounded-lg border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="w-40 rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-neutral-400 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 transition-colors"
         />
         <button
           onClick={() => refetch()}
-          className="p-2 transition-colors rounded-lg text-neutral-500 hover:text-brand-600 hover:bg-neutral-100"
+          className="rounded-xl border border-neutral-200 bg-white p-2 text-neutral-500 shadow-sm hover:text-brand-600 hover:border-brand-200 transition-colors"
           title="Recarregar"
         >
           <RefreshCw size={16} />
@@ -426,37 +446,71 @@ export default function JournalistsPage() {
       </div>
 
       {/* Tabela */}
-      <div className="overflow-hidden bg-white border rounded-xl border-neutral-200">
+      <div className="overflow-hidden rounded-[20px] border border-neutral-200 bg-white shadow-sm">
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 size={24} className="animate-spin text-brand-600" />
+          <div className="flex flex-col items-center justify-center gap-3 py-20">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-neutral-200 border-t-brand-600" />
+            <p className="text-sm text-neutral-400">A carregar...</p>
           </div>
         ) : !data?.data.length ? (
-          <div className="flex flex-col items-center justify-center py-20 text-neutral-400">
-            <Users size={40} className="mb-3" />
-            <p className="font-medium">Nenhum jornalista encontrado</p>
-            <p className="mt-1 text-sm">Adicione o primeiro jornalista à base de dados</p>
+          <div className="flex flex-col items-center justify-center gap-4 p-16 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-brand-50 text-brand-600">
+              <Users size={30} />
+            </div>
+            <div>
+              <p className="font-display font-semibold text-neutral-900">
+                Nenhum jornalista encontrado
+              </p>
+              <p className="mt-1 text-sm text-neutral-500">
+                Adicione o primeiro jornalista à base de dados
+              </p>
+            </div>
+            {isAdmin && (
+              <button
+                onClick={() => {
+                  setEditTarget(undefined)
+                  setModalOpen(true)
+                }}
+                className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 transition-colors"
+              >
+                <Plus size={15} /> Novo jornalista
+              </button>
+            )}
           </div>
         ) : (
           <table className="w-full text-sm">
-            <thead>
-              <tr className="text-xs tracking-wide uppercase border-b border-neutral-200 bg-neutral-50 text-neutral-500">
-                <th className="px-4 py-3 text-left">Nome</th>
-                <th className="hidden px-4 py-3 text-left md:table-cell">Veículo</th>
-                <th className="hidden px-4 py-3 text-left lg:table-cell">Meio</th>
-                <th className="hidden px-4 py-3 text-left xl:table-cell">Áreas</th>
-                <th className="px-4 py-3 text-left">Estado</th>
-                {isAdmin && <th className="px-4 py-3 text-right">Acções</th>}
+            <thead className="border-b border-neutral-100 bg-neutral-50/80">
+              <tr>
+                <th className="px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-[0.15em] text-neutral-500">
+                  Nome
+                </th>
+                <th className="hidden px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-[0.15em] text-neutral-500 md:table-cell">
+                  Veículo
+                </th>
+                <th className="hidden px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-[0.15em] text-neutral-500 lg:table-cell">
+                  Meio
+                </th>
+                <th className="hidden px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-[0.15em] text-neutral-500 xl:table-cell">
+                  Áreas
+                </th>
+                <th className="px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-[0.15em] text-neutral-500">
+                  Estado
+                </th>
+                {isAdmin && (
+                  <th className="px-4 py-3.5 text-right text-[11px] font-semibold uppercase tracking-[0.15em] text-neutral-500">
+                    Acções
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-100">
               {data.data.map((j) => (
                 <tr key={j.id} className="transition-colors hover:bg-neutral-50">
-                  <td className="px-4 py-3">
-                    <p className="font-medium text-neutral-900">{j.name}</p>
+                  <td className="px-4 py-3.5">
+                    <p className="font-semibold text-neutral-900">{j.name}</p>
                     <p className="text-xs text-neutral-500">{j.email}</p>
                   </td>
-                  <td className="hidden px-4 py-3 text-neutral-600 md:table-cell">
+                  <td className="hidden px-4 py-3.5 text-neutral-600 md:table-cell">
                     <p>{j.outlet}</p>
                     {j.jobTitle && <p className="text-xs text-neutral-400">{j.jobTitle}</p>}
                   </td>
@@ -532,26 +586,26 @@ export default function JournalistsPage() {
 
       {/* Paginação */}
       {data && data.meta.totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm text-neutral-500">
+        <div className="flex items-center justify-between rounded-2xl border border-neutral-200 bg-white px-5 py-3 text-sm text-neutral-500 shadow-sm">
           <span>
-            {(page - 1) * 20 + 1}–{Math.min(page * 20, data.meta.total)} de {data.meta.total}{' '}
-            jornalistas
+            {(page - 1) * 20 + 1}–{Math.min(page * 20, data.meta.total)} de{' '}
+            <span className="font-semibold text-neutral-800">{data.meta.total}</span> jornalistas
           </span>
           <div className="flex items-center gap-2">
             <button
               disabled={page <= 1}
               onClick={() => setPage(page - 1)}
-              className="px-3 py-1.5 border border-neutral-300 rounded-lg disabled:opacity-40 hover:bg-neutral-50 transition-colors"
+              className="rounded-xl border border-neutral-200 px-3 py-1.5 text-xs font-medium transition-colors hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-40"
             >
               Anterior
             </button>
-            <span className="px-2">
+            <span className="text-xs font-semibold text-neutral-700">
               {page} / {data.meta.totalPages}
             </span>
             <button
               disabled={page >= data.meta.totalPages}
               onClick={() => setPage(page + 1)}
-              className="px-3 py-1.5 border border-neutral-300 rounded-lg disabled:opacity-40 hover:bg-neutral-50 transition-colors"
+              className="rounded-xl border border-neutral-200 px-3 py-1.5 text-xs font-medium transition-colors hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-40"
             >
               Seguinte
             </button>

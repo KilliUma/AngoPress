@@ -26,7 +26,7 @@ function ResetPasswordForm() {
   if (!token) {
     return (
       <div className="w-full space-y-4">
-        <h2 className="text-2xl font-bold text-neutral-900">Link inválido</h2>
+        <h2 className="text-2xl text-neutral-900 title-strong">Link inválido</h2>
         <p className="text-sm text-neutral-600">O link de reset é inválido ou expirou.</p>
       </div>
     )
@@ -35,7 +35,7 @@ function ResetPasswordForm() {
   return (
     <div className="w-full space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-neutral-900">Nova password</h2>
+        <h2 className="text-2xl text-neutral-900 title-strong">Nova password</h2>
         <p className="mt-1 text-sm text-neutral-600">Defina uma nova password para a sua conta.</p>
       </div>
 

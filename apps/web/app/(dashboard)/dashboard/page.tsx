@@ -96,7 +96,7 @@ function StatCard({
         {loading ? (
           <div className="w-20 h-8 rounded bg-neutral-100 animate-pulse" />
         ) : (
-          <p className="text-3xl font-black leading-none text-neutral-900">{value}</p>
+          <p className="text-3xl leading-none text-neutral-900 title-heavy">{value}</p>
         )}
         {sub && <p className="text-xs text-neutral-400 mt-1.5">{sub}</p>}
       </div>
@@ -182,34 +182,43 @@ export default function DashboardPage() {
     <>
       <div className="space-y-6 max-w-[1280px]">
         {/* ── Welcome banner ── */}
-        <div className="relative p-6 overflow-hidden text-white rounded-2xl bg-gradient-to-r from-brand-800 via-brand-700 to-brand-600 sm:p-8">
+        <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-brand-800 via-brand-700 to-brand-600 p-6 text-white shadow-xl shadow-brand-900/10 sm:p-8">
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute rounded-full -top-24 -right-24 w-72 h-72 bg-white/5 blur-3xl" />
+            <div className="absolute rounded-full -top-20 -right-20 h-72 w-72 bg-white/10 blur-3xl" />
             <div className="absolute bottom-0 w-64 h-40 rounded-full left-1/3 bg-brand-900/40 blur-2xl" />
             <div
-              className="absolute inset-0 opacity-[0.04]"
+              className="absolute inset-0 opacity-[0.06]"
               style={{
                 backgroundImage:
                   'linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)',
-                backgroundSize: '40px 40px',
+                backgroundSize: '44px 44px',
               }}
             />
           </div>
-          <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="mb-1 text-sm font-medium text-brand-200">Olá! 👋 {firstName}!</p>
-              <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
-                Bem-vindo de volta à AngoPress
-              </h1>
-              <p className="mt-1 text-sm text-brand-200/80">
-                Distribua press releases e alcance jornalistas em todo Angola.
-              </p>
+          <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-3">
+              <p className="text-sm font-semibold text-brand-100">👋 Olá!, {firstName}</p>
+              <div>
+                <h1 className="text-2xl tracking-tight sm:text-3xl title-strong">
+                  Bem-vindo de volta à AngoPress
+                </h1>
+                <p className="mt-1.5 text-sm text-brand-100/80">
+                  Distribua press releases e alcance jornalistas em todo Angola.
+                </p>
+              </div>
             </div>
-            <div className="shrink-0">
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-white/10 border border-white/20 px-3 py-1.5 rounded-full">
+            <div className="flex flex-col items-start gap-2 shrink-0 sm:items-end">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/90">
                 <CalendarDays size={12} />
                 {today}
               </span>
+              <Link
+                href="/press-releases/novo"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white transition-all border rounded-xl bg-white/15 border-white/20 backdrop-blur-sm hover:bg-white/25"
+              >
+                <FileText size={14} />
+                Novo press release
+              </Link>
             </div>
           </div>
         </div>
@@ -217,9 +226,11 @@ export default function DashboardPage() {
         {/* ── Stats ── */}
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <BarChart2 size={17} className="text-brand-600" />
-            <h2 className="font-bold text-neutral-800">Estatísticas</h2>
-            <span className="flex items-center gap-1 ml-auto text-xs text-neutral-400">
+            <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-brand-50 text-brand-600">
+              <BarChart2 size={16} />
+            </span>
+            <h2 className="font-bold font-display text-neutral-800">Estatísticas</h2>
+            <span className="flex items-center gap-1 ml-auto rounded-full border border-neutral-200 bg-white px-2.5 py-1 text-xs text-neutral-500">
               <RefreshCw size={11} />
               Actualizado agora
             </span>
@@ -267,9 +278,13 @@ export default function DashboardPage() {
           {/* Press releases recentes — 2/3 */}
           <div className="overflow-hidden bg-white border lg:col-span-2 rounded-2xl border-neutral-200">
             <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100">
-              <div className="flex items-center gap-2">
-                <FileText size={16} className="text-brand-600" />
-                <h2 className="text-sm font-bold text-neutral-800">Press Releases Recentes</h2>
+              <div className="flex items-center gap-2.5">
+                <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-brand-50 text-brand-600">
+                  <FileText size={15} />
+                </span>
+                <h2 className="text-sm font-bold font-display text-neutral-800">
+                  Press Releases Recentes
+                </h2>
               </div>
               <Link
                 href="/press-releases"
@@ -336,8 +351,10 @@ export default function DashboardPage() {
 
           {/* Acções rápidas — 1/3 */}
           <div className="overflow-hidden bg-white border rounded-2xl border-neutral-200">
-            <div className="flex items-center gap-2 px-6 py-4 border-b border-neutral-100">
-              <TrendingUp size={16} className="text-brand-600" />
+            <div className="flex items-center gap-2.5 px-6 py-4 border-b border-neutral-100">
+              <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-brand-50 text-brand-600">
+                <TrendingUp size={15} />
+              </span>
               <h2 className="text-sm font-bold text-neutral-800">Acções Rápidas</h2>
             </div>
             <div className="p-3 space-y-1">
@@ -370,9 +387,13 @@ export default function DashboardPage() {
         {!loadingCamp && recentCamps.length > 0 && (
           <div className="overflow-hidden bg-white border rounded-2xl border-neutral-200">
             <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100">
-              <div className="flex items-center gap-2">
-                <Send size={16} className="text-brand-600" />
-                <h2 className="text-sm font-bold text-neutral-800">Campanhas Recentes</h2>
+              <div className="flex items-center gap-2.5">
+                <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-brand-50 text-brand-600">
+                  <Send size={15} />
+                </span>
+                <h2 className="text-sm font-bold font-display text-neutral-800">
+                  Campanhas Recentes
+                </h2>
               </div>
               <Link
                 href="/campanhas"

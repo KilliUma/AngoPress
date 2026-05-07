@@ -4,7 +4,18 @@ import dynamic from 'next/dynamic'
 import { useState, useRef, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
-import { ArrowLeft, Loader2, Save, Send, Clock, Paperclip, X, FileText, Trash2 } from 'lucide-react'
+import {
+  ArrowLeft,
+  Loader2,
+  Save,
+  Send,
+  Clock,
+  Paperclip,
+  X,
+  FileText,
+  Trash2,
+  Sparkles,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import { usePressRelease } from '@/hooks/usePressReleases'
 import { api } from '@/services/api'
@@ -15,7 +26,7 @@ const RichEditor = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="border border-neutral-200 rounded-lg h-64 flex items-center justify-center text-neutral-400 text-sm">
+      <div className="flex items-center justify-center h-64 text-sm border rounded-lg border-neutral-200 text-neutral-400">
         A carregar editor...
       </div>
     ),
@@ -167,7 +178,7 @@ export default function EditPressReleasePage() {
         <p>Press release não encontrado</p>
         <button
           onClick={() => router.push('/press-releases')}
-          className="text-brand-600 hover:underline text-sm"
+          className="text-sm text-brand-600 hover:underline"
         >
           Voltar à lista
         </button>
@@ -176,69 +187,91 @@ export default function EditPressReleasePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Cabeçalho */}
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => router.push('/press-releases')}
-            className="p-2 rounded-lg text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 transition-colors"
-          >
-            <ArrowLeft size={20} />
-          </button>
-          <div>
-            <h1 className="text-xl font-bold text-neutral-900">Editar Press Release</h1>
-            <p className="text-neutral-500 text-sm truncate max-w-xs">{pr.title}</p>
+    <div className="max-w-6xl mx-auto space-y-6">
+      {/* ── Banner de topo ── */}
+      <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-brand-800 via-brand-700 to-brand-600 p-6 text-white shadow-xl shadow-brand-900/10 sm:p-8">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute w-56 h-56 rounded-full -top-16 -right-16 bg-white/10 blur-3xl" />
+          <div className="absolute bottom-0 w-64 h-32 rounded-full left-1/4 bg-brand-950/25 blur-2xl" />
+          <div
+            className="absolute inset-0 opacity-[0.06]"
+            style={{
+              backgroundImage:
+                'linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)',
+              backgroundSize: '44px 44px',
+            }}
+          />
+        </div>
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-2">
+            <button
+              onClick={() => router.push('/press-releases')}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-100/80 hover:text-white transition-colors mb-1"
+            >
+              <ArrowLeft size={13} /> Press Releases
+            </button>
+            <span className="flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand-100 w-fit">
+              <Sparkles size={13} />
+              Editar comunicado
+            </span>
+            <h1 className="text-2xl tracking-tight sm:text-3xl title-strong">
+              Editar Press Release
+            </h1>
+            <p className="max-w-sm text-sm truncate text-brand-100/80">{pr.title}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <button
+              onClick={() => handleSaveDraft(false)}
+              disabled={saving}
+              className="inline-flex items-center gap-2 rounded-2xl border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/20 disabled:opacity-60 transition-all"
+            >
+              {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+              Guardar
+            </button>
+            {pr.status !== 'PUBLISHED' && (
+              <>
+                <button
+                  onClick={() => setScheduleOpen(true)}
+                  className="inline-flex items-center gap-2 rounded-2xl border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/20 transition-all"
+                >
+                  <Clock size={14} /> Agendar
+                </button>
+                <button
+                  onClick={handlePublish}
+                  disabled={saving}
+                  className="inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-2.5 text-sm font-bold text-brand-700 shadow-md hover:bg-neutral-50 disabled:opacity-60 transition-all"
+                >
+                  {saving ? (
+                    <Loader2 size={14} className="animate-spin text-brand-700" />
+                  ) : (
+                    <Send size={14} />
+                  )}
+                  Publicar
+                </button>
+              </>
+            )}
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => handleSaveDraft(false)}
-            disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-neutral-300 rounded-lg text-neutral-700 hover:bg-neutral-50 disabled:opacity-60 transition-colors"
-          >
-            {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-            Guardar
-          </button>
-          {pr.status !== 'PUBLISHED' && (
-            <>
-              <button
-                onClick={() => setScheduleOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-brand-300 rounded-lg text-brand-700 bg-brand-50 hover:bg-brand-100 transition-colors"
-              >
-                <Clock size={14} /> Agendar
-              </button>
-              <button
-                onClick={handlePublish}
-                disabled={saving}
-                className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 disabled:opacity-60 transition-colors"
-              >
-                {saving ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-                Publicar
-              </button>
-            </>
-          )}
-        </div>
-      </div>
+      </section>
 
       {/* Formulário */}
-      <div className="bg-white rounded-2xl border border-neutral-200 p-6 space-y-5">
+      <div className="p-6 space-y-5 bg-white border rounded-2xl border-neutral-200">
         {/* Título */}
         <div>
-          <label className="block text-sm font-medium text-neutral-700 mb-1">
+          <label className="block mb-1 text-sm font-medium text-neutral-700">
             Título <span className="text-red-500">*</span>
           </label>
           <input
             {...register('title', { required: 'Título obrigatório' })}
             placeholder="Título do press release..."
-            className="w-full text-lg border border-neutral-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500 placeholder:text-neutral-400"
+            className="w-full px-4 py-3 text-lg border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 placeholder:text-neutral-400"
           />
-          {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
+          {errors.title && <p className="mt-1 text-xs text-red-500">{errors.title.message}</p>}
         </div>
 
         {/* Editor */}
         <div>
-          <label className="block text-sm font-medium text-neutral-700 mb-2">
+          <label className="block mb-2 text-sm font-medium text-neutral-700">
             Conteúdo <span className="text-red-500">*</span>
           </label>
           <RichEditor
@@ -275,21 +308,21 @@ export default function EditPressReleasePage() {
             Tipos permitidos: PDF, JPG, PNG, GIF, WEBP e DOCX. Tamanho maximo por ficheiro: 20 MB.
           </p>
           {attachments.length === 0 ? (
-            <p className="text-sm text-neutral-400 italic">Sem anexos</p>
+            <p className="text-sm italic text-neutral-400">Sem anexos</p>
           ) : (
             <ul className="space-y-2">
               {attachments.map((att) => (
                 <li
                   key={att.id}
-                  className="flex items-center justify-between px-3 py-2 bg-neutral-50 rounded-lg border border-neutral-200"
+                  className="flex items-center justify-between px-3 py-2 border rounded-lg bg-neutral-50 border-neutral-200"
                 >
-                  <div className="flex items-center gap-2 min-w-0">
+                  <div className="flex items-center min-w-0 gap-2">
                     <FileText size={14} className="text-neutral-400 shrink-0" />
                     <a
                       href={att.fileUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-brand-600 hover:underline truncate"
+                      className="text-sm truncate text-brand-600 hover:underline"
                     >
                       {att.fileName}
                     </a>
@@ -299,7 +332,7 @@ export default function EditPressReleasePage() {
                   </div>
                   <button
                     onClick={() => removeAttachment(att.id)}
-                    className="p-1 text-neutral-400 hover:text-red-500 transition-colors"
+                    className="p-1 transition-colors text-neutral-400 hover:text-red-500"
                   >
                     <Trash2 size={13} />
                   </button>
@@ -312,8 +345,8 @@ export default function EditPressReleasePage() {
 
       {/* Modal agendamento */}
       {scheduleOpen && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="w-full max-w-sm p-6 space-y-4 bg-white shadow-xl rounded-2xl">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold text-neutral-900">Agendar publicação</h2>
               <button
@@ -324,12 +357,12 @@ export default function EditPressReleasePage() {
               </button>
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Data e hora</label>
+              <label className="block mb-1 text-sm font-medium text-neutral-700">Data e hora</label>
               <input
                 {...register('scheduledAt')}
                 type="datetime-local"
                 min={new Date().toISOString().slice(0, 16)}
-                className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-3 py-2 text-sm border rounded-lg border-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
             <div className="flex justify-end gap-3">
@@ -342,7 +375,7 @@ export default function EditPressReleasePage() {
               <button
                 onClick={handleSchedule}
                 disabled={saving}
-                className="flex items-center gap-2 px-5 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 disabled:opacity-60"
+                className="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white rounded-lg bg-brand-600 hover:bg-brand-700 disabled:opacity-60"
               >
                 {saving && <Loader2 size={14} className="animate-spin" />}
                 Confirmar agendamento

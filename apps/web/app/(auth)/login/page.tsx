@@ -1,8 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Link from 'next/link'
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle, Eye, EyeOff, Lock, Mail } from 'lucide-react'
 import { useLogin } from '@/hooks/useAuth'
 
 interface LoginFormData {
@@ -14,6 +15,7 @@ type ApiError = { response?: { data?: { message?: string } } }
 
 export default function LoginPage() {
   const { mutate: login, isPending, isError, error } = useLogin()
+  const [showPassword, setShowPassword] = useState(false)
   const {
     register,
     handleSubmit,
@@ -27,7 +29,7 @@ export default function LoginPage() {
   return (
     <div className="w-full">
       <div className="mb-8">
-        <h2 className="text-2xl font-extrabold text-neutral-900 tracking-tight">
+        <h2 className="text-2xl tracking-tight text-neutral-900 title-strong">
           Bem-vindo de volta
         </h2>
         <p className="mt-1.5 text-sm text-neutral-500">
@@ -55,18 +57,23 @@ export default function LoginPage() {
           >
             Email
           </label>
-          <input
-            id="email"
-            type="email"
-            autoComplete="email"
-            placeholder="nome@empresa.ao"
-            {...register('email', {
-              required: 'Email obrigatório',
-              pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Email inválido' },
-            })}
-            className="mt-1 block w-full rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 shadow-sm placeholder:text-neutral-400 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 disabled:bg-neutral-50 transition-colors"
-            disabled={isPending}
-          />
+          <div className="relative mt-1">
+            <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-neutral-400">
+              <Mail className="h-4 w-4" />
+            </span>
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              placeholder="nome@empresa.ao"
+              {...register('email', {
+                required: 'Email obrigatório',
+                pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Email inválido' },
+              })}
+              className="block w-full rounded-lg border border-neutral-200 bg-white py-2.5 pl-10 pr-3 text-sm text-neutral-900 shadow-sm placeholder:text-neutral-400 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 disabled:bg-neutral-50 transition-colors"
+              disabled={isPending}
+            />
+          </div>
           {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
         </div>
 
@@ -77,15 +84,30 @@ export default function LoginPage() {
           >
             Password
           </label>
-          <input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            placeholder="A sua password"
-            {...register('password', { required: 'Password obrigatória' })}
-            className="mt-1 block w-full rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 shadow-sm placeholder:text-neutral-400 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 disabled:bg-neutral-50 transition-colors"
-            disabled={isPending}
-          />
+          <div className="relative mt-1">
+            <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-neutral-400">
+              <Lock className="h-4 w-4" />
+            </span>
+            <input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="current-password"
+              placeholder="A sua password"
+              {...register('password', { required: 'Password obrigatória' })}
+              className="block w-full rounded-lg border border-neutral-200 bg-white py-2.5 pl-10 pr-11 text-sm text-neutral-900 shadow-sm placeholder:text-neutral-400 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 disabled:bg-neutral-50 transition-colors"
+              disabled={isPending}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((current) => !current)}
+              className="absolute inset-y-0 right-3 flex items-center text-neutral-400 transition-colors hover:text-neutral-600 focus:outline-none focus:text-brand-600"
+              aria-label={showPassword ? 'Ocultar password' : 'Mostrar password'}
+              aria-pressed={showPassword}
+              disabled={isPending}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
           {errors.password && (
             <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>
           )}
