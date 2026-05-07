@@ -13,6 +13,8 @@
     --color-brand-dark: #5c0010;
     --color-brand-light: #9b001b;
     --color-accent: #d99d99;
+    --font-body: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-display: "Space Grotesk", Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
 
   * {
