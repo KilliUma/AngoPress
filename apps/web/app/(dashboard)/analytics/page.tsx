@@ -1,7 +1,6 @@
 'use client'
 
 import { useCampaigns } from '@/hooks/useCampaigns'
-import { Card } from '@/components/ui/Card'
 import { BarChart2, Mail, MousePointerClick, AlertCircle, Sparkles, TrendingUp } from 'lucide-react'
 import dynamic from 'next/dynamic'
 

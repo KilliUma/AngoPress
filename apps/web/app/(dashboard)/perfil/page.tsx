@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, type UseFormRegisterReturn } from 'react-hook-form'
 import {
   User,
   Building2,
@@ -140,11 +140,7 @@ function PasswordField({
   error?: string
   visible: boolean
   onToggle: () => void
-  registration: ReturnType<typeof useForm<PasswordFormData>>['register'] extends (
-    ...args: any[]
-  ) => infer R
-    ? R
-    : never
+  registration: UseFormRegisterReturn
 }) {
   return (
     <div>
@@ -181,7 +177,7 @@ function PasswordField({
 // ──────────────────────────────────────────────────────────────
 export default function PerfilPage() {
   const { user: storeUser } = useAuthStore()
-  const { data: profile, isLoading } = useProfile()
+  const { data: profile } = useProfile()
   const { mutate: updateProfile, isPending: isSaving } = useUpdateProfile()
 
   const user = profile ?? storeUser

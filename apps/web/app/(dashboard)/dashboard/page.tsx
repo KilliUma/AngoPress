@@ -169,8 +169,6 @@ export default function DashboardPage() {
   const recentCamps = campData?.data?.slice(0, 3) ?? []
 
   const firstName = user?.name?.split(' ')[0] ?? 'utilizador'
-  const hour = new Date().getHours()
-  const greeting = hour < 12 ? '☀️ Bom dia' : hour < 18 ? '👋 Boa tarde' : '🌙 Boa noite'
 
   const today = new Date().toLocaleDateString('pt-PT', {
     weekday: 'long',

@@ -12,7 +12,6 @@ import {
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import { Card, CardHeader } from '@/components/ui/Card'
 import { useMySubscription, usePlans, useRequestSubscription } from '@/hooks/useSubscriptions'
 import type { SubscriptionStatus } from '@/services/subscriptions.service'
 
