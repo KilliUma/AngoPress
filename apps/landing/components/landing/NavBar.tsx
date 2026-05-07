@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 import { JournalistRegisterModal } from '@/components/JournalistRegisterModal'
 
@@ -11,18 +12,43 @@ const NAV_LINKS = [
   ['Para quem é?', '#para-quem'],
   ['Notícias', '/noticias'],
   ['Preços', '#precos'],
-]
+] as const
 
 export function NavBar({ transparentUntil = 12 }: { transparentUntil?: number }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [activeHash, setActiveHash] = useState('')
+  const pathname = usePathname()
   const ASSESSOR_LOGIN_URL = 'https://angopress.vercel.app/login'
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > transparentUntil)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [transparentUntil])
+
+  useEffect(() => {
+    const syncHash = () => setActiveHash(window.location.hash || '')
+    syncHash()
+    window.addEventListener('hashchange', syncHash)
+    return () => window.removeEventListener('hashchange', syncHash)
+  }, [])
+
+  const isActiveLink = (href: string) => {
+    if (href.startsWith('#')) return pathname === '/' && activeHash === href
+    if (href === '/') return pathname === '/' && !activeHash
+    return pathname === href
+  }
+
+  const desktopLinkBase =
+    'group relative px-4 py-2 text-[15px] font-semibold tracking-[-0.01em] whitespace-nowrap transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 rounded-md after:absolute after:left-4 after:right-4 after:-bottom-[1px] after:h-[2px] after:origin-left after:rounded-full after:transition-transform after:duration-200'
+
+  const desktopJournalistClass = `${desktopLinkBase} ${
+    scrolled
+      ? 'text-gray-600 hover:text-brand-700 focus-visible:ring-brand-500/40 after:bg-brand-600 after:scale-x-0 hover:after:scale-x-100'
+      : 'text-white/85 hover:text-white focus-visible:ring-white/40 after:bg-white after:scale-x-0 hover:after:scale-x-100'
+  }`
 
   return (
     <>
@@ -57,27 +83,38 @@ export function NavBar({ transparentUntil = 12 }: { transparentUntil?: number })
 
           {/* ── Nav links (desktop) — centered ── */}
           <nav className="absolute items-center hidden gap-1 -translate-x-1/2 lg:flex left-1/2">
-            {NAV_LINKS.map(([label, href]) => (
-              <a
-                key={label}
-                href={href}
-                className={`px-4 py-2 text-[15px] font-semibold rounded-lg transition-all duration-150 tracking-[-0.01em] whitespace-nowrap ${
-                  scrolled
-                    ? 'text-gray-600 hover:text-brand-700 hover:bg-brand-50'
-                    : 'text-white/85 hover:text-white hover:bg-white/12'
-                }`}
-              >
-                {label}
-              </a>
-            ))}
-            <JournalistRegisterModal
-              variant="nav"
-              navClassName={`px-4 py-2 text-[15px] font-semibold rounded-lg transition-all duration-150 tracking-[-0.01em] whitespace-nowrap ${
-                scrolled
-                  ? 'text-brand-600 hover:text-brand-700 hover:bg-brand-50'
-                  : 'text-white/85 hover:text-white hover:bg-white/12'
-              }`}
-            />
+            {NAV_LINKS.map(([label, href]) => {
+              const isActive = isActiveLink(href)
+
+              return (
+                <a
+                  key={label}
+                  href={href}
+                  onClick={() => {
+                    if (href.startsWith('#')) setActiveHash(href)
+                    if (href === '/') setActiveHash('')
+                  }}
+                  className={`${desktopLinkBase} ${
+                    scrolled
+                      ? 'focus-visible:ring-brand-500/40 after:bg-brand-600'
+                      : 'focus-visible:ring-white/40 after:bg-white'
+                  } ${
+                    scrolled
+                      ? isActive
+                        ? 'text-brand-700 after:scale-x-100'
+                        : 'text-gray-600 hover:text-brand-700 after:scale-x-0 hover:after:scale-x-100'
+                      : isActive
+                        ? 'text-white after:scale-x-100'
+                        : 'text-white/85 hover:text-white after:scale-x-0 hover:after:scale-x-100'
+                  }`}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  {label}
+                </a>
+              )
+            })}
+
+            <JournalistRegisterModal variant="nav" navClassName={desktopJournalistClass} />
           </nav>
 
           {/* ── Actions (desktop) ── */}
@@ -158,44 +195,55 @@ export function NavBar({ transparentUntil = 12 }: { transparentUntil?: number })
       >
         <div className="bg-white border-b border-gray-100 shadow-xl">
           <nav className="max-w-7xl mx-auto px-5 pt-3 pb-5 flex flex-col gap-0.5">
-            {NAV_LINKS.map(([label, href]) => (
-              <a
-                key={label}
-                href={href}
-                onClick={() => setMobileOpen(false)}
-                className="px-4 py-3 text-[14px] font-medium text-gray-700 hover:text-gray-950 hover:bg-gray-50 rounded-xl transition-colors"
-              >
-                {label}
-              </a>
-            ))}
+            {NAV_LINKS.map(([label, href]) => {
+              const isActive = isActiveLink(href)
+
+              return (
+                <a
+                  key={label}
+                  href={href}
+                  onClick={() => {
+                    if (href.startsWith('#')) setActiveHash(href)
+                    if (href === '/') setActiveHash('')
+                    setMobileOpen(false)
+                  }}
+                  className={`px-4 py-3 text-[14px] font-medium rounded-xl transition-colors ${
+                    isActive
+                      ? 'text-brand-800 bg-brand-50'
+                      : 'text-gray-700 hover:text-gray-950 hover:bg-gray-50'
+                  }`}
+                >
+                  {label}
+                </a>
+              )
+            })}
+
+            <JournalistRegisterModal
+              variant="nav"
+              navClassName="px-4 py-3 text-[14px] font-medium text-gray-700 hover:text-gray-950 hover:bg-gray-50 rounded-xl transition-colors text-left"
+            />
 
             <div className="h-px my-3 bg-gray-100" />
 
-            <div className="flex flex-col gap-2">
-              <JournalistRegisterModal
-                variant="nav"
-                navClassName="px-4 py-3 text-[14px] font-semibold text-brand-600 hover:text-brand-700 hover:bg-brand-50 rounded-xl transition-colors tracking-[-0.01em] whitespace-nowrap text-left"
-              />
-              <a
-                href={ASSESSOR_LOGIN_URL}
-                className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white transition-colors shadow-md bg-brand-600 hover:bg-brand-700 rounded-xl shadow-brand-600/20"
+            <a
+              href={ASSESSOR_LOGIN_URL}
+              className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white transition-colors shadow-md bg-brand-600 hover:bg-brand-700 rounded-xl shadow-brand-600/20"
+            >
+              Entrar como assessor
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                viewBox="0 0 24 24"
               >
-                Entrar como assessor
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2.5}
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
-                  />
-                </svg>
-              </a>
-            </div>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                />
+              </svg>
+            </a>
           </nav>
         </div>
       </div>

@@ -118,8 +118,8 @@ export default async function HomePage() {
         <PressReleasesShowcase featured={featured} />
         <ForWhoSection />
         <NewsSection content={landingContent.news} />
-        <PricingSection plans={plans} content={landingContent.pricing} />
         <JournalistCTASection content={landingContent.journalistCta} />
+        <PricingSection plans={plans} content={landingContent.pricing} />
       </main>
       <Footer />
     </>

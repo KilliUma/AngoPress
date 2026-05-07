@@ -44,7 +44,7 @@ export function ForWhoSection() {
   const APP_URL = process.env.APP_URL ?? 'http://localhost:5173'
   return (
     <section id="para-quem" className="relative px-4 overflow-hidden py-28 sm:px-6">
-      <div className="absolute inset-0 bg-gray-50" />
+      <div className="absolute inset-0 bg-white" />
       <div className="absolute inset-0 pointer-events-none grid-bg opacity-40" />
 
       <div className="relative max-w-6xl mx-auto">
