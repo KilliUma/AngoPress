@@ -1,27 +1,83 @@
-export default function PrivacidadePage() {
+import { getLegalContent } from '@/lib/cms'
+import type { Metadata } from 'next'
+import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Política de Privacidade — AngoPress',
+  description: 'Como a AngoPress recolhe, usa e protege os seus dados pessoais.',
+}
+
+export const revalidate = 3600
+
+export default async function PrivacidadePage() {
+  const { privacidade: doc } = await getLegalContent()
+
   return (
     <main className="min-h-screen bg-neutral-50 px-4 py-12">
-      <article className="mx-auto max-w-3xl rounded-xl border border-neutral-200 bg-white p-8 shadow-sm">
-        <h1 className="text-3xl font-bold text-neutral-900">Política de Privacidade</h1>
-        <p className="mt-4 text-neutral-600">
-          A AngoPress recolhe apenas os dados necessários para gerir contas, assinaturas,
-          jornalistas, campanhas e métricas de desempenho dos envios.
-        </p>
-        <h2 className="mt-8 text-lg font-semibold text-neutral-900">Dados tratados</h2>
-        <p className="mt-2 text-neutral-600">
-          Podemos tratar nome, email, empresa, telefone, dados de plano, contactos de jornalistas,
-          histórico de campanhas e eventos técnicos como entrega, abertura, clique e descadastro.
-        </p>
-        <h2 className="mt-8 text-lg font-semibold text-neutral-900">Finalidade</h2>
-        <p className="mt-2 text-neutral-600">
-          Os dados são usados para prestar o serviço, garantir segurança, cumprir pedidos de
-          descadastro, gerar relatórios e apoiar a operação comercial da plataforma.
-        </p>
-        <h2 className="mt-8 text-lg font-semibold text-neutral-900">Contacto</h2>
-        <p className="mt-2 text-neutral-600">
-          Para pedidos de acesso, correcção ou remoção, contacte suporte@angopress.ao.
-        </p>
-      </article>
+      <div className="mx-auto max-w-3xl">
+        {/* Hero */}
+        <header className="rounded-xl border border-neutral-200 bg-white p-8 shadow-sm">
+          <span className="inline-block rounded-full bg-brand/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-brand">
+            Legal
+          </span>
+          <h1 className="mt-4 text-3xl font-bold text-neutral-900 title-strong">{doc.title}</h1>
+          <p className="mt-2 text-neutral-600">{doc.subtitle}</p>
+          <p className="mt-3 text-xs text-neutral-400">Última actualização: {doc.lastUpdated}</p>
+
+          {/* Índice */}
+          <nav className="mt-8 rounded-lg border border-neutral-100 bg-neutral-50 p-4">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-neutral-400">
+              Índice
+            </p>
+            <ol className="space-y-1">
+              {doc.sections.map((s, i) => (
+                <li key={s.id} className="flex items-center gap-2">
+                  <span className="w-5 shrink-0 text-right text-xs text-neutral-300">{i + 1}.</span>
+                  <a
+                    href={`#${s.id}`}
+                    className="text-sm text-neutral-500 transition-colors hover:text-neutral-900"
+                  >
+                    {s.title}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </header>
+
+        {/* Secções */}
+        <article className="mt-6 space-y-6">
+          {doc.sections.map((s, i) => (
+            <section
+              key={s.id}
+              id={s.id}
+              className="scroll-mt-8 rounded-xl border border-neutral-200 bg-white p-6 shadow-sm"
+            >
+              <h2 className="flex items-baseline gap-3 text-lg font-semibold text-neutral-900 title-strong">
+                <span className="text-sm font-normal text-brand">{i + 1}.</span>
+                {s.title}
+              </h2>
+              <div
+                className="prose prose-neutral mt-3 max-w-none text-neutral-600 [&_a]:text-brand [&_a]:underline [&_strong]:text-neutral-800"
+                dangerouslySetInnerHTML={{ __html: s.content }}
+              />
+            </section>
+          ))}
+        </article>
+
+        {/* Rodapé */}
+        <footer className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-neutral-200 pt-6 text-sm text-neutral-400">
+          <p>
+            Questões sobre privacidade?{' '}
+            <a href={`mailto:${doc.contact}`} className="text-brand underline">
+              {doc.contact}
+            </a>
+          </p>
+          <Link href="/termos" className="underline hover:text-neutral-600">
+            Termos de Uso
+          </Link>
+        </footer>
+      </div>
     </main>
   )
 }

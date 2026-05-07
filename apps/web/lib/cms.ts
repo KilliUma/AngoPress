@@ -1,7 +1,26 @@
-// Tipos e funções para consumir conteúdo da página Ajuda gerido no WordPress
+// Tipos e funções para consumir conteúdo gerido no WordPress
 import https from 'https'
 
 // ── Interfaces ───────────────────────────────────────────────────────────────
+
+export interface LegalSection {
+  id: string
+  title: string
+  content: string // HTML permitido
+}
+
+export interface LegalDocument {
+  title: string
+  subtitle: string
+  lastUpdated: string
+  contact: string
+  sections: LegalSection[]
+}
+
+export interface LegalContent {
+  termos: LegalDocument
+  privacidade: LegalDocument
+}
 
 export interface HelpFaqItem {
   question: string
@@ -243,5 +262,159 @@ export async function getHelpContent(): Promise<HelpContent> {
     return { faqs, guides, contact }
   } catch {
     return HELP_FALLBACK
+  }
+}
+
+// ── Legal (Termos + Privacidade) ─────────────────────────────────────────────
+
+export const LEGAL_FALLBACK: LegalContent = {
+  termos: {
+    title: 'Termos de Uso',
+    subtitle: 'Condições que regem o uso da plataforma AngoPress.',
+    lastUpdated: '7 de Maio de 2026',
+    contact: 'suporte@angopress.ao',
+    sections: [
+      {
+        id: 'aceitacao',
+        title: 'Aceitação dos Termos',
+        content:
+          'Ao aceder ou usar a AngoPress, o utilizador confirma que leu, compreendeu e aceita estes Termos de Uso na íntegra. Se não concordar com alguma das cláusulas, deve cessar imediatamente o uso da plataforma.',
+      },
+      {
+        id: 'uso-permitido',
+        title: 'Uso Permitido',
+        content:
+          'A plataforma destina-se exclusivamente a comunicações legítimas de assessoria de imprensa e comunicação institucional. É <strong>proibido</strong> usar a AngoPress para envio de spam, conteúdos ilegais, falsas identidades, comunicações que violem direitos de terceiros ou qualquer actividade contrária à legislação angolana.',
+      },
+      {
+        id: 'conta',
+        title: 'Conta e Responsabilidade',
+        content:
+          'Cada utilizador é responsável pela segurança das suas credenciais de acesso. Deve notificar imediatamente a AngoPress em caso de uso não autorizado da conta.',
+      },
+      {
+        id: 'assinaturas',
+        title: 'Assinaturas e Pagamentos',
+        content:
+          'Os planos são activados manualmente após confirmação de pagamento. A AngoPress reserva-se o direito de suspender contas com pagamentos pendentes, abuso de envio ou reclamações recorrentes. Não são efectuados reembolsos após activação do plano.',
+      },
+      {
+        id: 'propriedade',
+        title: 'Propriedade Intelectual',
+        content:
+          'Todos os direitos sobre a plataforma pertencem à AngoPress. O utilizador mantém os direitos sobre o conteúdo que publica, concedendo à AngoPress uma licença limitada para processar e transmitir esse conteúdo.',
+      },
+      {
+        id: 'limitacao',
+        title: 'Limitação de Responsabilidade',
+        content:
+          'A AngoPress não se responsabiliza por falhas de entrega atribuíveis a servidores de terceiros, decisões editoriais dos jornalistas ou danos indirectos.',
+      },
+      {
+        id: 'alteracoes',
+        title: 'Alterações aos Termos',
+        content:
+          'A AngoPress pode actualizar estes Termos a qualquer momento. Alterações significativas serão comunicadas por e-mail com pelo menos 15 dias de antecedência.',
+      },
+      {
+        id: 'contato',
+        title: 'Contacto',
+        content:
+          'Para questões sobre estes Termos: <a href="mailto:suporte@angopress.ao" class="text-brand underline">suporte@angopress.ao</a>.',
+      },
+    ],
+  },
+  privacidade: {
+    title: 'Política de Privacidade',
+    subtitle: 'Como a AngoPress recolhe, usa e protege os seus dados pessoais.',
+    lastUpdated: '7 de Maio de 2026',
+    contact: 'suporte@angopress.ao',
+    sections: [
+      {
+        id: 'introducao',
+        title: 'Introdução',
+        content:
+          'A AngoPress compromete-se a proteger a privacidade dos seus utilizadores. Esta Política descreve quais dados recolhemos, como os usamos e os seus direitos.',
+      },
+      {
+        id: 'dados-recolhidos',
+        title: 'Dados que Recolhemos',
+        content:
+          '<strong>Dados de conta:</strong> nome, e-mail, empresa e telefone.<br><strong>Dados de jornalistas:</strong> contactos importados para fins de mailing.<br><strong>Dados de campanhas:</strong> press releases, listas de envio e histórico.<br><strong>Dados de desempenho:</strong> abertura, clique, rejeição e descadastro.<br><strong>Dados de pagamento:</strong> referência de transacção e estado da assinatura.',
+      },
+      {
+        id: 'finalidade',
+        title: 'Finalidade do Tratamento',
+        content:
+          'Os dados são tratados para: prestar o serviço, gerir conta e assinatura, gerar relatórios, cumprir obrigações legais e enviar comunicações de serviço.',
+      },
+      {
+        id: 'partilha',
+        title: 'Partilha de Dados',
+        content:
+          'A AngoPress não vende dados a terceiros. Os dados podem ser partilhados com fornecedores de infra-estrutura (subprocessadores) e autoridades quando exigido por lei.',
+      },
+      {
+        id: 'retencao',
+        title: 'Retenção de Dados',
+        content:
+          'Os dados são conservados durante a vigência da conta e por mais 12 meses após encerramento. Dados de jornalistas descadastrados são removidos imediatamente.',
+      },
+      {
+        id: 'direitos',
+        title: 'Os Seus Direitos',
+        content:
+          'Tem direito a aceder, corrigir, eliminar, opor-se ao tratamento e exportar os seus dados. Contacte: <a href="mailto:suporte@angopress.ao" class="text-brand underline">suporte@angopress.ao</a>.',
+      },
+      {
+        id: 'seguranca',
+        title: 'Segurança',
+        content:
+          'Implementamos encriptação em trânsito (TLS), controlo de acessos por função e monitorização de actividade suspeita.',
+      },
+      {
+        id: 'contato',
+        title: 'Contacto',
+        content:
+          'Para exercício de direitos ou questões sobre privacidade: <a href="mailto:suporte@angopress.ao" class="text-brand underline">suporte@angopress.ao</a>.',
+      },
+    ],
+  },
+}
+
+export async function getLegalContent(): Promise<LegalContent> {
+  const base = process.env.WP_URL
+  if (!base) return LEGAL_FALLBACK
+
+  try {
+    const res = await fetchWp(base, '/angopress/v1/legal')
+    if (!res.ok) throw new Error(`WP API ${res.status}`)
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const raw: any = await res.json()
+
+    function mapDoc(doc: Record<string, unknown>, fallback: LegalDocument): LegalDocument {
+      return {
+        title: String(doc.title ?? fallback.title),
+        subtitle: String(doc.subtitle ?? fallback.subtitle),
+        lastUpdated: String(doc.last_updated ?? fallback.lastUpdated),
+        contact: String(doc.contact ?? fallback.contact),
+        sections:
+          Array.isArray(doc.sections) && doc.sections.length
+            ? (doc.sections as Array<Record<string, string>>).map((s) => ({
+                id: String(s.id ?? ''),
+                title: String(s.title ?? ''),
+                content: String(s.content ?? ''),
+              }))
+            : fallback.sections,
+      }
+    }
+
+    return {
+      termos: mapDoc(raw.termos ?? {}, LEGAL_FALLBACK.termos),
+      privacidade: mapDoc(raw.privacidade ?? {}, LEGAL_FALLBACK.privacidade),
+    }
+  } catch {
+    return LEGAL_FALLBACK
   }
 }

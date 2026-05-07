@@ -1151,3 +1151,203 @@ function angopress_help_page(): void {
     </div>
     <?php
 }
+
+// ════════════════════════════════════════════════════════════════
+// LEGAL (Termos de Uso + Política de Privacidade)
+// ════════════════════════════════════════════════════════════════
+
+// ── Defaults ─────────────────────────────────────────────────────
+
+function angopress_legal_defaults(): array {
+    $sections_termos = [
+        [ 'id' => 'aceitacao',   'title' => 'Aceitação dos Termos',         'content' => 'Ao aceder ou usar a AngoPress, o utilizador confirma que leu, compreendeu e aceita estes Termos de Uso na íntegra.' ],
+        [ 'id' => 'uso-permitido', 'title' => 'Uso Permitido',              'content' => 'A plataforma destina-se exclusivamente a comunicações legítimas de assessoria de imprensa. É <strong>proibido</strong> usar a AngoPress para envio de spam, conteúdos ilegais ou falsas identidades.' ],
+        [ 'id' => 'conta',       'title' => 'Conta e Responsabilidade',     'content' => 'Cada utilizador é responsável pela segurança das suas credenciais de acesso.' ],
+        [ 'id' => 'assinaturas', 'title' => 'Assinaturas e Pagamentos',     'content' => 'Os planos são activados manualmente após confirmação de pagamento. Não são efectuados reembolsos após activação.' ],
+        [ 'id' => 'propriedade', 'title' => 'Propriedade Intelectual',      'content' => 'Todos os direitos sobre a plataforma pertencem à AngoPress.' ],
+        [ 'id' => 'limitacao',   'title' => 'Limitação de Responsabilidade','content' => 'A AngoPress não se responsabiliza por falhas de entrega atribuíveis a servidores de terceiros.' ],
+        [ 'id' => 'alteracoes',  'title' => 'Alterações aos Termos',        'content' => 'Alterações significativas serão comunicadas por e-mail com pelo menos 15 dias de antecedência.' ],
+        [ 'id' => 'contato',     'title' => 'Contacto',                     'content' => 'Para questões sobre estes Termos: <a href="mailto:suporte@angopress.ao">suporte@angopress.ao</a>.' ],
+    ];
+
+    $sections_privacidade = [
+        [ 'id' => 'introducao',       'title' => 'Introdução',              'content' => 'A AngoPress compromete-se a proteger a privacidade dos seus utilizadores.' ],
+        [ 'id' => 'dados-recolhidos', 'title' => 'Dados que Recolhemos',    'content' => '<strong>Dados de conta:</strong> nome, e-mail, empresa e telefone.<br><strong>Dados de campanhas:</strong> press releases e histórico de envio.' ],
+        [ 'id' => 'finalidade',       'title' => 'Finalidade do Tratamento','content' => 'Os dados são tratados para prestar o serviço, gerir a conta e gerar relatórios.' ],
+        [ 'id' => 'partilha',         'title' => 'Partilha de Dados',       'content' => 'A AngoPress não vende dados a terceiros.' ],
+        [ 'id' => 'retencao',         'title' => 'Retenção de Dados',       'content' => 'Os dados são conservados durante a vigência da conta e por mais 12 meses após encerramento.' ],
+        [ 'id' => 'direitos',         'title' => 'Os Seus Direitos',        'content' => 'Tem direito a aceder, corrigir, eliminar e exportar os seus dados.' ],
+        [ 'id' => 'seguranca',        'title' => 'Segurança',               'content' => 'Implementamos encriptação em trânsito (TLS) e controlo de acessos por função.' ],
+        [ 'id' => 'contato',          'title' => 'Contacto',                'content' => 'Para questões sobre privacidade: <a href="mailto:suporte@angopress.ao">suporte@angopress.ao</a>.' ],
+    ];
+
+    return [
+        'termos' => [
+            'title'        => 'Termos de Uso',
+            'subtitle'     => 'Condições que regem o uso da plataforma AngoPress.',
+            'last_updated' => '7 de Maio de 2026',
+            'contact'      => 'suporte@angopress.ao',
+            'sections'     => json_encode( $sections_termos ),
+        ],
+        'privacidade' => [
+            'title'        => 'Política de Privacidade',
+            'subtitle'     => 'Como a AngoPress recolhe, usa e protege os seus dados pessoais.',
+            'last_updated' => '7 de Maio de 2026',
+            'contact'      => 'suporte@angopress.ao',
+            'sections'     => json_encode( $sections_privacidade ),
+        ],
+    ];
+}
+
+// ── REST endpoint /angopress/v1/legal ────────────────────────────
+
+add_action( 'rest_api_init', function () {
+    register_rest_route( 'angopress/v1', '/legal', [
+        'methods'             => 'GET',
+        'callback'            => 'angopress_legal_endpoint',
+        'permission_callback' => '__return_true',
+    ] );
+} );
+
+function angopress_legal_endpoint(): WP_REST_Response {
+    $d          = angopress_legal_defaults();
+    $termos_opt = get_option( 'angopress_legal_termos',      $d['termos'] );
+    $priv_opt   = get_option( 'angopress_legal_privacidade', $d['privacidade'] );
+
+    function angopress_decode_legal_doc( array $opt, array $fallback ): array {
+        $sections_raw = $opt['sections'] ?? $fallback['sections'];
+        $sections     = json_decode( $sections_raw, true );
+        if ( ! is_array( $sections ) ) {
+            $sections = json_decode( $fallback['sections'], true );
+        }
+        return [
+            'title'        => $opt['title']        ?? $fallback['title'],
+            'subtitle'     => $opt['subtitle']      ?? $fallback['subtitle'],
+            'last_updated' => $opt['last_updated']  ?? $fallback['last_updated'],
+            'contact'      => $opt['contact']       ?? $fallback['contact'],
+            'sections'     => $sections,
+        ];
+    }
+
+    $res = new WP_REST_Response( [
+        'termos'      => angopress_decode_legal_doc( $termos_opt, $d['termos'] ),
+        'privacidade' => angopress_decode_legal_doc( $priv_opt,   $d['privacidade'] ),
+    ], 200 );
+
+    $res->header( 'Cache-Control', 'public, max-age=3600, s-maxage=3600' );
+    return $res;
+}
+
+// ── Admin: submenu "Termos & Privacidade" ──────────────────────────
+
+add_action( 'admin_menu', function () {
+    add_submenu_page(
+        'angopress-landing',
+        'Termos & Privacidade',
+        'Termos & Privacidade',
+        'manage_options',
+        'angopress-legal',
+        'angopress_legal_page'
+    );
+} );
+
+function angopress_legal_page(): void {
+    if ( ! current_user_can( 'manage_options' ) ) return;
+
+    $d    = angopress_legal_defaults();
+    $docs = [ 'termos' => 'Termos de Uso', 'privacidade' => 'Política de Privacidade' ];
+
+    // ── Save ──
+    if ( isset( $_POST['angopress_legal_save'] ) && check_admin_referer( 'angopress_legal_save' ) ) {
+        foreach ( $docs as $key => $_ ) {
+            $prefix   = "legal_{$key}";
+            $s_ids    = array_map( 'sanitize_key',           $_POST["{$prefix}_section_id"]      ?? [] );
+            $s_titles = array_map( 'sanitize_text_field',    $_POST["{$prefix}_section_title"]   ?? [] );
+            $s_conts  = array_map( 'wp_kses_post',           $_POST["{$prefix}_section_content"] ?? [] );
+            $sections = [];
+            foreach ( $s_ids as $i => $id ) {
+                $sections[] = [
+                    'id'      => $id,
+                    'title'   => $s_titles[ $i ] ?? '',
+                    'content' => $s_conts[ $i ]  ?? '',
+                ];
+            }
+            update_option( "angopress_legal_{$key}", [
+                'title'        => sanitize_text_field( $_POST["{$prefix}_title"]        ?? '' ),
+                'subtitle'     => sanitize_text_field( $_POST["{$prefix}_subtitle"]     ?? '' ),
+                'last_updated' => sanitize_text_field( $_POST["{$prefix}_last_updated"] ?? '' ),
+                'contact'      => sanitize_email( $_POST["{$prefix}_contact"]           ?? '' ),
+                'sections'     => json_encode( $sections ),
+            ] );
+        }
+        echo '<div class="notice notice-success is-dismissible"><p>✅ Conteúdo legal guardado com sucesso.</p></div>';
+    }
+
+    ?>
+    <div class="wrap">
+    <h1 style="display:flex;align-items:center;gap:8px;">
+        <span class="dashicons dashicons-shield" style="font-size:28px;"></span>
+        AngoPress — Termos &amp; Privacidade
+    </h1>
+    <p class="description">Gira o conteúdo das páginas Termos de Uso e Política de Privacidade. Cache de 1 hora.</p>
+
+    <form method="post" style="margin-top:24px;">
+        <?php wp_nonce_field( 'angopress_legal_save' ); ?>
+
+        <?php foreach ( $docs as $key => $label ) :
+            $prefix  = "legal_{$key}";
+            $opt     = get_option( "angopress_legal_{$key}", $d[ $key ] );
+            $sections_raw = $opt['sections'] ?? $d[ $key ]['sections'];
+            $sections     = json_decode( $sections_raw, true );
+            if ( ! is_array( $sections ) ) {
+                $sections = json_decode( $d[ $key ]['sections'], true );
+            }
+        ?>
+
+        <h2 class="title" style="border-top:1px solid #ddd;padding-top:20px;">
+            <?= esc_html( $label ) ?>
+        </h2>
+        <table class="form-table">
+            <tr>
+                <th><label>Título da página</label></th>
+                <td><input class="large-text" name="<?= $prefix ?>_title" value="<?= esc_attr( $opt['title'] ?? '' ) ?>"></td>
+            </tr>
+            <tr>
+                <th><label>Subtítulo</label></th>
+                <td><input class="large-text" name="<?= $prefix ?>_subtitle" value="<?= esc_attr( $opt['subtitle'] ?? '' ) ?>">
+                <p class="description">Frase curta que aparece abaixo do título.</p></td>
+            </tr>
+            <tr>
+                <th><label>Última actualização</label></th>
+                <td><input class="regular-text" name="<?= $prefix ?>_last_updated" value="<?= esc_attr( $opt['last_updated'] ?? '' ) ?>">
+                <p class="description">Ex: 7 de Maio de 2026</p></td>
+            </tr>
+            <tr>
+                <th><label>Email de contacto</label></th>
+                <td><input class="regular-text" type="email" name="<?= $prefix ?>_contact" value="<?= esc_attr( $opt['contact'] ?? '' ) ?>"></td>
+            </tr>
+        </table>
+
+        <h3 style="padding-left:10px;">📋 Secções</h3>
+        <p class="description" style="padding-left:10px;">Cada secção corresponde a um bloco de conteúdo com título e texto. Suporta HTML básico (&lt;strong&gt;, &lt;em&gt;, &lt;a&gt;, &lt;br&gt;).</p>
+        <table class="form-table">
+            <?php foreach ( $sections as $i => $s ) : ?>
+            <tr>
+                <th>Secção <?= $i + 1 ?></th>
+                <td style="display:flex;flex-direction:column;gap:8px;">
+                    <input placeholder="ID (slug único, ex: aceitacao)" class="regular-text" name="<?= $prefix ?>_section_id[]" value="<?= esc_attr( $s['id'] ?? '' ) ?>">
+                    <input placeholder="Título da secção" class="large-text" name="<?= $prefix ?>_section_title[]" value="<?= esc_attr( $s['title'] ?? '' ) ?>">
+                    <textarea placeholder="Conteúdo (HTML permitido)" class="large-text" rows="4" name="<?= $prefix ?>_section_content[]"><?= esc_textarea( $s['content'] ?? '' ) ?></textarea>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </table>
+
+        <?php endforeach; ?>
+
+        <?php submit_button( 'Guardar Termos & Privacidade', 'primary large', 'angopress_legal_save' ); ?>
+    </form>
+    </div>
+    <?php
+}
+
