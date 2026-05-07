@@ -1,19 +1,19 @@
 import type { Metadata } from 'next'
-import { Inter, Space_Grotesk } from 'next/font/google'
+import localFont from 'next/font/local'
 import './globals.css'
-import { ScrollReveal } from '@/components/ScrollReveal'
 
-const inter = Inter({
-  subsets: ['latin', 'latin-ext'],
+const inter = localFont({
+  src: './fonts/inter-variable.woff2',
   variable: '--font-body',
   display: 'swap',
+  weight: '100 900',
 })
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin', 'latin-ext'],
+const spaceGrotesk = localFont({
+  src: './fonts/space-grotesk-variable.woff2',
   variable: '--font-display',
   display: 'swap',
-  weight: ['400', '500', '600', '700'],
+  weight: '300 700',
 })
 
 export const metadata: Metadata = {
