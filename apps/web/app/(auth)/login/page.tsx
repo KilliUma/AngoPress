@@ -32,15 +32,17 @@ export default function LoginPage() {
     })
   }
 
-  const isEnteringSystem = isPending || isRedirecting
+  // isPending = pedido em curso; isRedirecting = sucesso, aguarda navegação
+  // isError garante que isPending=false e o overlay desaparece quando há erro
+  const isEnteringSystem = (isPending || isRedirecting) && !isError
 
   return (
     <div className="relative w-full">
       {isEnteringSystem && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-white/80 backdrop-blur-[2px]">
-          <div className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white px-4 py-3 shadow-sm">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-neutral-300 border-t-brand-600" />
-            <p className="text-sm font-medium text-neutral-700">A entrar no sistema...</p>
+        <div className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-gradient-to-b from-white/85 to-brand-50/70 backdrop-blur-[2px]">
+          <div className="flex items-center gap-3 rounded-xl border border-brand-100 bg-white px-4 py-3 shadow-md shadow-brand-100/60">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand-200 border-t-brand-600" />
+            <p className="text-sm font-semibold text-brand-900">A entrar no sistema...</p>
           </div>
         </div>
       )}
