@@ -372,7 +372,7 @@ export default async function NewsArticlePage({ params }: Props) {
         )}
 
         {/* Gradiente de marca — padrão do sistema */}
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-600/80 to-brand-900/90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-brand-600/15 to-brand-900" />
 
         {/* Grid overlay */}
         <div

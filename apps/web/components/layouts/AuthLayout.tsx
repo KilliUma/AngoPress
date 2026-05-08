@@ -123,7 +123,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         </Link>
 
         {/* Conteúdo central */}
-        <div className="relative z-10 space-y-8">
+        <div className="relative z-10 mt-10 space-y-10">
           {/* Headline */}
           <div className="mb-10 space-y-4">
             <p className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-white/70">

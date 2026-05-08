@@ -70,7 +70,7 @@ function DashboardMockup({ stats }: { stats?: HeroStats }) {
 
   return (
     <div className="relative">
-      <div className="absolute -inset-8 bg-gradient-radial from-brand-600/20 to-transparent blur-3xl pointer-events-none rounded-full" />
+      <div className="absolute rounded-full pointer-events-none -inset-8 bg-gradient-radial from-brand-600/20 to-transparent blur-3xl" />
       <div
         className="relative border border-white/[0.08] rounded-2xl overflow-hidden animate-scale-in shadow-2xl shadow-black/60"
         style={{ animationDelay: '0.5s', background: 'rgb(13, 13, 20)' }}
@@ -80,7 +80,7 @@ function DashboardMockup({ stats }: { stats?: HeroStats }) {
           <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
           <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
           <span className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
-          <div className="flex-1 flex justify-center">
+          <div className="flex justify-center flex-1">
             <span className="text-[11px] text-white/25 font-mono bg-white/5 px-3 py-0.5 rounded border border-white/[0.06]">
               app.angopress.ao — Dashboard
             </span>
@@ -98,7 +98,7 @@ function DashboardMockup({ stats }: { stats?: HeroStats }) {
                 style={{ animationDelay: `${0.7 + i * 0.08}s` }}
               >
                 <p className="text-[10px] text-white/35 mb-1.5 font-medium">{label}</p>
-                <p className="text-xl font-black text-white leading-none mb-1">{value}</p>
+                <p className="mb-1 text-xl font-black leading-none text-white">{value}</p>
                 <p className={`text-[10px] font-semibold ${color}`}>{delta}</p>
               </div>
             ))}
@@ -113,11 +113,11 @@ function DashboardMockup({ stats }: { stats?: HeroStats }) {
                 className="flex items-center justify-between bg-white/[0.025] border border-white/[0.05] rounded-lg px-3 py-2 gap-3 animate-fade-up"
                 style={{ animationDelay: `${0.95 + i * 0.08}s` }}
               >
-                <div className="flex items-center gap-2 min-w-0">
+                <div className="flex items-center min-w-0 gap-2">
                   <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dot}`} />
-                  <p className="text-xs text-white/70 font-medium truncate">{title}</p>
+                  <p className="text-xs font-medium truncate text-white/70">{title}</p>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center flex-shrink-0 gap-2">
                   <span className="text-[10px] text-white/25">{time}</span>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${cls}`}>
                     {status}
@@ -138,7 +138,7 @@ export function HeroSection({ stats, content }: Props) {
   const primaryHref = 'https://angopress.vercel.app/login'
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden pt-20 pb-16 px-4 sm:px-6">
+    <section className="relative flex flex-col justify-center min-h-screen px-4 pt-20 pb-16 overflow-hidden sm:px-6">
       {/* Base background */}
       <div className="absolute inset-0 bg-gradient-to-br from-brand-600 to-brand-900" />
 
@@ -148,7 +148,7 @@ export function HeroSection({ stats, content }: Props) {
       </div>
 
       {/* Grid overlay */}
-      <div className="absolute inset-0 grid-bg opacity-10 pointer-events-none" />
+      <div className="absolute inset-0 pointer-events-none grid-bg opacity-10" />
 
       {/* Radial spotlight — top centre */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] pointer-events-none">
@@ -156,18 +156,18 @@ export function HeroSection({ stats, content }: Props) {
       </div>
 
       {/* Soft vignette — bottom */}
-      <div className="absolute bottom-0 inset-x-0 h-56 bg-gradient-to-t from-brand-950/80 to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-56 pointer-events-none bg-gradient-to-t from-brand-950/80 to-transparent" />
 
       {/* ── Content ── */}
-      <div className="relative max-w-6xl mx-auto w-full">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <div className="relative w-full max-w-6xl mx-auto">
+        <div className="grid items-center gap-16 lg:grid-cols-2 justify-items-center lg:justify-items-stretch">
           {/* Left */}
-          <div className="order-2 lg:order-1">
+          <div className="flex flex-col items-center order-2 text-center lg:order-1 lg:items-start lg:text-left">
             {/* Status badge */}
             <div className="animate-fade-up" style={{ animationDelay: '0s' }}>
               <span className="inline-flex items-center gap-2 text-[11px] font-semibold text-white/80 bg-white/15 border border-white/25 px-4 py-1.5 rounded-full mb-8 tracking-wide">
                 <span className="relative flex h-1.5 w-1.5">
-                  <span className="animate-ping2 absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping2 bg-emerald-400" />
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
                 </span>
                 {cms.badge}
@@ -176,7 +176,7 @@ export function HeroSection({ stats, content }: Props) {
 
             {/* Headline */}
             <h1
-              className="font-display text-[3.5rem] sm:text-[4rem] lg:text-[4.5rem] font-bold leading-[1.04] tracking-tight mb-6 animate-fade-up"
+              className="font-display text-[3rem] sm:text-[4rem] lg:text-[4.5rem] font-bold leading-[1.04] tracking-tight mb-6 animate-fade-up"
               style={{ animationDelay: '0.1s' }}
             >
               <span className="text-white">{cms.headlineLine1}</span>
@@ -194,7 +194,7 @@ export function HeroSection({ stats, content }: Props) {
 
             {/* CTAs */}
             <div
-              className="flex flex-col sm:flex-row gap-3 mb-14 animate-fade-up"
+              className="flex flex-col gap-3 sm:flex-row mb-14 animate-fade-up"
               style={{ animationDelay: '0.26s' }}
             >
               <a
@@ -257,21 +257,24 @@ export function HeroSection({ stats, content }: Props) {
                     </div>
                   ))}
               </div>
-              <p className="text-xs text-white/70 leading-snug">
-                <span className="text-white font-semibold">{journalistsLabel}</span> jornalistas já
+              <p className="text-xs leading-snug text-white/70">
+                <span className="font-semibold text-white">{journalistsLabel}</span> jornalistas já
                 na plataforma
               </p>
             </div>
           </div>
 
           {/* Right — Dashboard Mockup */}
-          <div className="order-1 lg:order-2 animate-fade-up" style={{ animationDelay: '0.4s' }}>
+          <div
+            className="order-1 lg:order-2 animate-fade-up max-lg:!hidden"
+            style={{ animationDelay: '0.4s' }}
+          >
             <DashboardMockup stats={stats} />
           </div>
         </div>
       </div>
 
-      <div className="absolute bottom-0 inset-x-0 divider-glow" />
+      <div className="absolute inset-x-0 bottom-0 divider-glow" />
     </section>
   )
 }

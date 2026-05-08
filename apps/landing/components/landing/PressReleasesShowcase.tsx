@@ -1,7 +1,11 @@
+'use client'
+
+import { useState } from 'react'
 import type { CSSProperties } from 'react'
 import { SectionLabel } from './ui'
 import AnimateIn from '@/components/AnimateIn'
 import { NetworkBackground } from './NetworkBackground'
+import { JournalistRegisterModal } from '@/components/JournalistRegisterModal'
 import type { FeaturedPressRelease } from './types'
 
 function timeAgo(dateStr: string | null): string {
@@ -12,7 +16,15 @@ function timeAgo(dateStr: string | null): string {
   return `${Math.floor(h / 24)}d atrás`
 }
 
-function PRCard({ pr, index }: { pr: FeaturedPressRelease; index: number }) {
+function PRCard({
+  pr,
+  index,
+  onTitleClick,
+}: {
+  pr: FeaturedPressRelease
+  index: number
+  onTitleClick: () => void
+}) {
   return (
     <AnimateIn variant="up" delay={index * 100}>
       <article className="group bg-white/10 border border-white/15 hover:bg-white/15 hover:border-white/30 rounded-2xl p-6 flex flex-col h-full transition-all duration-300 backdrop-blur-sm">
@@ -25,9 +37,13 @@ function PRCard({ pr, index }: { pr: FeaturedPressRelease; index: number }) {
           )}
         </div>
 
-        <h3 className="font-bold text-white group-hover:text-white/90 text-base mb-2.5 leading-snug flex-1 transition-colors duration-200">
+        <button
+          type="button"
+          onClick={onTitleClick}
+          className="font-bold text-white group-hover:text-white/90 text-base mb-2.5 leading-snug flex-1 transition-colors duration-200 text-left hover:underline decoration-white/40 underline-offset-2 cursor-pointer"
+        >
           {pr.title}
-        </h3>
+        </button>
         {pr.summary && (
           <p className="text-sm text-white/65 leading-relaxed mb-5 line-clamp-3">{pr.summary}</p>
         )}
@@ -47,6 +63,7 @@ function PRCard({ pr, index }: { pr: FeaturedPressRelease; index: number }) {
 
 export function PressReleasesShowcase({ featured }: { featured: FeaturedPressRelease[] }) {
   const items = featured.slice(0, 3)
+  const [modalOpen, setModalOpen] = useState(false)
 
   const NETWORK_STYLE = {
     '--net-edge': 'rgb(255 255 255 / 0.22)',
@@ -98,7 +115,7 @@ export function PressReleasesShowcase({ featured }: { featured: FeaturedPressRel
         {items.length > 0 ? (
           <div className="grid md:grid-cols-3 gap-5">
             {items.map((pr, i) => (
-              <PRCard key={pr.id} pr={pr} index={i} />
+              <PRCard key={pr.id} pr={pr} index={i} onTitleClick={() => setModalOpen(true)} />
             ))}
           </div>
         ) : (
@@ -109,6 +126,13 @@ export function PressReleasesShowcase({ featured }: { featured: FeaturedPressRel
             </p>
           </div>
         )}
+
+        {/* Modal de registo de jornalista — disparado pelos títulos dos cards */}
+        <JournalistRegisterModal
+          variant="footer"
+          externalOpen={modalOpen}
+          onExternalClose={() => setModalOpen(false)}
+        />
       </div>
     </section>
   )

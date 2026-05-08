@@ -81,8 +81,8 @@ export function NavBar({ transparentUntil = 12 }: { transparentUntil?: number })
             />
           </a>
 
-          {/* ── Nav links (desktop) — centered ── */}
-          <nav className="absolute items-center hidden gap-1 -translate-x-1/2 lg:flex left-1/2">
+          {/* ── Nav links (desktop) — right aligned ── */}
+          <nav className="items-center hidden gap-1 ml-auto mr-6 lg:flex">
             {NAV_LINKS.map(([label, href]) => {
               const isActive = isActiveLink(href)
 

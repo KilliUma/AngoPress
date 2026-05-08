@@ -104,7 +104,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="flex items-center justify-between h-16 px-5 border-b border-neutral-200 shrink-0">
           <Link href={homeHref} className="flex items-center gap-3" onClick={onClose}>
             <Image
-              src="/logo.png"
+              src="/logo-red.png"
               alt="AngoPress"
               width={120}
               height={34}

@@ -156,11 +156,20 @@ export type JournalistRegisterModalVariant = 'nav' | 'card' | 'cta' | 'footer'
 export function JournalistRegisterModal({
   variant = 'card',
   navClassName,
+  externalOpen,
+  onExternalClose,
 }: {
   variant?: JournalistRegisterModalVariant
   navClassName?: string
+  externalOpen?: boolean
+  onExternalClose?: () => void
 }) {
   const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    if (externalOpen) setOpen(true)
+  }, [externalOpen])
+
   const [state, setState] = useState<FormState>({ status: 'idle' })
   const [errors, setErrors] = useState<Errors>({})
   const [selectedAreas, setSelectedAreas] = useState<Set<string>>(new Set())
@@ -232,6 +241,7 @@ export function JournalistRegisterModal({
 
   const handleClose = () => {
     setOpen(false)
+    onExternalClose?.()
     setState({ status: 'idle' })
     setErrors({})
     setSelectedAreas(new Set())

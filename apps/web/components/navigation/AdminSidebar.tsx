@@ -28,16 +28,16 @@ export function AdminSidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="w-60 bg-neutral-900 flex flex-col shrink-0">
+    <aside className="flex flex-col w-60 bg-neutral-900 shrink-0">
       {/* Logo */}
-      <div className="h-14 flex items-center px-5 border-b border-neutral-700 shrink-0">
+      <div className="flex items-center px-5 border-b h-14 border-neutral-700 shrink-0">
         <Link href="/admin" className="flex items-center gap-2">
           <Image
-            src="/logo-white.png"
+            src="/logo-red.png"
             alt="AngoPress"
             width={120}
             height={34}
-            className="h-7 w-auto object-contain"
+            className="object-contain w-auto h-7"
             priority
           />
           <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider ml-1">
@@ -72,7 +72,7 @@ export function AdminSidebar() {
       <div className="p-3 border-t border-neutral-700">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2 text-xs text-neutral-400 hover:text-white transition-colors px-3 py-2"
+          className="flex items-center gap-2 px-3 py-2 text-xs transition-colors text-neutral-400 hover:text-white"
         >
           <ArrowLeft size={14} />
           Voltar ao Dashboard

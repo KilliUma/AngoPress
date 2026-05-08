@@ -58,7 +58,7 @@ const SOCIAL_LINKS = [
 function FooterLinkGroup({ title, links }: { title: string; links: string[][] }) {
   return (
     <div>
-      <p className="text-[10px] font-bold text-brand-300 uppercase tracking-widest mb-4">{title}</p>
+      <p className="text-[13px] font-bold text-white uppercase tracking-widest mb-4">{title}</p>
       <ul className="space-y-2.5">
         {links.map(([label, href]) => (
           <li key={label}>
@@ -71,7 +71,7 @@ function FooterLinkGroup({ title, links }: { title: string; links: string[][] })
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={1.5}
-                className="w-2 h-2 text-brand-500 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 shrink-0"
+                className="w-2 h-2 transition-all duration-200 -translate-x-1 opacity-0 text-brand-500 group-hover:opacity-100 group-hover:translate-x-0 shrink-0"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="m1 1 4 4-4 4" />
               </svg>
@@ -118,7 +118,7 @@ export function Footer() {
     <>
       <BackToTop />
       <footer className="relative overflow-hidden bg-brand-900">
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-brand-600/50 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-600/50 to-transparent" />
 
         {/* Decorative radial glow */}
         <div
@@ -127,8 +127,8 @@ export function Footer() {
         />
 
         {/* Main content */}
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-14">
-          <div className="grid grid-cols-2 md:grid-cols-12 gap-10">
+        <div className="relative max-w-6xl px-4 mx-auto sm:px-6 py-14">
+          <div className="grid grid-cols-2 gap-10 md:grid-cols-12">
             {/* Brand */}
             <div className="col-span-2 md:col-span-4">
               <a href="/" className="inline-flex items-center mb-5 group">
@@ -137,7 +137,7 @@ export function Footer() {
                   alt="AngoPress"
                   width={140}
                   height={40}
-                  className="h-8 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity duration-200"
+                  className="object-contain w-auto transition-opacity duration-200 h-19 opacity-90 group-hover:opacity-100"
                 />
               </a>
               <p className="text-sm text-brand-200/70 leading-relaxed mb-6 max-w-[260px]">
@@ -154,7 +154,7 @@ export function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={label}
-                    className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 hover:bg-brand-600 text-brand-200/50 hover:text-white transition-all duration-200"
+                    className="flex items-center justify-center w-8 h-8 transition-all duration-200 rounded-lg bg-white/5 hover:bg-brand-600 text-brand-200/50 hover:text-white"
                   >
                     {icon}
                   </a>
@@ -163,7 +163,7 @@ export function Footer() {
             </div>
 
             {/* Nav columns */}
-            <div className="col-span-2 md:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 col-span-2 gap-8 md:col-span-8 sm:grid-cols-3">
               <FooterLinkGroup title="Plataforma" links={PLATAFORMA_LINKS} />
               <FooterLinkGroup title="Para Jornalistas" links={JORNALISTAS_LINKS} />
               <FooterLinkGroup title="Legal" links={LEGAL_LINKS} />
@@ -171,17 +171,17 @@ export function Footer() {
           </div>
 
           {/* Bottom bar */}
-          <div className="mt-12 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-brand-200/60">
+          <div className="flex flex-col items-center justify-between gap-3 pt-6 mt-12 text-xs border-t border-white/5 sm:flex-row text-white/80">
             <p>© {new Date().getFullYear()} AngoPress. Todos os direitos reservados.</p>
 
             <a
               href="https://outisux.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-white transition-colors duration-200"
+              className="transition-colors duration-200 hover:text-white"
             >
               Design by{' '}
-              <span className="font-semibold text-brand-300 hover:text-white transition-colors duration-200">
+              <span className="font-semibold text-white transition-colors duration-200 hover:text-white">
                 Outis UX
               </span>
             </a>
