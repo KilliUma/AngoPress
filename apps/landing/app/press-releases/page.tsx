@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import type { CSSProperties } from 'react'
 import { NetworkBackground } from '@/components/landing/NetworkBackground'
+import { PressReleasesGrid } from './PressReleasesGrid'
 
 export const metadata = {
   title: 'Press Releases | AngoPress',
@@ -140,53 +141,6 @@ async function fetchPublicPressReleases(
   }
 }
 
-function formatDate(iso: string | null) {
-  if (!iso) return ''
-  try {
-    return new Intl.DateTimeFormat('pt-AO', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    }).format(new Date(iso))
-  } catch {
-    return ''
-  }
-}
-
-function PressReleaseCard({ pressRelease }: { pressRelease: PublicPressRelease }) {
-  const date = formatDate(pressRelease.publishedAt)
-  const author = pressRelease.user?.name?.trim() || 'Equipa AngoPress'
-  const company = pressRelease.user?.company?.trim() || 'AngoPress'
-
-  return (
-    <article className="h-full rounded-2xl border border-neutral-200 bg-white p-5 transition-colors duration-300 hover:border-neutral-300 shadow-sm">
-      <div className="mb-4 flex items-center justify-between gap-3 border-b border-neutral-200 pb-3">
-        <span className="inline-flex items-center rounded-full border border-brand-400/25 bg-brand-400/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-brand-300">
-          Press Release
-        </span>
-        {date ? (
-          <span className="text-xs text-neutral-500">{date}</span>
-        ) : (
-          <span className="text-xs text-neutral-400">Sem data</span>
-        )}
-      </div>
-
-      <h2 className="mb-3 line-clamp-3 text-base font-bold leading-snug text-neutral-900">
-        {pressRelease.title}
-      </h2>
-
-      <p className="mb-4 line-clamp-4 text-sm leading-relaxed text-neutral-600">
-        {pressRelease.summary?.trim() || 'Comunicado publicado na plataforma AngoPress.'}
-      </p>
-
-      <div className="mt-auto border-t border-neutral-200 pt-4 text-xs text-neutral-500">
-        <p className="font-medium text-neutral-700">{author}</p>
-        <p>{company}</p>
-      </div>
-    </article>
-  )
-}
-
 interface Props {
   searchParams: Promise<{ page?: string }>
 }
@@ -246,11 +200,7 @@ export default async function PressReleasesPage({ searchParams }: Props) {
 
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         {data.length > 0 ? (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {data.map((pressRelease) => (
-              <PressReleaseCard key={pressRelease.id} pressRelease={pressRelease} />
-            ))}
-          </div>
+          <PressReleasesGrid items={data} />
         ) : (
           <div className="py-24 text-center text-neutral-500">
             <svg
