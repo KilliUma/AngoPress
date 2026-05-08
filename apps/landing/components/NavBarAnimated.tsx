@@ -64,7 +64,7 @@ export default function NavBarAnimated({ appUrl }: Props) {
         <div className="flex items-center gap-2">
           <JournalistRegisterModal variant="nav" />
           <a
-            href={`${appUrl}/login`}
+            href="https://angopress.vercel.app/login"
             className="items-center hidden px-4 py-2 text-sm font-medium text-white transition-all duration-150 border rounded-lg sm:inline-flex border-white/10 hover:bg-white/5 hover:border-white/20"
           >
             Entrar

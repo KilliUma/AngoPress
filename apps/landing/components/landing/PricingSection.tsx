@@ -123,7 +123,7 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
         </ul>
 
         <a
-          href={`${APP_URL}/cadastro?plan=${plan.id}`}
+          href="https://angopress.vercel.app/login"
           className={`w-full inline-flex items-center justify-center px-5 py-3 rounded-xl text-sm font-bold transition-all duration-150 ${
             isPro
               ? 'bg-brand-500 hover:bg-brand-400 text-white shadow-lg shadow-brand-900/50 glow-brand-xs'

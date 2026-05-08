@@ -94,7 +94,7 @@ export function ForWhoSection() {
                 </ul>
 
                 <a
-                  href={`${APP_URL}/cadastro`}
+                  href="https://angopress.vercel.app/login"
                   className="inline-flex items-center justify-center gap-2 w-full py-3.5 text-sm font-bold bg-white text-brand-700 hover:bg-brand-50 rounded-xl transition-all duration-150 shadow-lg"
                 >
                   Criar conta

@@ -120,7 +120,7 @@ export const HERO_FALLBACK: HeroContent = {
   subtitle:
     'Crie, segmente e envie press releases para toda a imprensa angolana. Rastreie aberturas, cliques e resultados em tempo real.',
   ctaPrimaryLabel: 'Começar gratuitamente',
-  ctaPrimaryUrl: '/cadastro',
+  ctaPrimaryUrl: 'https://angopress.vercel.app/login',
   ctaSecondaryLabel: 'Ver como funciona',
   ctaSecondaryUrl: '#como-funciona',
 }
@@ -220,7 +220,7 @@ export const HOW_IT_WORKS_FALLBACK: HowItWorksContent = {
   subtitle: 'Em apenas três passos, os seus press releases chegam aos jornalistas certos.',
   featuresTitle: 'Tudo incluído, sem surpresas',
   ctaLabel: 'Criar a minha conta grátis',
-  ctaUrl: '/cadastro',
+  ctaUrl: 'https://angopress.vercel.app/login',
   steps: [
     {
       title: 'Crie o seu press release',

@@ -125,11 +125,7 @@ const STEP_NUMBERS = ['01', '02', '03']
 
 export function HowItWorksSection({ content }: { content?: HowItWorksContent }) {
   const cms = content ?? HOW_IT_WORKS_FALLBACK
-  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:5173'
-
-  const ctaHref = cms.ctaUrl.startsWith('http')
-    ? cms.ctaUrl
-    : `${APP_URL}${cms.ctaUrl.startsWith('/') ? '' : '/'}${cms.ctaUrl}`
+  const ctaHref = 'https://angopress.vercel.app/login'
 
   return (
     <section id="como-funciona" className="py-28 px-4 sm:px-6 bg-gray-50 relative overflow-hidden">

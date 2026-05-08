@@ -133,13 +133,9 @@ function DashboardMockup({ stats }: { stats?: HeroStats }) {
 }
 
 export function HeroSection({ stats, content }: Props) {
-  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:5173'
   const journalistsLabel = stats ? fmtNum(stats.totalJournalists) + '+' : '2.500+'
   const cms = content ?? HERO_FALLBACK
-  // Se o URL já for absoluto usa directamente; caso contrário prefixar com APP_URL
-  const primaryHref = cms.ctaPrimaryUrl.startsWith('http')
-    ? cms.ctaPrimaryUrl
-    : `${APP_URL}${cms.ctaPrimaryUrl}`
+  const primaryHref = 'https://angopress.vercel.app/login'
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden pt-20 pb-16 px-4 sm:px-6">

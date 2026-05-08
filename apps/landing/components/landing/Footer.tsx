@@ -10,12 +10,12 @@ const PLATAFORMA_LINKS = [
   ['Como funciona', '#como-funciona'],
   ['Funcionalidades', '#como-funciona'],
   ['Planos e Preços', '#precos'],
-  ['Criar conta', `${APP_URL}/cadastro`],
-  ['Entrar', `${APP_URL}/login`],
+  ['Criar conta', 'https://angopress.vercel.app/login'],
+  ['Entrar', 'https://angopress.vercel.app/login'],
 ]
 
 const JORNALISTAS_LINKS = [
-  ['Registar-se', `${APP_URL}/cadastro-jornalista`],
+  ['Registar-se', 'https://angopress.vercel.app/login'],
   ['Como funciona', '#como-funciona'],
 ]
 
