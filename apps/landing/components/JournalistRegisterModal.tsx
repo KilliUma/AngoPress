@@ -361,7 +361,7 @@ export function JournalistRegisterModal({
           <ArrowIcon />
         </button>
       )}
-      {variant === 'footer' && (
+      {variant === 'footer' && !onExternalClose && (
         <button onClick={handleOpen} className="hover:text-white transition-colors text-left">
           Registar-se
         </button>
