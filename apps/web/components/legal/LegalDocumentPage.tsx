@@ -24,7 +24,7 @@ export function LegalDocumentPage({
       <header className="sticky top-0 z-30 border-b border-neutral-200 bg-white/80 backdrop-blur-md">
         <div className="flex items-center justify-between max-w-5xl px-4 py-3 mx-auto">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/logo.png" alt="AngoPress" className="w-auto h-8" />
+            <img src="/logo-red.png" alt="AngoPress" className="w-auto h-12" />
             {/*  <span className="text-base font-bold tracking-tight text-brand-700">AngoPress</span> */}
           </Link>
           <div className="flex items-center gap-4">
