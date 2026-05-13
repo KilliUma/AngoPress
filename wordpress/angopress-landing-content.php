@@ -1153,7 +1153,7 @@ function angopress_help_page(): void {
 }
 
 // ════════════════════════════════════════════════════════════════
-// LEGAL (Termos de Uso + Política de Privacidade)
+// LEGAL (Termos de Uso + Política de Privacidade + Política Anti-spam)
 // ════════════════════════════════════════════════════════════════
 
 // ── Defaults ─────────────────────────────────────────────────────
@@ -1181,6 +1181,14 @@ function angopress_legal_defaults(): array {
         [ 'id' => 'contato',          'title' => 'Contacto',                'content' => 'Para questões sobre privacidade: <a href="mailto:suporte@angopress.ao">suporte@angopress.ao</a>.' ],
     ];
 
+    $sections_anti_spam = [
+        [ 'id' => 'opt-out',        'title' => 'Opt-out',                     'content' => 'Contactos que cancelam a recepção ficam bloqueados para novos envios na plataforma.' ],
+        [ 'id' => 'identificacao',  'title' => 'Identificação do Remetente',  'content' => 'Todos os envios devem identificar claramente o remetente, permitindo que os jornalistas saibam exactamente quem está a enviar a comunicação.' ],
+        [ 'id' => 'contexto',       'title' => 'Respeito Contextual',         'content' => 'Os press releases devem respeitar o contexto editorial dos jornalistas, garantindo relevância e adequação ao seu campo de cobertura.' ],
+        [ 'id' => 'descadastro',    'title' => 'Link de Descadastro',         'content' => 'Todos os envios devem incluir um link de descadastro destacado, permitindo que os jornalistas se removam da lista de distribuição a qualquer momento.' ],
+        [ 'id' => 'reputacao',      'title' => 'Reputação e Medidas',         'content' => 'Reclamações, bounces permanentes e sinais de abuso podem resultar na suspensão temporária ou definitiva da conta.' ],
+    ];
+
     return [
         'termos' => [
             'title'        => 'Termos de Uso',
@@ -1195,6 +1203,13 @@ function angopress_legal_defaults(): array {
             'last_updated' => '7 de Maio de 2026',
             'contact'      => 'suporte@angopress.ao',
             'sections'     => json_encode( $sections_privacidade ),
+        ],
+        'anti_spam' => [
+            'title'        => 'Política Anti-spam',
+            'subtitle'     => 'Diretrizes para garantir comunicações responsáveis e éticas na plataforma.',
+            'last_updated' => '7 de Maio de 2026',
+            'contact'      => 'suporte@angopress.ao',
+            'sections'     => json_encode( $sections_anti_spam ),
         ],
     ];
 }
@@ -1213,6 +1228,7 @@ function angopress_legal_endpoint(): WP_REST_Response {
     $d          = angopress_legal_defaults();
     $termos_opt = get_option( 'angopress_legal_termos',      $d['termos'] );
     $priv_opt   = get_option( 'angopress_legal_privacidade', $d['privacidade'] );
+    $anti_opt   = get_option( 'angopress_legal_anti_spam',   $d['anti_spam'] );
 
     function angopress_decode_legal_doc( array $opt, array $fallback ): array {
         $sections_raw = $opt['sections'] ?? $fallback['sections'];
@@ -1232,19 +1248,20 @@ function angopress_legal_endpoint(): WP_REST_Response {
     $res = new WP_REST_Response( [
         'termos'      => angopress_decode_legal_doc( $termos_opt, $d['termos'] ),
         'privacidade' => angopress_decode_legal_doc( $priv_opt,   $d['privacidade'] ),
+        'anti_spam'   => angopress_decode_legal_doc( $anti_opt,   $d['anti_spam'] ),
     ], 200 );
 
     $res->header( 'Cache-Control', 'public, max-age=3600, s-maxage=3600' );
     return $res;
 }
 
-// ── Admin: submenu "Termos & Privacidade" ──────────────────────────
+// ── Admin: submenu "Termos, Privacidade & Anti-spam" ──────────────────────────
 
 add_action( 'admin_menu', function () {
     add_submenu_page(
         'angopress-landing',
-        'Termos & Privacidade',
-        'Termos & Privacidade',
+        'Termos, Privacidade & Anti-spam',
+        'Termos, Privacidade & Anti-spam',
         'manage_options',
         'angopress-legal',
         'angopress_legal_page'
@@ -1255,7 +1272,11 @@ function angopress_legal_page(): void {
     if ( ! current_user_can( 'manage_options' ) ) return;
 
     $d    = angopress_legal_defaults();
-    $docs = [ 'termos' => 'Termos de Uso', 'privacidade' => 'Política de Privacidade' ];
+    $docs = [
+        'termos'      => 'Termos de Uso',
+        'privacidade' => 'Política de Privacidade',
+        'anti_spam'   => 'Política Anti-spam',
+    ];
 
     // ── Save ──
     if ( isset( $_POST['angopress_legal_save'] ) && check_admin_referer( 'angopress_legal_save' ) ) {
@@ -1287,9 +1308,9 @@ function angopress_legal_page(): void {
     <div class="wrap">
     <h1 style="display:flex;align-items:center;gap:8px;">
         <span class="dashicons dashicons-shield" style="font-size:28px;"></span>
-        AngoPress — Termos &amp; Privacidade
+        AngoPress — Termos, Privacidade &amp; Anti-spam
     </h1>
-    <p class="description">Gira o conteúdo das páginas Termos de Uso e Política de Privacidade. Cache de 1 hora.</p>
+    <p class="description">Gira o conteúdo das páginas Termos de Uso, Política de Privacidade e Política Anti-spam. Cache de 1 hora.</p>
 
     <form method="post" style="margin-top:24px;">
         <?php wp_nonce_field( 'angopress_legal_save' ); ?>
@@ -1345,7 +1366,7 @@ function angopress_legal_page(): void {
 
         <?php endforeach; ?>
 
-        <?php submit_button( 'Guardar Termos & Privacidade', 'primary large', 'angopress_legal_save' ); ?>
+        <?php submit_button( 'Guardar conteúdo legal', 'primary large', 'angopress_legal_save' ); ?>
     </form>
     </div>
     <?php

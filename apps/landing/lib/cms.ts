@@ -530,6 +530,7 @@ export interface LegalDocument {
 export interface LegalContent {
   termos: LegalDocument
   privacidade: LegalDocument
+  antiSpam: LegalDocument
 }
 
 export const LEGAL_FALLBACK: LegalContent = {
@@ -651,6 +652,44 @@ export const LEGAL_FALLBACK: LegalContent = {
       },
     ],
   },
+  antiSpam: {
+    title: 'Política Anti-spam',
+    subtitle: 'Diretrizes para garantir comunicações responsáveis e éticas na plataforma.',
+    lastUpdated: '7 de Maio de 2026',
+    contact: 'suporte@angopress.ao',
+    sections: [
+      {
+        id: 'opt-out',
+        title: 'Opt-out',
+        content:
+          'Contactos que cancelam a recepção ficam bloqueados para novos envios na plataforma.',
+      },
+      {
+        id: 'identificacao',
+        title: 'Identificação do Remetente',
+        content:
+          'Todos os envios devem identificar claramente o remetente, permitindo que os jornalistas saibam exactamente quem está a enviar a comunicação.',
+      },
+      {
+        id: 'contexto',
+        title: 'Respeito Contextual',
+        content:
+          'Os press releases devem respeitar o contexto editorial dos jornalistas, garantindo relevância e adequação ao seu campo de cobertura.',
+      },
+      {
+        id: 'descadastro',
+        title: 'Link de Descadastro',
+        content:
+          'Todos os envios devem incluir um link de descadastro destacado, permitindo que os jornalistas se removam da lista de distribuição a qualquer momento.',
+      },
+      {
+        id: 'reputacao',
+        title: 'Reputação e Medidas',
+        content:
+          'Reclamações, bounces permanentes e sinais de abuso podem resultar na suspensão temporária ou definitiva da conta.',
+      },
+    ],
+  },
 }
 
 export async function getLegalContent(): Promise<LegalContent> {
@@ -682,6 +721,7 @@ export async function getLegalContent(): Promise<LegalContent> {
     return {
       termos: mapDoc(raw.termos ?? {}, LEGAL_FALLBACK.termos),
       privacidade: mapDoc(raw.privacidade ?? {}, LEGAL_FALLBACK.privacidade),
+      antiSpam: mapDoc(raw.anti_spam ?? {}, LEGAL_FALLBACK.antiSpam),
     }
   } catch (err) {
     console.error('[cms] getLegalContent falhou, a usar fallback:', err)

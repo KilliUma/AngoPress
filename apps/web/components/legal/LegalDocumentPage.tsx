@@ -41,6 +41,12 @@ export function LegalDocumentPage({
               Privacidade
             </Link>
             <Link
+              href="/anti-spam"
+              className="text-sm transition-colors text-neutral-500 hover:text-brand-600"
+            >
+              Anti-spam
+            </Link>
+            <Link
               href="/login"
               className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 transition-colors"
             >

@@ -1,6 +1,15 @@
 import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { NetworkBackground } from '@/components/landing/NetworkBackground'
+import { getLegalContent } from '@/lib/cms'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Política Anti-spam — AngoPress',
+  description: 'Diretrizes para garantir comunicações responsáveis e éticas na plataforma.',
+}
+
+export const revalidate = 3600
 
 const NETWORK_STYLE = {
   '--net-edge': 'rgb(255 255 255 / 0.22)',
@@ -10,33 +19,9 @@ const NETWORK_STYLE = {
   '--net-avatar': 'rgb(255 255 255 / 0.88)',
 } as CSSProperties
 
-const sections = [
-  {
-    id: 'opt-out',
-    title: 'Opt-out',
-    content: 'Contactos que cancelam a recepção ficam bloqueados para novos envios na plataforma.',
-  },
-  {
-    id: 'identificacao',
-    title: 'Identificação do Remetente',
-    content:
-      'Todos os envios devem identificar claramente o remetente, permitindo que os jornalistas saibam exatamente quem está a enviar a comunicação.',
-  },
-  {
-    id: 'contexto',
-    title: 'Respeito Contextual',
-    content:
-      'Os press releases devem respeitar o contexto editorial dos jornalistas, garantindo relevância e adequação ao seu campo de cobertura.',
-  },
-  {
-    id: 'descadastro',
-    title: 'Link de Descadastro',
-    content:
-      'Todos os envios devem incluir um link de descadastro destacado, permitindo que os jornalistas se removam da lista de distribuição a qualquer momento.',
-  },
-]
+export default async function AntiSpamPage() {
+  const { antiSpam: doc } = await getLegalContent()
 
-export default function AntiSpamPage() {
   return (
     <main className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -88,11 +73,10 @@ export default function AntiSpamPage() {
               Política Anti-spam
             </p>
             <h1 className="text-4xl font-black leading-tight text-white sm:text-5xl lg:text-6xl">
-              Política Anti-spam
+              {doc.title}
             </h1>
-            <p className="mx-auto max-w-2xl text-lg text-white/80">
-              Diretrizes para garantir comunicações responsáveis e éticas na plataforma
-            </p>
+            <p className="mx-auto max-w-2xl text-lg text-white/80">{doc.subtitle}</p>
+            <p className="text-sm text-white/60">Última actualização: {doc.lastUpdated}</p>
           </div>
         </div>
       </div>
@@ -107,7 +91,7 @@ export default function AntiSpamPage() {
                 Índice
               </p>
               <nav className="space-y-2">
-                {sections.map((s, i) => (
+                {doc.sections.map((s, i) => (
                   <a
                     key={s.id}
                     href={`#${s.id}`}
@@ -136,7 +120,7 @@ export default function AntiSpamPage() {
 
           {/* Content */}
           <article className="space-y-6 lg:col-span-3">
-            {sections.map((s, i) => (
+            {doc.sections.map((s, i) => (
               <section
                 key={s.id}
                 id={s.id}
@@ -151,9 +135,20 @@ export default function AntiSpamPage() {
                     <div className="mt-0.5 h-1 w-12 rounded-full bg-gradient-to-r from-brand-500 to-brand-600" />
                   </div>
                 </div>
-                <p className="text-neutral-700 leading-relaxed">{s.content}</p>
+                <div
+                  className="text-neutral-700 leading-relaxed [&_a]:text-brand-700 [&_a]:underline"
+                  dangerouslySetInnerHTML={{ __html: s.content }}
+                />
               </section>
             ))}
+
+            <section className="rounded-2xl border border-brand-100 bg-brand-50/40 p-6 text-sm text-neutral-700">
+              Dúvidas sobre esta política? Contacte{' '}
+              <a className="font-medium text-brand-700 underline" href={`mailto:${doc.contact}`}>
+                {doc.contact}
+              </a>
+              .
+            </section>
           </article>
         </div>
       </div>

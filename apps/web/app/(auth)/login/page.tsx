@@ -38,15 +38,6 @@ export default function LoginPage() {
 
   return (
     <div className="relative w-full">
-      {isEnteringSystem && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-gradient-to-b from-white/85 to-brand-50/70 backdrop-blur-[2px]">
-          <div className="flex items-center gap-3 rounded-xl border border-brand-100 bg-white px-4 py-3 shadow-md shadow-brand-100/60">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand-200 border-t-brand-600" />
-            <p className="text-sm font-semibold text-brand-900">A entrar no sistema...</p>
-          </div>
-        </div>
-      )}
-
       <div className="mb-8">
         <h2 className="text-2xl tracking-tight text-neutral-900 title-strong">
           Bem-vindo de volta
@@ -144,9 +135,16 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={isEnteringSystem}
-          className="w-full rounded-xl bg-brand-600 px-4 py-3 text-sm font-bold text-white shadow-md shadow-brand-200 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 transition-colors"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-3 text-sm font-bold text-white shadow-md shadow-brand-200 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 transition-colors"
         >
-          {isEnteringSystem ? 'A entrar…' : 'Entrar na conta'}
+          {isEnteringSystem ? (
+            <>
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+              A entrar...
+            </>
+          ) : (
+            'Entrar na conta'
+          )}
         </button>
       </form>
     </div>
