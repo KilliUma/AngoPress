@@ -28,6 +28,8 @@ function StatCard({
   accent,
   sub,
   trend,
+  href,
+  ctaLabel = 'Ver todos',
   loading,
 }: {
   label: string
@@ -36,70 +38,97 @@ function StatCard({
   accent: 'brand' | 'emerald' | 'violet' | 'amber'
   sub?: string
   trend?: { label: string; positive: boolean }
+  href: string
+  ctaLabel?: string
   loading?: boolean
 }) {
   const colors = {
     brand: {
-      bg: 'bg-brand-50',
-      icon: 'bg-brand-600',
+      top: 'bg-brand-600',
+      iconBg: 'bg-brand-50',
       text: 'text-brand-600',
-      border: 'border-brand-100',
+      iconText: 'text-brand-600',
+      pill: 'bg-brand-50 text-brand-700',
+      shadow: 'hover:shadow-brand-900/10',
     },
     emerald: {
-      bg: 'bg-emerald-50',
-      icon: 'bg-emerald-500',
+      top: 'bg-emerald-500',
+      iconBg: 'bg-emerald-50',
       text: 'text-emerald-600',
-      border: 'border-emerald-100',
+      iconText: 'text-emerald-600',
+      pill: 'bg-emerald-50 text-emerald-700',
+      shadow: 'hover:shadow-emerald-900/10',
     },
     violet: {
-      bg: 'bg-violet-50',
-      icon: 'bg-violet-500',
+      top: 'bg-violet-500',
+      iconBg: 'bg-violet-50',
       text: 'text-violet-600',
-      border: 'border-violet-100',
+      iconText: 'text-violet-600',
+      pill: 'bg-violet-50 text-violet-700',
+      shadow: 'hover:shadow-violet-900/10',
     },
     amber: {
-      bg: 'bg-amber-50',
-      icon: 'bg-amber-500',
+      top: 'bg-amber-500',
+      iconBg: 'bg-amber-50',
       text: 'text-amber-600',
-      border: 'border-amber-100',
+      iconText: 'text-amber-600',
+      pill: 'bg-amber-50 text-amber-700',
+      shadow: 'hover:shadow-amber-900/10',
     },
   }
   const c = colors[accent]
+  const badgeLabel = trend?.label ?? sub
 
   return (
     <div
       className={clsx(
-        'bg-white rounded-2xl border p-5 flex flex-col gap-4 hover:shadow-md transition-shadow',
-        c.border,
+        'group relative overflow-hidden rounded-xl border border-neutral-100 bg-white p-3.5 shadow-sm shadow-neutral-900/5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md sm:p-4',
+        c.shadow,
       )}
     >
-      <div className="flex items-start justify-between">
+      <span className={clsx('absolute inset-x-0 top-0 h-0.5', c.top)} />
+
+      <div className="flex items-start justify-between gap-2 pt-2">
         <div
-          className={clsx('w-11 h-11 rounded-xl flex items-center justify-center shrink-0', c.icon)}
+          className={clsx(
+            'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-transform duration-300 group-hover:scale-105',
+            c.iconBg,
+          )}
         >
-          <Icon size={20} className="text-white" />
+          <Icon size={17} className={c.iconText} strokeWidth={2.1} />
         </div>
-        {trend && (
+        {badgeLabel && (
           <span
             className={clsx(
-              'inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full',
-              trend.positive ? 'text-emerald-700 bg-emerald-50' : 'text-red-600 bg-red-50',
+              'inline-flex min-h-6 items-center rounded-full px-2 py-0.5 text-[11px] font-semibold',
+              trend && !trend.positive ? 'bg-red-50 text-red-600' : c.pill,
             )}
           >
-            <TrendingUp size={11} />
-            {trend.label}
+            {trend && <TrendingUp size={10} className="mr-1" />}
+            {badgeLabel}
           </span>
         )}
       </div>
-      <div>
-        <p className="mb-1 text-xs font-medium text-neutral-500">{label}</p>
+
+      <div className="mt-3">
+        <p className="text-xs font-semibold leading-snug text-neutral-600">{label}</p>
         {loading ? (
-          <div className="w-20 h-8 rounded bg-neutral-100 animate-pulse" />
+          <div className="mt-2 h-7 w-14 animate-pulse rounded-md bg-neutral-100" />
         ) : (
-          <p className="text-3xl leading-none text-neutral-900 title-heavy">{value}</p>
+          <p className="mt-2 text-2xl leading-none text-neutral-900 title-heavy">{value}</p>
         )}
-        {sub && <p className="text-xs text-neutral-400 mt-1.5">{sub}</p>}
       </div>
+
+      <Link
+        href={href}
+        className={clsx(
+          'mt-3 inline-flex w-fit items-center gap-1.5 text-xs font-semibold transition-colors',
+          c.text,
+        )}
+      >
+        {ctaLabel}
+        <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
+      </Link>
     </div>
   )
 }
@@ -239,8 +268,9 @@ export default function DashboardPage() {
               value={totalJournalists}
               icon={Users}
               accent="emerald"
-              sub="Base verificada"
-              trend={{ label: 'Tendência positiva', positive: true }}
+              href="/jornalistas"
+              ctaLabel="Ver todos"
+              trend={{ label: 'Base verificada', positive: true }}
               loading={loadingJ}
             />
             <StatCard
@@ -248,8 +278,9 @@ export default function DashboardPage() {
               value={totalLists}
               icon={List}
               accent="violet"
-              sub="Segmentadas"
-              trend={{ label: 'Tendência positiva', positive: true }}
+              href="/listas"
+              ctaLabel="Ver todas"
+              trend={{ label: 'Segmentadas', positive: true }}
               loading={loadingML}
             />
             <StatCard
@@ -258,6 +289,7 @@ export default function DashboardPage() {
               icon={FileText}
               accent="brand"
               sub="Total criados"
+              href="/press-releases"
               loading={loadingPR}
             />
             <StatCard
@@ -266,6 +298,8 @@ export default function DashboardPage() {
               icon={Send}
               accent="amber"
               sub="Total enviadas"
+              href="/campanhas"
+              ctaLabel="Ver todas"
               loading={loadingCamp}
             />
           </div>

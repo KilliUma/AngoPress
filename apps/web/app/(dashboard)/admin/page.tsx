@@ -11,6 +11,7 @@ import {
   ClipboardCheck,
   Sparkles,
   ShieldCheck,
+  ArrowRight,
 } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useAuthStore } from '@/store/auth.store'
@@ -20,34 +21,84 @@ function StatCard({
   label,
   value,
   icon: Icon,
-  colorClass,
+  accent,
+  href,
   loading,
 }: {
   label: string
   value: number | string
   icon: React.ElementType
-  colorClass: string
+  accent: 'brand' | 'emerald' | 'amber' | 'violet'
+  href: string
   loading?: boolean
 }) {
+  const colors = {
+    brand: {
+      top: 'bg-brand-600',
+      iconBg: 'bg-brand-50',
+      iconText: 'text-brand-600',
+      text: 'text-brand-600',
+    },
+    emerald: {
+      top: 'bg-emerald-500',
+      iconBg: 'bg-emerald-50',
+      iconText: 'text-emerald-600',
+      text: 'text-emerald-600',
+    },
+    amber: {
+      top: 'bg-amber-500',
+      iconBg: 'bg-amber-50',
+      iconText: 'text-amber-600',
+      text: 'text-amber-600',
+    },
+    violet: {
+      top: 'bg-violet-500',
+      iconBg: 'bg-violet-50',
+      iconText: 'text-violet-600',
+      text: 'text-violet-600',
+    },
+  }
+  const c = colors[accent]
+
   return (
-    <div className="flex items-center gap-4 rounded-[20px] border border-neutral-200/80 bg-white p-5 shadow-sm">
-      <div
+    <Link
+      href={href}
+      className="group relative overflow-hidden rounded-xl border border-neutral-100 bg-white p-3.5 shadow-sm shadow-neutral-900/5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md sm:p-4"
+    >
+      <span className={clsx('absolute inset-x-0 top-0 h-0.5', c.top)} />
+
+      <div className="flex items-start justify-between gap-2 pt-2">
+        <span
+          className={clsx(
+            'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-transform duration-300 group-hover:scale-105',
+            c.iconBg,
+          )}
+        >
+          <Icon size={17} className={c.iconText} strokeWidth={2.1} />
+        </span>
+      </div>
+
+      <div className="mt-3 min-w-0">
+        <p className="text-xs font-semibold leading-snug text-neutral-600">{label}</p>
+        {loading ? (
+          <div className="mt-2 h-7 w-14 animate-pulse rounded-md bg-neutral-100" />
+        ) : (
+          <p className="mt-2 truncate text-2xl leading-none text-neutral-900 title-heavy">
+            {value}
+          </p>
+        )}
+      </div>
+
+      <span
         className={clsx(
-          'flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl',
-          colorClass,
+          'mt-3 inline-flex w-fit items-center gap-1.5 text-xs font-semibold transition-colors',
+          c.text,
         )}
       >
-        <Icon size={20} className="text-white" />
-      </div>
-      <div>
-        <p className="text-xs text-neutral-500">{label}</p>
-        {loading ? (
-          <div className="mt-1 h-7 w-16 animate-pulse rounded bg-neutral-100" />
-        ) : (
-          <p className="mt-0.5 text-2xl font-bold text-neutral-900">{value}</p>
-        )}
-      </div>
-    </div>
+        Ver detalhes
+        <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
+      </span>
+    </Link>
   )
 }
 
@@ -103,28 +154,32 @@ export default function AdminDashboardPage() {
           label="Usuários activos"
           value={stats?.activeUsers ?? 0}
           icon={Users}
-          colorClass="bg-brand-600"
+          accent="brand"
+          href="/admin/utilizadores"
           loading={isLoading}
         />
         <StatCard
           label="Assinaturas activas"
           value={stats?.activeSubscriptions ?? 0}
           icon={CreditCard}
-          colorClass="bg-emerald-500"
+          accent="emerald"
+          href="/admin/assinaturas"
           loading={isLoading}
         />
         <StatCard
           label="Envios totais"
           value={stats?.totalSends ?? 0}
           icon={Send}
-          colorClass="bg-amber-500"
+          accent="amber"
+          href="/campanhas"
           loading={isLoading}
         />
         <StatCard
           label="Receita mensal"
           value={revenue}
           icon={TrendingUp}
-          colorClass="bg-violet-500"
+          accent="violet"
+          href="/admin/assinaturas"
           loading={isLoading}
         />
       </div>

@@ -22,7 +22,6 @@ export const metadata: Metadata = {
   description: 'Plataforma de Mailing de Imprensa',
   icons: {
     icon: '/favicon.ico',
-    apple: '/apple-icon.png',
   },
 }
 
