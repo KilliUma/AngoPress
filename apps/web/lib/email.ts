@@ -1,23 +1,14 @@
-import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses'
+import { Resend } from 'resend'
 
 const isConfigured =
-  !!process.env.AWS_ACCESS_KEY_ID &&
-  process.env.AWS_ACCESS_KEY_ID !== 'SUBSTITUIR' &&
-  !!process.env.AWS_SECRET_ACCESS_KEY &&
-  process.env.AWS_SECRET_ACCESS_KEY !== 'SUBSTITUIR'
+  !!process.env.RESEND_API_KEY &&
+  !process.env.RESEND_API_KEY.includes('SUBSTITUIR') &&
+  !process.env.RESEND_API_KEY.includes('placeholder')
 
-const ses = isConfigured
-  ? new SESClient({
-      region: process.env.AWS_REGION ?? 'us-east-1',
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-      },
-    })
-  : null
+const resend = isConfigured ? new Resend(process.env.RESEND_API_KEY) : null
 
-const FROM_EMAIL = process.env.AWS_SES_FROM_EMAIL ?? 'noreply@angopress.ao'
-const FROM_NAME = process.env.AWS_SES_FROM_NAME ?? 'AngoPress'
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? 'noreply@angopress.ao'
+const FROM_NAME = process.env.RESEND_FROM_NAME ?? 'AngoPress'
 
 export async function sendEmail(params: {
   to: string
@@ -27,21 +18,21 @@ export async function sendEmail(params: {
 }): Promise<void> {
   const { to, toName, subject, html } = params
 
-  if (!ses) {
+  if (!resend) {
     console.debug(`[DEV] Simulando envio para ${to} — "${subject}"`)
     return
   }
 
-  await ses.send(
-    new SendEmailCommand({
-      Source: `"${FROM_NAME}" <${FROM_EMAIL}>`,
-      Destination: { ToAddresses: [`"${toName}" <${to}>`] },
-      Message: {
-        Subject: { Data: subject, Charset: 'UTF-8' },
-        Body: { Html: { Data: html, Charset: 'UTF-8' } },
-      },
-    }),
-  )
+  const result = await resend.emails.send({
+    from: `${FROM_NAME} <${FROM_EMAIL}>`,
+    to: [`${toName} <${to}>`],
+    subject,
+    html,
+  })
+
+  if (result.error) {
+    throw new Error(`Falha Resend: ${result.error.message}`)
+  }
 }
 
 export async function sendSubscriptionActivatedEmail(params: {

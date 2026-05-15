@@ -86,12 +86,19 @@ export async function POST(
         expiresAt: updated.expiresAt ?? effectiveExpiresAt,
         sendsPerMonth: plan.maxSendsMonth,
       })
-    } catch {
+    } catch (error) {
+      console.error('[subscription-activate] Falha ao enviar email de confirmação', {
+        userId,
+        message: error instanceof Error ? error.message : 'Erro desconhecido',
+      })
       // falha no envio de e-mail não deve bloquear a ativação
     }
 
     return NextResponse.json(updated)
-  } catch {
+  } catch (error) {
+    console.error('[subscription-activate] Erro interno', {
+      message: error instanceof Error ? error.message : 'Erro desconhecido',
+    })
     return NextResponse.json({ message: 'Erro interno do servidor' }, { status: 500 })
   }
 }

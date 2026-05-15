@@ -118,7 +118,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           where: { id: recipient.id },
           data: { status: 'SENT', sentAt: new Date() },
         })
-      } catch {
+      } catch (error) {
+        console.error('[campaign-send] Falha ao enviar email', {
+          campaignId: id,
+          recipientId: recipient.id,
+          journalistId: recipient.journalistId,
+          message: error instanceof Error ? error.message : 'Erro desconhecido',
+        })
         await prisma.campaignRecipient.update({
           where: { id: recipient.id },
           data: { status: 'FAILED' },
@@ -144,7 +150,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       { ok: true, sent: recipients.length - failed, failed },
       { status: 202 },
     )
-  } catch {
+  } catch (error) {
+    console.error('[campaign-send] Erro interno', {
+      message: error instanceof Error ? error.message : 'Erro desconhecido',
+    })
     return NextResponse.json({ message: 'Erro interno do servidor' }, { status: 500 })
   }
 }

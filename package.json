@@ -13,6 +13,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "email:test": "node scripts/test-resend.mjs",
     "git:auto": "node scripts/git-auto.mjs",
     "git:auto:watch": "node scripts/git-auto-watch.mjs",
     "typecheck": "turbo run typecheck",
