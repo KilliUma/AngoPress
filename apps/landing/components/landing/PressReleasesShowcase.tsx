@@ -27,7 +27,7 @@ function PRCard({
 }) {
   return (
     <AnimateIn variant="up" delay={index * 100}>
-      <article className="group bg-white/10 border border-white/15 hover:bg-white/15 hover:border-white/30 rounded-2xl p-6 flex flex-col h-full transition-all duration-300 backdrop-blur-sm">
+      <article className="flex flex-col h-full p-6 transition-all duration-300 border group bg-white/10 border-white/15 hover:bg-white/15 hover:border-white/30 rounded-2xl backdrop-blur-sm">
         <div className="flex items-center justify-between gap-3 mb-4">
           <span className="text-[10px] font-bold text-white/80 bg-white/15 border border-white/20 px-2.5 py-1 rounded-full uppercase tracking-widest">
             Press Release
@@ -45,14 +45,14 @@ function PRCard({
           {pr.title}
         </button>
         {pr.summary && (
-          <p className="text-sm text-white/65 leading-relaxed mb-5 line-clamp-3">{pr.summary}</p>
+          <p className="mb-5 text-sm leading-relaxed text-white/65 line-clamp-3">{pr.summary}</p>
         )}
 
         <div className="flex items-center gap-2.5 pt-4 border-t border-white/15 mt-auto">
-          <div className="w-7 h-7 rounded-lg bg-white/20 text-white font-bold text-xs flex items-center justify-center flex-shrink-0">
+          <div className="flex items-center justify-center flex-shrink-0 text-xs font-bold text-white rounded-lg w-7 h-7 bg-white/20">
             {(pr.user.company ?? pr.user.name).charAt(0).toUpperCase()}
           </div>
-          <p className="text-xs font-medium text-white/55 truncate">
+          <p className="text-xs font-medium truncate text-white/55">
             {pr.user.company ?? pr.user.name}
           </p>
         </div>
@@ -74,20 +74,20 @@ export function PressReleasesShowcase({ featured }: { featured: FeaturedPressRel
   } as CSSProperties
 
   return (
-    <section className="relative py-28 px-4 sm:px-6 overflow-hidden">
+    <section className="relative px-4 overflow-hidden py-28 sm:px-6">
       <div className="absolute inset-0 bg-gradient-to-br from-brand-600 to-brand-900" />
       <div className="absolute inset-0 opacity-35" style={NETWORK_STYLE}>
         <NetworkBackground />
       </div>
-      <div className="absolute inset-0 grid-bg opacity-8 pointer-events-none" />
+      <div className="absolute inset-0 pointer-events-none grid-bg opacity-8" />
 
       <div className="relative max-w-6xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12 reveal">
+        <div className="flex flex-col gap-4 mb-12 sm:flex-row sm:items-end sm:justify-between reveal">
           <div>
             <SectionLabel className="text-white/70 border-white/30 bg-white/10">
               Vitrine pública
             </SectionLabel>
-            <h2 className="text-4xl font-black text-white tracking-tight mt-3">
+            <h2 className="mt-3 text-4xl font-black tracking-tight text-white">
               Press Releases em destaque
             </h2>
           </div>
@@ -113,15 +113,15 @@ export function PressReleasesShowcase({ featured }: { featured: FeaturedPressRel
         </div>
 
         {items.length > 0 ? (
-          <div className="grid md:grid-cols-3 gap-5">
+          <div className="grid gap-5 md:grid-cols-3">
             {items.map((pr, i) => (
               <PRCard key={pr.id} pr={pr} index={i} onTitleClick={() => setModalOpen(true)} />
             ))}
           </div>
         ) : (
-          <div className="rounded-2xl border border-white/15 bg-white/10 p-8 text-center">
-            <p className="text-white font-semibold">Ainda não há press releases públicos.</p>
-            <p className="text-white/60 text-sm mt-2">
+          <div className="p-8 text-center border rounded-2xl border-white/15 bg-white/10">
+            <p className="font-semibold text-white">Ainda não há press releases públicos.</p>
+            <p className="mt-2 text-sm text-white/60">
               Assim que forem publicados, vão aparecer aqui automaticamente.
             </p>
           </div>
