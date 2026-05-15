@@ -35,6 +35,25 @@ function stagedChanges() {
   return git(['diff', '--cached', '--name-only']).length > 0
 }
 
+function unstageIgnoredGeneratedFiles() {
+  const staged = git(['diff', '--cached', '--name-only'])
+    .split('\n')
+    .filter(Boolean)
+
+  const ignored = staged.filter(
+    (file) =>
+      file.endsWith('.tsbuildinfo') ||
+      file.endsWith('.zip') ||
+      file.endsWith('.log') ||
+      file.endsWith('.DS_Store') ||
+      file === '.DS_Store',
+  )
+
+  if (ignored.length > 0) {
+    git(['reset', '-q', 'HEAD', '--', ...ignored], { stdio: 'inherit' })
+  }
+}
+
 function main() {
   if (!hasChanges()) {
     console.log('Sem alterações para commit.')
@@ -43,19 +62,8 @@ function main() {
 
   assertSafeStatus()
 
-  git(
-    [
-      'add',
-      '--all',
-      '--',
-      '.',
-      ':(exclude)*.tsbuildinfo',
-      ':(exclude)*.zip',
-      ':(exclude)*.log',
-      ':(exclude).DS_Store',
-    ],
-    { stdio: 'inherit' },
-  )
+  git(['add', '--all', '--', '.'], { stdio: 'inherit' })
+  unstageIgnoredGeneratedFiles()
 
   if (!stagedChanges()) {
     console.log('Sem alterações elegíveis para commit.')
