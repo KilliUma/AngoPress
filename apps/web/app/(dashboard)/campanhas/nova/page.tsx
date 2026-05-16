@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight, Send, Calendar, Check, Sparkles } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { Card } from '@/components/ui/Card'
-import { useCreateCampaign } from '@/hooks/useCampaigns'
+import { useCreateCampaign, useScheduleCampaign, useSendCampaign } from '@/hooks/useCampaigns'
 import { usePressReleases } from '@/hooks/usePressReleases'
 import { useMailingLists } from '@/hooks/useMailingLists'
 import type { CreateCampaignPayload } from '@/services/campaigns.service'
@@ -33,6 +33,8 @@ export default function NovaCampanhaPage() {
   const { data: prData } = usePressReleases({ limit: 100 })
   const { data: listsData } = useMailingLists()
   const createCampaign = useCreateCampaign()
+  const sendCampaign = useSendCampaign()
+  const scheduleCampaign = useScheduleCampaign()
 
   const pressReleases = prData?.data || []
   const mailingLists = listsData || []
@@ -45,11 +47,16 @@ export default function NovaCampanhaPage() {
       name: values.name,
       subject: values.subject,
       mailingListIds: selectedLists,
-      ...(scheduleMode === 'later' && values.scheduledAt
-        ? { scheduledAt: new Date(values.scheduledAt).toISOString() }
-        : {}),
     }
     const campaign = await createCampaign.mutateAsync(payload)
+    if (scheduleMode === 'now') {
+      await sendCampaign.mutateAsync(campaign.id)
+    } else if (values.scheduledAt) {
+      await scheduleCampaign.mutateAsync({
+        id: campaign.id,
+        scheduledAt: new Date(values.scheduledAt).toISOString(),
+      })
+    }
     router.push(`/campanhas/${campaign.id}`)
   })
 
@@ -370,10 +377,14 @@ export default function NovaCampanhaPage() {
               </button>
               <button
                 type="submit"
-                disabled={createCampaign.isPending}
+                disabled={
+                  createCampaign.isPending || sendCampaign.isPending || scheduleCampaign.isPending
+                }
                 className="inline-flex items-center gap-2 px-5 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-brand-600 hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                {createCampaign.isPending ? (
+                {createCampaign.isPending ||
+                sendCampaign.isPending ||
+                scheduleCampaign.isPending ? (
                   <div className="w-4 h-4 border-2 rounded-full border-white/30 border-t-white animate-spin" />
                 ) : (
                   <Send size={16} />

@@ -46,12 +46,21 @@ export class EmailService {
       return
     }
 
-    await this.resend.emails.send({
+    const result = await this.resend.emails.send({
       from: `${this.fromName} <${this.fromEmail}>`,
       to: [`${toName} <${to}>`],
       subject,
       html: trackedHtml,
     })
+
+    if (result.error) {
+      const { name, message, statusCode } = result.error
+      throw new Error(
+        `Resend rejeitou o envio (${name}, ${statusCode ?? 'sem status'}): ${message}`,
+      )
+    }
+
+    this.logger.log(`Email enviado para ${to} via Resend: ${result.data.id}`)
   }
 
   /** Injecta pixel 1×1 transparente antes de </body> */

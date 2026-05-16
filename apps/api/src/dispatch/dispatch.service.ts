@@ -19,8 +19,10 @@ interface SendBatchJobData {
 @Injectable()
 export class DispatchService {
   private readonly logger = new Logger(DispatchService.name)
-  private readonly queue: Queue
+  private readonly queue: Queue | undefined
   private worker: Worker | undefined
+  private readonly isServerless: boolean
+  private readonly appUrl: string
 
   constructor(
     private readonly prisma: PrismaService,
@@ -30,7 +32,9 @@ export class DispatchService {
     const redisHost = configService.get<string>('redis.host') ?? 'localhost'
     const redisPort = configService.get<number>('redis.port') ?? 6379
     const redisPassword = configService.get<string>('redis.password')
-    const appUrl = configService.get<string>('app.url') ?? 'http://localhost:3001'
+    this.appUrl = configService.get<string>('app.url') ?? 'http://localhost:3001'
+    this.isServerless =
+      process.env.VERCEL === '1' || process.env.AWS_LAMBDA_FUNCTION_NAME !== undefined
 
     const connection = {
       host: redisHost,
@@ -39,12 +43,17 @@ export class DispatchService {
       tls: configService.get<boolean>('redis.tls') ? {} : undefined,
     }
 
+    if (this.isServerless) {
+      this.logger.warn('Ambiente serverless detectado: envios imediatos serao processados inline')
+      return
+    }
+
     this.queue = new Queue('campaign-dispatch', { connection })
 
     this.worker = new Worker<SendBatchJobData>(
       'campaign-dispatch',
       async (job: Job<SendBatchJobData>) => {
-        await this.processCampaign(job.data.campaignId, appUrl)
+        await this.processCampaign(job.data.campaignId, this.appUrl)
       },
       { connection, concurrency: 2 },
     )
@@ -74,6 +83,11 @@ export class DispatchService {
       data: { status: CampaignStatus.QUEUED },
     })
 
+    if (this.isServerless || !this.queue) {
+      await this.processCampaign(campaignId, this.appUrl)
+      return
+    }
+
     await this.queue.add(
       'send',
       { campaignId },
@@ -89,6 +103,12 @@ export class DispatchService {
 
     const delay = scheduledAt.getTime() - Date.now()
     if (delay < 0) throw new BadRequestException('Data de agendamento no passado')
+
+    if (this.isServerless || !this.queue) {
+      throw new BadRequestException(
+        'Agendamento futuro indisponível neste deploy serverless. Use envio imediato ou configure um worker persistente.',
+      )
+    }
 
     await this.prisma.campaign.update({
       where: { id: campaignId },
