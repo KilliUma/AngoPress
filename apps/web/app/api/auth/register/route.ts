@@ -4,6 +4,17 @@ import { signAccessToken, signRefreshToken, buildAuthCookies } from '@/lib/auth'
 import bcrypt from 'bcrypt'
 
 const SALT_ROUNDS = 12
+const REGISTER_USER_SELECT = {
+  id: true,
+  name: true,
+  email: true,
+  role: true,
+  status: true,
+  company: true,
+  phone: true,
+  avatarUrl: true,
+  createdAt: true,
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,6 +41,7 @@ export async function POST(request: NextRequest) {
         role: 'CLIENT',
         status: 'ACTIVE',
       },
+      select: REGISTER_USER_SELECT,
     })
 
     const payload = { sub: user.id, email: user.email, role: user.role }

@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyRefreshToken, signAccessToken, signRefreshToken, buildAuthCookies } from '@/lib/auth'
 
+const REFRESH_USER_SELECT = {
+  id: true,
+  email: true,
+  role: true,
+}
+
 export async function POST(request: NextRequest) {
   try {
     const refreshTokenCookie = request.cookies.get('refresh_token')?.value
@@ -16,7 +22,7 @@ export async function POST(request: NextRequest) {
 
     const stored = await prisma.refreshToken.findFirst({
       where: { token: refreshTokenCookie, revoked: false },
-      include: { user: true },
+      include: { user: { select: REFRESH_USER_SELECT } },
     })
 
     if (!stored) {

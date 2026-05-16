@@ -3,6 +3,19 @@ import { prisma } from '@/lib/prisma'
 import { signAccessToken, signRefreshToken, buildAuthCookies } from '@/lib/auth'
 import bcrypt from 'bcrypt'
 
+const AUTH_USER_SELECT = {
+  id: true,
+  name: true,
+  email: true,
+  passwordHash: true,
+  role: true,
+  status: true,
+  company: true,
+  phone: true,
+  avatarUrl: true,
+  createdAt: true,
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -12,7 +25,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'Email e password são obrigatórios' }, { status: 400 })
     }
 
-    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } })
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+      select: AUTH_USER_SELECT,
+    })
 
     if (!user) {
       // Verificar jornalista com pedido pendente
@@ -81,7 +97,8 @@ export async function POST(request: NextRequest) {
     })
     cookies.forEach((c) => response.headers.append('Set-Cookie', c))
     return response
-  } catch {
+  } catch (err) {
+    console.error('[POST /api/auth/login]', err)
     return NextResponse.json({ message: 'Erro interno do servidor' }, { status: 500 })
   }
 }
