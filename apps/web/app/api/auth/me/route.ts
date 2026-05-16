@@ -24,9 +24,14 @@ export async function GET(request: NextRequest) {
       company: user.company,
       phone: user.phone,
       avatarUrl: user.avatarUrl,
+      emailSignatureText: user.emailSignatureText,
+      emailSignatureImageUrl: user.emailSignatureImageUrl,
       createdAt: user.createdAt,
     })
-  } catch {
+  } catch (error) {
+    console.error('[auth/me:get] Erro interno', {
+      message: error instanceof Error ? error.message : 'Erro desconhecido',
+    })
     return NextResponse.json({ message: 'Erro interno do servidor' }, { status: 500 })
   }
 }
@@ -39,7 +44,15 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, company, phone, currentPassword, newPassword } = body
+    const {
+      name,
+      company,
+      phone,
+      currentPassword,
+      newPassword,
+      emailSignatureText,
+      emailSignatureImageUrl,
+    } = body
 
     const user = await prisma.user.findUnique({ where: { id: authUser.sub } })
     if (!user) {
@@ -60,6 +73,35 @@ export async function PATCH(request: NextRequest) {
 
     if (company !== undefined) updateData.company = company?.trim() || null
     if (phone !== undefined) updateData.phone = phone?.trim() || null
+
+    if (emailSignatureText !== undefined) {
+      if (user.role !== 'ADMIN') {
+        return NextResponse.json(
+          { message: 'Apenas administradores podem editar a assinatura' },
+          { status: 403 },
+        )
+      }
+      if (typeof emailSignatureText !== 'string') {
+        return NextResponse.json({ message: 'Assinatura inválida' }, { status: 400 })
+      }
+      if (emailSignatureText.length > 1200) {
+        return NextResponse.json({ message: 'Assinatura demasiado longa' }, { status: 400 })
+      }
+      updateData.emailSignatureText = emailSignatureText.trim() || null
+    }
+
+    if (emailSignatureImageUrl !== undefined) {
+      if (user.role !== 'ADMIN') {
+        return NextResponse.json(
+          { message: 'Apenas administradores podem editar a assinatura' },
+          { status: 403 },
+        )
+      }
+      if (emailSignatureImageUrl !== null && typeof emailSignatureImageUrl !== 'string') {
+        return NextResponse.json({ message: 'Imagem da assinatura inválida' }, { status: 400 })
+      }
+      updateData.emailSignatureImageUrl = emailSignatureImageUrl?.trim() || null
+    }
 
     // Alteração de password
     if (newPassword !== undefined) {
@@ -93,9 +135,14 @@ export async function PATCH(request: NextRequest) {
       company: updated.company,
       phone: updated.phone,
       avatarUrl: updated.avatarUrl,
+      emailSignatureText: updated.emailSignatureText,
+      emailSignatureImageUrl: updated.emailSignatureImageUrl,
       createdAt: updated.createdAt,
     })
-  } catch {
+  } catch (error) {
+    console.error('[auth/me:patch] Erro interno', {
+      message: error instanceof Error ? error.message : 'Erro desconhecido',
+    })
     return NextResponse.json({ message: 'Erro interno do servidor' }, { status: 500 })
   }
 }

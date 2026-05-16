@@ -110,3 +110,9 @@ export function useUpdateProfile() {
     },
   })
 }
+
+export function useUploadSignatureImage() {
+  return useMutation({
+    mutationFn: (file: File) => authService.uploadSignatureImage(file),
+  })
+}

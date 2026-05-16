@@ -126,9 +126,12 @@ export class DispatchService {
   private async processCampaign(campaignId: string, _appUrl: string): Promise<void> {
     const campaign = await this.prisma.campaign.findUnique({
       where: { id: campaignId },
-      include: { pressRelease: true },
+      include: {
+        pressRelease: true,
+      },
     })
     if (!campaign || !campaign.pressRelease) return
+    const signature = await this.getAdminSignature()
 
     await this.prisma.campaign.update({
       where: { id: campaignId },
@@ -148,12 +151,17 @@ export class DispatchService {
           nome: recipient.journalist.name,
           veiculo: recipient.journalist.outlet,
         })
+        const cleanHtml = this.normalizeEmailBody(personalizedHtml)
+        const htmlWithSignature = this.appendSignature(cleanHtml, {
+          text: signature.text,
+          imageUrl: signature.imageUrl,
+        })
 
         await this.emailService.send({
           to: recipient.journalist.email,
           toName: recipient.journalist.name,
           subject: campaign.subject,
-          html: personalizedHtml,
+          html: htmlWithSignature,
           trackingToken: recipient.trackingToken,
         })
 
@@ -214,5 +222,78 @@ export class DispatchService {
   /** Substitui variáveis no template {{nome}}, {{veiculo}} */
   private personalize(html: string, vars: Record<string, string>): string {
     return html.replace(/\{\{(\w+)\}\}/g, (_, key) => vars[key] ?? `{{${key}}}`)
+  }
+
+  private normalizeEmailBody(html: string): string {
+    return html
+      .replace(/<li\b[^>]*>\s*(?:<p\b[^>]*>)?\s*(?:<br\s*\/?>)?\s*(?:<\/p>)?\s*<\/li>/gi, '')
+      .replace(/<li\b[^>]*>\s*<p\b([^>]*)>([\s\S]*?)<\/p>\s*<\/li>/gi, '<p$1>$2</p>')
+      .replace(/<li\b[^>]*>([\s\S]*?)<\/li>/gi, '<p>$1</p>')
+      .replace(/<\/?(?:ol|ul)\b[^>]*>/gi, '')
+  }
+
+  private async getAdminSignature(): Promise<{ text: string | null; imageUrl: string | null }> {
+    const admin = await this.prisma.user.findFirst({
+      where: {
+        role: 'ADMIN',
+        OR: [{ emailSignatureText: { not: null } }, { emailSignatureImageUrl: { not: null } }],
+      },
+      select: { emailSignatureText: true, emailSignatureImageUrl: true },
+      orderBy: { createdAt: 'asc' },
+    })
+
+    return {
+      text: admin?.emailSignatureText ?? null,
+      imageUrl: admin?.emailSignatureImageUrl ?? null,
+    }
+  }
+
+  private appendSignature(
+    html: string,
+    signature: { text: string | null; imageUrl: string | null },
+  ): string {
+    if (!signature.text?.trim() && !signature.imageUrl?.trim()) return html
+
+    const textHtml = signature.text
+      ?.trim()
+      .split(/\r?\n/)
+      .filter(Boolean)
+      .map((line) => `<div>${this.escapeHtml(line)}</div>`)
+      .join('')
+
+    const imageUrl = this.toAbsoluteUrl(signature.imageUrl?.trim() ?? '')
+    const imageHtml = imageUrl
+      ? `<img src="${this.escapeHtml(imageUrl)}" alt="Assinatura" style="display:block;max-width:220px;height:auto;margin-top:12px;border:0;" />`
+      : ''
+
+    const signatureHtml = `
+      <div style="margin-top:32px;padding-top:18px;border-top:1px solid #e5e7eb;color:#374151;font-family:Arial,sans-serif;font-size:14px;line-height:1.55;">
+        ${textHtml ?? ''}
+        ${imageHtml}
+      </div>
+    `
+
+    if (html.includes('</body>')) {
+      return html.replace('</body>', `${signatureHtml}</body>`)
+    }
+
+    return `${html}${signatureHtml}`
+  }
+
+  private escapeHtml(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
+  }
+
+  private toAbsoluteUrl(url: string): string {
+    if (!url) return ''
+    if (/^https?:\/\//i.test(url)) return url
+    if (!url.startsWith('/')) return url
+
+    return `${this.appUrl.replace(/\/$/, '')}${url}`
   }
 }

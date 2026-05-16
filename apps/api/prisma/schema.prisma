@@ -26,27 +26,27 @@ enum UserStatus {
 }
 
 enum SubscriptionStatus {
-  PENDING     // Aguardando confirmação de pagamento
-  ACTIVE      // Ativa
-  EXPIRED     // Expirada
-  CANCELLED   // Cancelada
+  PENDING // Aguardando confirmação de pagamento
+  ACTIVE // Ativa
+  EXPIRED // Expirada
+  CANCELLED // Cancelada
 }
 
 enum PressReleaseStatus {
-  DRAFT       // Rascunho
-  PUBLISHED   // Publicado
-  SCHEDULED   // Agendado
-  ARCHIVED    // Arquivado
+  DRAFT // Rascunho
+  PUBLISHED // Publicado
+  SCHEDULED // Agendado
+  ARCHIVED // Arquivado
 }
 
 enum CampaignStatus {
-  DRAFT       // Rascunho / configuração
-  QUEUED      // Na fila para envio
-  SENDING     // A ser enviado
-  SENT        // Enviado
-  FAILED      // Falhou
-  SCHEDULED   // Agendado
-  CANCELLED   // Cancelado
+  DRAFT // Rascunho / configuração
+  QUEUED // Na fila para envio
+  SENDING // A ser enviado
+  SENT // Enviado
+  FAILED // Falhou
+  SCHEDULED // Agendado
+  CANCELLED // Cancelado
 }
 
 enum RecipientStatus {
@@ -70,8 +70,8 @@ enum EmailEventType {
 enum MediaType {
   TV
   RADIO
-  PRINT      // Jornal impresso
-  DIGITAL    // Portal online / site
+  PRINT // Jornal impresso
+  DIGITAL // Portal online / site
   PODCAST
   MAGAZINE
 }
@@ -87,26 +87,28 @@ enum JournalistRegistrationStatus {
 // ─────────────────────────────────────────────────────────────────
 
 model User {
-  id           String     @id @default(cuid())
-  name         String
-  email        String     @unique
-  passwordHash String     @map("password_hash")
-  role         UserRole   @default(CLIENT)
-  status       UserStatus @default(PENDING)
-  avatarUrl            String?   @map("avatar_url")
-  phone                String?
-  company              String?
-  passwordResetToken   String?   @map("password_reset_token")
-  passwordResetExpires DateTime? @map("password_reset_expires")
-  createdAt            DateTime  @default(now()) @map("created_at")
-  updatedAt            DateTime  @updatedAt @map("updated_at")
+  id                     String     @id @default(cuid())
+  name                   String
+  email                  String     @unique
+  passwordHash           String     @map("password_hash")
+  role                   UserRole   @default(CLIENT)
+  status                 UserStatus @default(PENDING)
+  avatarUrl              String?    @map("avatar_url")
+  phone                  String?
+  company                String?
+  emailSignatureText     String?    @map("email_signature_text")
+  emailSignatureImageUrl String?    @map("email_signature_image_url")
+  passwordResetToken     String?    @map("password_reset_token")
+  passwordResetExpires   DateTime?  @map("password_reset_expires")
+  createdAt              DateTime   @default(now()) @map("created_at")
+  updatedAt              DateTime   @updatedAt @map("updated_at")
 
   // Relações
-  subscription    Subscription?
-  pressReleases   PressRelease[]
-  campaigns       Campaign[]
-  mailingLists    MailingList[]
-  refreshTokens   RefreshToken[]
+  subscription  Subscription?
+  pressReleases PressRelease[]
+  campaigns     Campaign[]
+  mailingLists  MailingList[]
+  refreshTokens RefreshToken[]
 
   @@map("users")
 }
@@ -130,10 +132,10 @@ model RefreshToken {
 
 model SubscriptionPlan {
   id              String   @id @default(cuid())
-  name            String   @unique  // "Básico", "Profissional", "Empresarial"
+  name            String   @unique // "Básico", "Profissional", "Empresarial"
   description     String?
   maxSendsMonth   Int      @map("max_sends_month")
-  features        Json     // Lista de funcionalidades incluídas
+  features        Json // Lista de funcionalidades incluídas
   priceMonthlyAoa Decimal  @map("price_monthly_aoa") @db.Decimal(10, 2)
   priceYearlyAoa  Decimal? @map("price_yearly_aoa") @db.Decimal(10, 2)
   isActive        Boolean  @default(true) @map("is_active")
@@ -176,7 +178,7 @@ model Journalist {
   id           String    @id @default(cuid())
   name         String
   email        String    @unique
-  outlet       String    // Veículo de comunicação
+  outlet       String // Veículo de comunicação
   jobTitle     String?   @map("job_title")
   coverageArea String[]  @map("coverage_area") // ["economia", "política", "tecnologia"]
   mediaType    MediaType @map("media_type")
@@ -270,15 +272,15 @@ model PressRelease {
   id          String             @id @default(cuid())
   userId      String             @map("user_id")
   title       String
-  content     String             // HTML do editor TipTap
-  summary     String?            // Resumo/olho da notícia
+  content     String // HTML do editor TipTap
+  summary     String? // Resumo/olho da notícia
   status      PressReleaseStatus @default(DRAFT)
   scheduledAt DateTime?          @map("scheduled_at")
   publishedAt DateTime?          @map("published_at")
   createdAt   DateTime           @default(now()) @map("created_at")
   updatedAt   DateTime           @updatedAt @map("updated_at")
 
-  user        User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
   attachments PressReleaseAttachment[]
   campaigns   Campaign[]
 
@@ -289,9 +291,9 @@ model PressReleaseAttachment {
   id             String   @id @default(cuid())
   pressReleaseId String   @map("press_release_id")
   fileName       String   @map("file_name")
-  fileUrl        String   @map("file_url")    // URL do S3
-  fileType       String   @map("file_type")   // "application/pdf", "image/jpeg", etc.
-  fileSize       Int      @map("file_size")   // em bytes
+  fileUrl        String   @map("file_url") // URL do S3
+  fileType       String   @map("file_type") // "application/pdf", "image/jpeg", etc.
+  fileSize       Int      @map("file_size") // em bytes
   createdAt      DateTime @default(now()) @map("created_at")
 
   pressRelease PressRelease @relation(fields: [pressReleaseId], references: [id], onDelete: Cascade)
@@ -304,17 +306,17 @@ model PressReleaseAttachment {
 // ─────────────────────────────────────────────────────────────────
 
 model Campaign {
-  id             String         @id @default(cuid())
-  userId         String         @map("user_id")
-  pressReleaseId String         @map("press_release_id")
-  name           String
-  subject        String         // Assunto do e-mail
-  status         CampaignStatus @default(DRAFT)
-  scheduledAt    DateTime?      @map("scheduled_at")
-  sentAt         DateTime?      @map("sent_at")
-  totalRecipients Int           @default(0) @map("total_recipients")
-  createdAt      DateTime       @default(now()) @map("created_at")
-  updatedAt      DateTime       @updatedAt @map("updated_at")
+  id              String         @id @default(cuid())
+  userId          String         @map("user_id")
+  pressReleaseId  String         @map("press_release_id")
+  name            String
+  subject         String // Assunto do e-mail
+  status          CampaignStatus @default(DRAFT)
+  scheduledAt     DateTime?      @map("scheduled_at")
+  sentAt          DateTime?      @map("sent_at")
+  totalRecipients Int            @default(0) @map("total_recipients")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
 
   user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   pressRelease PressRelease        @relation(fields: [pressReleaseId], references: [id])
@@ -325,15 +327,15 @@ model Campaign {
 }
 
 model CampaignRecipient {
-  id           String          @id @default(cuid())
-  campaignId   String          @map("campaign_id")
-  journalistId String          @map("journalist_id")
-  status       RecipientStatus @default(PENDING)
-  sentAt       DateTime?       @map("sent_at")
+  id            String          @id @default(cuid())
+  campaignId    String          @map("campaign_id")
+  journalistId  String          @map("journalist_id")
+  status        RecipientStatus @default(PENDING)
+  sentAt        DateTime?       @map("sent_at")
   // Token único para rastreio por destinatário
-  trackingToken String         @unique @default(cuid()) @map("tracking_token")
-  createdAt    DateTime        @default(now()) @map("created_at")
-  updatedAt    DateTime        @updatedAt @map("updated_at")
+  trackingToken String          @unique @default(cuid()) @map("tracking_token")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
 
   campaign   Campaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   journalist Journalist @relation(fields: [journalistId], references: [id])

@@ -9,6 +9,8 @@ export interface AuthUser {
   company: string | null
   phone: string | null
   avatarUrl: string | null
+  emailSignatureText: string | null
+  emailSignatureImageUrl: string | null
   createdAt: string
 }
 
@@ -62,8 +64,17 @@ export const authService = {
     phone?: string | null
     currentPassword?: string
     newPassword?: string
+    emailSignatureText?: string | null
+    emailSignatureImageUrl?: string | null
   }): Promise<AuthUser> => {
     const { data } = await api.patch<AuthUser>('/auth/me', payload)
+    return data
+  },
+
+  uploadSignatureImage: async (file: File): Promise<{ url: string }> => {
+    const formData = new FormData()
+    formData.append('file', file)
+    const { data } = await api.post<{ url: string }>('/auth/me/signature-image', formData)
     return data
   },
 }

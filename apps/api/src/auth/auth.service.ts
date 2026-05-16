@@ -208,6 +208,8 @@ export class AuthService {
     company: string | null
     phone: string | null
     avatarUrl: string | null
+    emailSignatureText?: string | null
+    emailSignatureImageUrl?: string | null
     createdAt: Date
   }) {
     return {
@@ -219,6 +221,8 @@ export class AuthService {
       company: user.company,
       phone: user.phone,
       avatarUrl: user.avatarUrl,
+      emailSignatureText: user.emailSignatureText ?? null,
+      emailSignatureImageUrl: user.emailSignatureImageUrl ?? null,
       createdAt: user.createdAt,
     }
   }

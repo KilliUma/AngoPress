@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { PrismaService } from '@/prisma/prisma.service'
 import { Resend } from 'resend'
 
 @Injectable()
@@ -9,7 +10,10 @@ export class MailService {
   private readonly isConfigured: boolean
   private readonly fromAddress: string
 
-  constructor(private readonly config: ConfigService) {
+  constructor(
+    private readonly config: ConfigService,
+    private readonly prisma: PrismaService,
+  ) {
     const apiKey = this.config.get<string>('resend.apiKey') ?? ''
     const fromName = this.config.get<string>('resend.fromName') ?? 'AngoPress'
     const fromEmail = this.config.get<string>('resend.fromEmail') ?? 'contacto@angopress.ao'
@@ -36,7 +40,9 @@ export class MailService {
       year: 'numeric',
     })
 
-    const html = `
+    const adminSignature = await this.getAdminSignature()
+    const html = this.appendSignature(
+      `
 <!DOCTYPE html>
 <html lang="pt">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
@@ -79,7 +85,9 @@ export class MailService {
     </div>
   </div>
 </body>
-</html>`
+</html>`,
+      adminSignature,
+    )
 
     const text = `Olá ${toName},\n\nA sua subscrição do plano ${planName} foi activada com sucesso.\nEnvios disponíveis: ${sendsPerMonth}/mês\nVálido até: ${expiresFormatted}\n\nAceda à plataforma em: ${process.env.APP_URL ?? 'http://localhost:5173'}/subscription`
 
@@ -103,5 +111,56 @@ export class MailService {
       // Email falhou mas não deve bloquear o fluxo
       this.logger.error(`Falha ao enviar email para ${toEmail}: ${(err as Error).message}`)
     }
+  }
+
+  private async getAdminSignature(): Promise<{ text: string | null; imageUrl: string | null }> {
+    const admin = await this.prisma.user.findFirst({
+      where: { role: 'ADMIN' },
+      select: { emailSignatureText: true, emailSignatureImageUrl: true },
+      orderBy: { createdAt: 'asc' },
+    })
+
+    return {
+      text: admin?.emailSignatureText ?? null,
+      imageUrl: admin?.emailSignatureImageUrl ?? null,
+    }
+  }
+
+  private appendSignature(
+    html: string,
+    signature: { text: string | null; imageUrl: string | null },
+  ): string {
+    if (!signature.text?.trim() && !signature.imageUrl?.trim()) return html
+
+    const textHtml = signature.text
+      ?.trim()
+      .split(/\r?\n/)
+      .filter(Boolean)
+      .map((line) => `<div>${this.escapeHtml(line)}</div>`)
+      .join('')
+
+    const imageUrl = signature.imageUrl?.trim()
+    const imageHtml = imageUrl
+      ? `<img src="${this.escapeHtml(imageUrl)}" alt="Assinatura" style="display:block;max-width:220px;height:auto;margin-top:12px;border:0;" />`
+      : ''
+
+    const signatureHtml = `
+      <div style="margin-top:32px;padding-top:18px;border-top:1px solid #e5e7eb;color:#374151;font-family:Arial,sans-serif;font-size:14px;line-height:1.55;">
+        ${textHtml ?? ''}
+        ${imageHtml}
+      </div>
+    `
+
+    if (html.includes('</body>')) return html.replace('</body>', `${signatureHtml}</body>`)
+    return `${html}${signatureHtml}`
+  }
+
+  private escapeHtml(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
   }
 }

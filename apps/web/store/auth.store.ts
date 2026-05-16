@@ -12,6 +12,8 @@ export interface AuthUser {
   company: string | null
   phone: string | null
   avatarUrl: string | null
+  emailSignatureText: string | null
+  emailSignatureImageUrl: string | null
   createdAt: string
 }
 

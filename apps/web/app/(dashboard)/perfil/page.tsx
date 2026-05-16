@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ChangeEvent } from 'react'
 import { useForm, type UseFormRegisterReturn } from 'react-hook-form'
 import {
   User,
@@ -16,14 +16,17 @@ import {
   Mail,
   ShieldCheck,
   Sparkles,
+  ImagePlus,
+  Trash2,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/auth.store'
-import { useProfile, useUpdateProfile } from '@/hooks/useAuth'
+import { useProfile, useUpdateProfile, useUploadSignatureImage } from '@/hooks/useAuth'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
 import type { BadgeColor } from '@/components/ui/Badge'
+import { toast } from 'sonner'
 
 // ──────────────────────────────────────────────────────────────
 // Tipos de formulários
@@ -32,6 +35,8 @@ interface ProfileFormData {
   name: string
   company: string
   phone: string
+  emailSignatureText: string
+  emailSignatureImageUrl: string
 }
 
 interface PasswordFormData {
@@ -59,6 +64,10 @@ const SECURITY_TIPS = [
   'Evite reutilizar a mesma password em outros serviços.',
   'Mantenha o seu telefone actualizado para contacto rápido.',
 ]
+
+const SIGNATURE_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+const SIGNATURE_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif']
+const SIGNATURE_IMAGE_MAX_SIZE = 2 * 1024 * 1024
 
 function getPasswordStrength(password: string) {
   let score = 0
@@ -179,14 +188,18 @@ export default function PerfilPage() {
   const { user: storeUser } = useAuthStore()
   const { data: profile } = useProfile()
   const { mutate: updateProfile, isPending: isSaving } = useUpdateProfile()
+  const uploadSignatureImage = useUploadSignatureImage()
 
   const user = profile ?? storeUser
+  const isAdmin = user?.role === 'ADMIN'
 
   // ── Formulário: dados pessoais ────────────────────────────
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch: watchProfile,
     formState: { errors: profileErrors, isDirty: profileDirty },
   } = useForm<ProfileFormData>()
 
@@ -196,6 +209,8 @@ export default function PerfilPage() {
         name: user.name ?? '',
         company: user.company ?? '',
         phone: user.phone ?? '',
+        emailSignatureText: user.emailSignatureText ?? '',
+        emailSignatureImageUrl: user.emailSignatureImageUrl ?? '',
       })
     }
   }, [user, reset])
@@ -205,7 +220,54 @@ export default function PerfilPage() {
       name: data.name,
       company: data.company || null,
       phone: data.phone || null,
+      ...(isAdmin
+        ? {
+            emailSignatureText: data.emailSignatureText || null,
+            emailSignatureImageUrl: data.emailSignatureImageUrl || null,
+          }
+        : {}),
     })
+  }
+
+  const signatureImageUrl = watchProfile('emailSignatureImageUrl') ?? ''
+
+  const handleSignatureImageChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+
+    const extension = file.name.split('.').pop()?.toLowerCase() ?? ''
+    const hasValidType = SIGNATURE_IMAGE_TYPES.includes(file.type)
+    const hasValidExtension = SIGNATURE_IMAGE_EXTENSIONS.includes(extension)
+
+    if (!hasValidType && !hasValidExtension) {
+      toast.error('Use uma imagem PNG, JPG, WEBP ou GIF.')
+      return
+    }
+
+    if (file.size > SIGNATURE_IMAGE_MAX_SIZE) {
+      toast.error('A imagem deve ter no máximo 2MB.')
+      return
+    }
+
+    try {
+      const result = await uploadSignatureImage.mutateAsync(file)
+      setValue('emailSignatureImageUrl', result.url, { shouldDirty: true, shouldValidate: true })
+    } catch (error) {
+      const message =
+        typeof error === 'object' &&
+        error !== null &&
+        'response' in error &&
+        typeof error.response === 'object' &&
+        error.response !== null &&
+        'data' in error.response &&
+        typeof error.response.data === 'object' &&
+        error.response.data !== null &&
+        'message' in error.response.data
+          ? String(error.response.data.message)
+          : 'Não foi possível carregar a imagem da assinatura.'
+      toast.error(message)
+    }
   }
 
   // ── Formulário: password ──────────────────────────────────
@@ -397,6 +459,95 @@ export default function PerfilPage() {
                   {...register('phone')}
                 />
               </div>
+
+              {isAdmin && (
+                <div className="space-y-4 rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-neutral-900">
+                        Assinatura dos emails
+                      </p>
+                      <p className="mt-1 text-sm text-neutral-600">
+                        Esta assinatura será adicionada ao final dos emails de campanha enviados
+                        pela conta admin.
+                      </p>
+                    </div>
+                    <Badge color="brand" size="sm">
+                      Admin
+                    </Badge>
+                  </div>
+
+                  <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
+                    <div>
+                      <label className="block mb-1 text-xs font-semibold tracking-wide uppercase text-neutral-600">
+                        Texto da assinatura
+                      </label>
+                      <textarea
+                        rows={6}
+                        maxLength={1200}
+                        placeholder="Ex: Atenciosamente&#10;Equipa AngoPress&#10;contacto@angopress.ao"
+                        className="block w-full resize-y rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 shadow-sm placeholder:text-neutral-400 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
+                        {...register('emailSignatureText', {
+                          maxLength: {
+                            value: 1200,
+                            message: 'Máximo 1200 caracteres',
+                          },
+                        })}
+                      />
+                      {profileErrors.emailSignatureText && (
+                        <p className="mt-1 text-xs text-red-600">
+                          {profileErrors.emailSignatureText.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-3">
+                      <label className="block text-xs font-semibold tracking-wide uppercase text-neutral-600">
+                        Imagem
+                      </label>
+                      <div className="flex min-h-[150px] items-center justify-center rounded-xl border border-dashed border-neutral-300 bg-white p-3">
+                        {signatureImageUrl ? (
+                          <img
+                            src={signatureImageUrl}
+                            alt="Pré-visualização da assinatura"
+                            className="max-h-32 max-w-full object-contain"
+                          />
+                        ) : (
+                          <div className="text-center text-neutral-400">
+                            <ImagePlus size={28} className="mx-auto" />
+                            <p className="mt-2 text-xs">PNG, JPG, WEBP ou GIF até 2MB</p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-brand-600 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-700">
+                          <ImagePlus size={14} />
+                          {uploadSignatureImage.isPending ? 'A carregar...' : 'Adicionar imagem'}
+                          <input
+                            type="file"
+                            accept="image/png,image/jpeg,image/webp,image/gif"
+                            className="sr-only"
+                            disabled={uploadSignatureImage.isPending}
+                            onChange={handleSignatureImageChange}
+                          />
+                        </label>
+                        {signatureImageUrl && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setValue('emailSignatureImageUrl', '', { shouldDirty: true })
+                            }
+                            className="inline-flex items-center gap-2 rounded-lg border border-neutral-300 px-3 py-2 text-xs font-semibold text-neutral-700 transition-colors hover:bg-white"
+                          >
+                            <Trash2 size={14} />
+                            Remover
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="p-4 border rounded-2xl border-brand-100 bg-brand-50/60">
                 <div className="flex items-start gap-3">

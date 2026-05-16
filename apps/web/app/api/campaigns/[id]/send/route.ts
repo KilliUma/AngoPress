@@ -9,6 +9,14 @@ function personalize(html: string, vars: Record<string, string>): string {
   return html.replace(/\{\{(\w+)\}\}/g, (_, key) => vars[key] ?? `{{${key}}}`)
 }
 
+function normalizeEmailBody(html: string): string {
+  return html
+    .replace(/<li\b[^>]*>\s*(?:<p\b[^>]*>)?\s*(?:<br\s*\/?>)?\s*(?:<\/p>)?\s*<\/li>/gi, '')
+    .replace(/<li\b[^>]*>\s*<p\b([^>]*)>([\s\S]*?)<\/p>\s*<\/li>/gi, '<p$1>$2</p>')
+    .replace(/<li\b[^>]*>([\s\S]*?)<\/li>/gi, '<p>$1</p>')
+    .replace(/<\/?(?:ol|ul)\b[^>]*>/gi, '')
+}
+
 function injectTrackingPixel(html: string, pixelUrl: string): string {
   const pixel = `<img src="${pixelUrl}" width="1" height="1" style="display:none" alt="" />`
   if (html.includes('</body>')) return html.replace('</body>', `${pixel}</body>`)
@@ -88,6 +96,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         ? `https://${process.env.VERCEL_URL}`
         : 'http://localhost:3000'
 
+    const adminSignature = await prisma.user.findFirst({
+      where: {
+        role: 'ADMIN',
+        OR: [{ emailSignatureText: { not: null } }, { emailSignatureImageUrl: { not: null } }],
+      },
+      select: { emailSignatureText: true, emailSignatureImageUrl: true },
+      orderBy: { createdAt: 'asc' },
+    })
+
     const recipients = await prisma.campaignRecipient.findMany({
       where: { campaignId: id, status: 'PENDING' },
       include: { journalist: true },
@@ -100,10 +117,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           nome: recipient.journalist.name,
           veiculo: recipient.journalist.outlet,
         })
+        const cleanHtml = normalizeEmailBody(personalized)
         const pixelUrl = `${appUrl}/api/track/open/${recipient.trackingToken}`
         const unsubscribeUrl = `${appUrl}/api/unsubscribe/${recipient.trackingToken}`
         const trackedHtml = injectTrackingPixel(
-          injectUnsubscribeLink(personalized, unsubscribeUrl),
+          injectUnsubscribeLink(cleanHtml, unsubscribeUrl),
           pixelUrl,
         )
 
@@ -112,6 +130,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           toName: recipient.journalist.name,
           subject: campaign.subject,
           html: trackedHtml,
+          signature: {
+            text: adminSignature?.emailSignatureText,
+            imageUrl: adminSignature?.emailSignatureImageUrl,
+          },
         })
 
         await prisma.campaignRecipient.update({

@@ -79,12 +79,21 @@ export async function POST(
 
     // Enviar e-mail de confirmação
     try {
+      const admin = await prisma.user.findUnique({
+        where: { id: authUser.sub },
+        select: { emailSignatureText: true, emailSignatureImageUrl: true },
+      })
+
       await sendSubscriptionActivatedEmail({
         toEmail: user.email,
         toName: user.name,
         planName: plan.name,
         expiresAt: updated.expiresAt ?? effectiveExpiresAt,
         sendsPerMonth: plan.maxSendsMonth,
+        signature: {
+          text: admin?.emailSignatureText,
+          imageUrl: admin?.emailSignatureImageUrl,
+        },
       })
     } catch (error) {
       console.error('[subscription-activate] Falha ao enviar email de confirmação', {
