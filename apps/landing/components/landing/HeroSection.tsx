@@ -82,7 +82,7 @@ function DashboardMockup({ stats }: { stats?: HeroStats }) {
           <span className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
           <div className="flex justify-center flex-1">
             <span className="text-[11px] text-white/25 font-mono bg-white/5 px-3 py-0.5 rounded border border-white/[0.06]">
-              app.angopress.ao — Dashboard
+              sistema.angopress.ao — Dashboard
             </span>
           </div>
           <span className="text-[10px] text-white/20 font-medium hidden sm:block">
@@ -135,7 +135,7 @@ function DashboardMockup({ stats }: { stats?: HeroStats }) {
 export function HeroSection({ stats, content }: Props) {
   const journalistsLabel = stats ? fmtNum(stats.totalJournalists) + '+' : '2.500+'
   const cms = content ?? HERO_FALLBACK
-  const primaryHref = 'https://angopress.vercel.app/login'
+  const primaryHref = 'https://sistema.angopress.ao/login'
 
   return (
     <section className="relative flex flex-col justify-center min-h-screen px-4 pt-20 pb-16 overflow-hidden sm:px-6">

@@ -41,7 +41,6 @@ function CheckRow({ text, light }: { text: string; light?: boolean }) {
 }
 
 export function ForWhoSection() {
-  const APP_URL = process.env.APP_URL ?? 'http://localhost:5173'
   return (
     <section id="para-quem" className="relative px-4 overflow-hidden py-28 sm:px-6">
       <div className="absolute inset-0 bg-white" />
@@ -94,7 +93,7 @@ export function ForWhoSection() {
                 </ul>
 
                 <a
-                  href="https://angopress.vercel.app/login"
+                  href="https://sistema.angopress.ao/login"
                   className="inline-flex items-center justify-center gap-2 w-full py-3.5 text-sm font-bold bg-white text-brand-700 hover:bg-brand-50 rounded-xl transition-all duration-150 shadow-lg"
                 >
                   Criar conta

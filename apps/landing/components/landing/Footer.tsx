@@ -3,19 +3,19 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.angopress.ao'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://sistema.angopress.ao'
 
 const PLATAFORMA_LINKS = [
   ['Sobre', '#sobre'],
   ['Como funciona', '#como-funciona'],
   ['Funcionalidades', '#como-funciona'],
   ['Planos e Preços', '#precos'],
-  ['Criar conta', 'https://angopress.vercel.app/login'],
-  ['Entrar', 'https://angopress.vercel.app/login'],
+  ['Criar conta', 'https://sistema.angopress.ao/login'],
+  ['Entrar', 'https://sistema.angopress.ao/login'],
 ]
 
 const JORNALISTAS_LINKS = [
-  ['Registar-se', 'https://angopress.vercel.app/login'],
+  ['Registar-se', 'https://sistema.angopress.ao/login'],
   ['Como funciona', '#como-funciona'],
 ]
 

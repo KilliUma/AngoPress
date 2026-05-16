@@ -125,7 +125,7 @@ const STEP_NUMBERS = ['01', '02', '03']
 
 export function HowItWorksSection({ content }: { content?: HowItWorksContent }) {
   const cms = content ?? HOW_IT_WORKS_FALLBACK
-  const ctaHref = 'https://angopress.vercel.app/login'
+  const ctaHref = 'https://sistema.angopress.ao/login'
 
   return (
     <section id="como-funciona" className="py-28 px-4 sm:px-6 bg-gray-50 relative overflow-hidden">

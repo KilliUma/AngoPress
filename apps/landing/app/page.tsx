@@ -28,7 +28,7 @@ function resolveApiBaseUrls(): string[] {
     }
   }
 
-  urls.push('http://localhost:3000', 'http://localhost:3001', 'https://angopress.vercel.app')
+  urls.push('http://localhost:3000', 'http://localhost:3001', 'https://sistema.angopress.ao')
   return [...new Set(urls)]
 }
 

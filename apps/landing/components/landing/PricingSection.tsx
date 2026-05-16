@@ -56,7 +56,6 @@ function formatKz(value: number) {
 }
 
 function PlanCard({ plan, index }: { plan: Plan; index: number }) {
-  const APP_URL = process.env.APP_URL ?? 'http://localhost:5173'
   const isPro = plan.name === 'Profissional'
   const isFree = plan.price === 0
 
@@ -123,7 +122,7 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
         </ul>
 
         <a
-          href="https://angopress.vercel.app/login"
+          href="https://sistema.angopress.ao/login"
           className={`w-full inline-flex items-center justify-center px-5 py-3 rounded-xl text-sm font-bold transition-all duration-150 ${
             isPro
               ? 'bg-brand-500 hover:bg-brand-400 text-white shadow-lg shadow-brand-900/50 glow-brand-xs'

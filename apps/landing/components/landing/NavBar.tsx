@@ -19,7 +19,7 @@ export function NavBar({ transparentUntil = 12 }: { transparentUntil?: number })
   const [scrolled, setScrolled] = useState(false)
   const [activeHash, setActiveHash] = useState('')
   const pathname = usePathname()
-  const ASSESSOR_LOGIN_URL = 'https://angopress.vercel.app/login'
+  const ASSESSOR_LOGIN_URL = 'https://sistema.angopress.ao/login'
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > transparentUntil)
