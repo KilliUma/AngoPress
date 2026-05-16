@@ -25,7 +25,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'Campos obrigatórios em falta' }, { status: 400 })
     }
 
-    const existing = await prisma.user.findUnique({ where: { email: email.toLowerCase() } })
+    const existing = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+      select: { id: true },
+    })
     if (existing) {
       return NextResponse.json({ message: 'Este email já está em uso' }, { status: 409 })
     }
@@ -72,7 +75,10 @@ export async function POST(request: NextRequest) {
     )
     cookies.forEach((c) => response.headers.append('Set-Cookie', c))
     return response
-  } catch {
+  } catch (error) {
+    console.error('[POST /api/auth/register]', {
+      message: error instanceof Error ? error.message : 'Erro desconhecido',
+    })
     return NextResponse.json({ message: 'Erro interno do servidor' }, { status: 500 })
   }
 }

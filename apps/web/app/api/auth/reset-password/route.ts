@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
 
     const user = await prisma.user.findFirst({
       where: { passwordResetToken: token, passwordResetExpires: { gt: new Date() } },
+      select: { id: true },
     })
 
     if (!user) {

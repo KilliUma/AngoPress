@@ -11,7 +11,10 @@ export async function POST(request: NextRequest) {
       return new NextResponse(null, { status: 204 })
     }
 
-    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } })
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+      select: { id: true, email: true },
+    })
     // Não revelar se o email existe
     if (!user) return new NextResponse(null, { status: 204 })
 
