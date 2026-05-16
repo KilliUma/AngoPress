@@ -13,7 +13,7 @@ export class EmailService {
 
   constructor(configService: ConfigService) {
     const apiKey = configService.get<string>('resend.apiKey') ?? ''
-    this.fromEmail = configService.get<string>('resend.fromEmail') ?? 'noreply@angopress.ao'
+    this.fromEmail = configService.get<string>('resend.fromEmail') ?? 'contacto@angopress.ao'
     this.fromName = configService.get<string>('resend.fromName') ?? 'AngoPress'
     this.appUrl = configService.get<string>('app.url') ?? 'http://localhost:3001'
 

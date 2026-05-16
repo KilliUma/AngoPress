@@ -12,7 +12,7 @@ export class MailService {
   constructor(private readonly config: ConfigService) {
     const apiKey = this.config.get<string>('resend.apiKey') ?? ''
     const fromName = this.config.get<string>('resend.fromName') ?? 'AngoPress'
-    const fromEmail = this.config.get<string>('resend.fromEmail') ?? 'noreply@angopress.ao'
+    const fromEmail = this.config.get<string>('resend.fromEmail') ?? 'contacto@angopress.ao'
 
     this.fromAddress = `${fromName} <${fromEmail}>`
     this.isConfigured = apiKey !== '' && !apiKey.startsWith('re_placeholder')

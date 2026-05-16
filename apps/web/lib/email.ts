@@ -7,7 +7,7 @@ const isConfigured =
 
 const resend = isConfigured ? new Resend(process.env.RESEND_API_KEY) : null
 
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? 'noreply@angopress.ao'
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? 'contacto@angopress.ao'
 const FROM_NAME = process.env.RESEND_FROM_NAME ?? 'AngoPress'
 
 export async function sendEmail(params: {
