@@ -96,6 +96,8 @@ model User {
   avatarUrl              String?    @map("avatar_url")
   phone                  String?
   company                String?
+  senderName             String?    @map("sender_name")
+  senderEmail            String?    @map("sender_email")
   emailSignatureText     String?    @map("email_signature_text")
   emailSignatureImageUrl String?    @map("email_signature_image_url")
   passwordResetToken     String?    @map("password_reset_token")

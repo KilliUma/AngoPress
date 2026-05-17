@@ -23,18 +23,23 @@ export async function sendEmail(params: {
   subject: string
   html: string
   signature?: EmailSignature
+  sender?: { name: string; email: string }
 }): Promise<void> {
-  const { to, toName, subject, html, signature } = params
+  const { to, toName, subject, html, signature, sender } = params
   const { html: htmlWithSignature, attachments } = await appendEmailSignature(html, signature)
 
+  const fromName = sender?.name ?? FROM_NAME
+  const replyTo = sender?.email ?? undefined
+
   if (!resend) {
-    console.debug(`[DEV] Simulando envio para ${to} — "${subject}"`)
+    console.debug(`[DEV] Simulando envio de "${fromName}" para ${to} — "${subject}"`)
     return
   }
 
   const result = await resend.emails.send({
-    from: `${FROM_NAME} <${FROM_EMAIL}>`,
+    from: `${fromName} <${FROM_EMAIL}>`,
     to: [`${toName} <${to}>`],
+    replyTo: replyTo,
     subject,
     html: htmlWithSignature,
     attachments,

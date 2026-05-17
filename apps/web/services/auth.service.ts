@@ -9,6 +9,8 @@ export interface AuthUser {
   company: string | null
   phone: string | null
   avatarUrl: string | null
+  senderName: string | null
+  senderEmail: string | null
   emailSignatureText: string | null
   emailSignatureImageUrl: string | null
   createdAt: string
@@ -64,6 +66,8 @@ export const authService = {
     phone?: string | null
     currentPassword?: string
     newPassword?: string
+    senderName?: string | null
+    senderEmail?: string | null
     emailSignatureText?: string | null
     emailSignatureImageUrl?: string | null
   }): Promise<AuthUser> => {

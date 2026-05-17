@@ -96,13 +96,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         ? `https://${process.env.VERCEL_URL}`
         : 'http://localhost:3000'
 
-    const adminSignature = await prisma.user.findFirst({
-      where: {
-        role: 'ADMIN',
-        OR: [{ emailSignatureText: { not: null } }, { emailSignatureImageUrl: { not: null } }],
+    const campaignOwner = await prisma.user.findUnique({
+      where: { id: authUser.sub },
+      select: {
+        name: true,
+        email: true,
+        senderName: true,
+        senderEmail: true,
+        emailSignatureText: true,
+        emailSignatureImageUrl: true,
       },
-      select: { emailSignatureText: true, emailSignatureImageUrl: true },
-      orderBy: { createdAt: 'asc' },
     })
 
     const recipients = await prisma.campaignRecipient.findMany({
@@ -131,8 +134,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           subject: campaign.subject,
           html: trackedHtml,
           signature: {
-            text: adminSignature?.emailSignatureText,
-            imageUrl: adminSignature?.emailSignatureImageUrl,
+            text: campaignOwner?.emailSignatureText,
+            imageUrl: campaignOwner?.emailSignatureImageUrl,
+          },
+          sender: {
+            name: campaignOwner?.senderName ?? campaignOwner?.name ?? '',
+            email: campaignOwner?.senderEmail ?? campaignOwner?.email ?? '',
           },
         })
 

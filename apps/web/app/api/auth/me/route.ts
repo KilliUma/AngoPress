@@ -24,6 +24,8 @@ export async function GET(request: NextRequest) {
       company: user.company,
       phone: user.phone,
       avatarUrl: user.avatarUrl,
+      senderName: user.senderName,
+      senderEmail: user.senderEmail,
       emailSignatureText: user.emailSignatureText,
       emailSignatureImageUrl: user.emailSignatureImageUrl,
       createdAt: user.createdAt,
@@ -50,6 +52,8 @@ export async function PATCH(request: NextRequest) {
       phone,
       currentPassword,
       newPassword,
+      senderName,
+      senderEmail,
       emailSignatureText,
       emailSignatureImageUrl,
     } = body
@@ -74,13 +78,25 @@ export async function PATCH(request: NextRequest) {
     if (company !== undefined) updateData.company = company?.trim() || null
     if (phone !== undefined) updateData.phone = phone?.trim() || null
 
-    if (emailSignatureText !== undefined) {
-      if (user.role !== 'ADMIN') {
-        return NextResponse.json(
-          { message: 'Apenas administradores podem editar a assinatura' },
-          { status: 403 },
-        )
+    if (senderName !== undefined) {
+      if (senderName !== null && typeof senderName !== 'string') {
+        return NextResponse.json({ message: 'Nome de remetente inválido' }, { status: 400 })
       }
+      updateData.senderName = senderName?.trim() || null
+    }
+
+    if (senderEmail !== undefined) {
+      if (senderEmail !== null && typeof senderEmail !== 'string') {
+        return NextResponse.json({ message: 'Email de remetente inválido' }, { status: 400 })
+      }
+      const emailTrimmed = senderEmail?.trim() || null
+      if (emailTrimmed && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed)) {
+        return NextResponse.json({ message: 'Email de remetente inválido' }, { status: 400 })
+      }
+      updateData.senderEmail = emailTrimmed
+    }
+
+    if (emailSignatureText !== undefined) {
       if (typeof emailSignatureText !== 'string') {
         return NextResponse.json({ message: 'Assinatura inválida' }, { status: 400 })
       }
@@ -91,12 +107,6 @@ export async function PATCH(request: NextRequest) {
     }
 
     if (emailSignatureImageUrl !== undefined) {
-      if (user.role !== 'ADMIN') {
-        return NextResponse.json(
-          { message: 'Apenas administradores podem editar a assinatura' },
-          { status: 403 },
-        )
-      }
       if (emailSignatureImageUrl !== null && typeof emailSignatureImageUrl !== 'string') {
         return NextResponse.json({ message: 'Imagem da assinatura inválida' }, { status: 400 })
       }
@@ -135,6 +145,8 @@ export async function PATCH(request: NextRequest) {
       company: updated.company,
       phone: updated.phone,
       avatarUrl: updated.avatarUrl,
+      senderName: updated.senderName,
+      senderEmail: updated.senderEmail,
       emailSignatureText: updated.emailSignatureText,
       emailSignatureImageUrl: updated.emailSignatureImageUrl,
       createdAt: updated.createdAt,

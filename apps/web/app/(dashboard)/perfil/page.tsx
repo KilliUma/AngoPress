@@ -35,6 +35,8 @@ interface ProfileFormData {
   name: string
   company: string
   phone: string
+  senderName: string
+  senderEmail: string
   emailSignatureText: string
   emailSignatureImageUrl: string
 }
@@ -191,7 +193,6 @@ export default function PerfilPage() {
   const uploadSignatureImage = useUploadSignatureImage()
 
   const user = profile ?? storeUser
-  const isAdmin = user?.role === 'ADMIN'
 
   // ── Formulário: dados pessoais ────────────────────────────
   const {
@@ -209,6 +210,8 @@ export default function PerfilPage() {
         name: user.name ?? '',
         company: user.company ?? '',
         phone: user.phone ?? '',
+        senderName: user.senderName ?? '',
+        senderEmail: user.senderEmail ?? '',
         emailSignatureText: user.emailSignatureText ?? '',
         emailSignatureImageUrl: user.emailSignatureImageUrl ?? '',
       })
@@ -220,12 +223,10 @@ export default function PerfilPage() {
       name: data.name,
       company: data.company || null,
       phone: data.phone || null,
-      ...(isAdmin
-        ? {
-            emailSignatureText: data.emailSignatureText || null,
-            emailSignatureImageUrl: data.emailSignatureImageUrl || null,
-          }
-        : {}),
+      senderName: data.senderName || null,
+      senderEmail: data.senderEmail || null,
+      emailSignatureText: data.emailSignatureText || null,
+      emailSignatureImageUrl: data.emailSignatureImageUrl || null,
     })
   }
 
@@ -460,94 +461,109 @@ export default function PerfilPage() {
                 />
               </div>
 
-              {isAdmin && (
-                <div className="space-y-4 rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <p className="text-sm font-semibold text-neutral-900">
-                        Assinatura dos emails
+              <div className="space-y-4 rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
+                <div>
+                  <p className="text-sm font-semibold text-neutral-900">Identidade de envio</p>
+                  <p className="mt-1 text-sm text-neutral-600">
+                    Nome e email que os jornalistas vêem quando recebem as suas campanhas. As
+                    respostas serão enviadas para o email de remetente configurado.
+                  </p>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <Input
+                    label="Nome do remetente"
+                    leftIcon={<User size={15} />}
+                    placeholder="Ex: João Silva — Assessor de Comunicação"
+                    error={profileErrors.senderName?.message}
+                    {...register('senderName')}
+                  />
+                  <Input
+                    label="Email de resposta"
+                    leftIcon={<Mail size={15} />}
+                    placeholder="Ex: joao@empresa.ao"
+                    error={profileErrors.senderEmail?.message}
+                    {...register('senderEmail', {
+                      pattern: {
+                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                        message: 'Email inválido',
+                      },
+                    })}
+                  />
+                </div>
+
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
+                  <div>
+                    <label className="block mb-1 text-xs font-semibold tracking-wide uppercase text-neutral-600">
+                      Assinatura de email
+                    </label>
+                    <textarea
+                      rows={6}
+                      maxLength={1200}
+                      placeholder={
+                        'Ex: Atenciosamente\nJoão Silva\nAssessor de Comunicação\njoao@empresa.ao'
+                      }
+                      className="block w-full resize-y rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 shadow-sm placeholder:text-neutral-400 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
+                      {...register('emailSignatureText', {
+                        maxLength: {
+                          value: 1200,
+                          message: 'Máximo 1200 caracteres',
+                        },
+                      })}
+                    />
+                    {profileErrors.emailSignatureText && (
+                      <p className="mt-1 text-xs text-red-600">
+                        {profileErrors.emailSignatureText.message}
                       </p>
-                      <p className="mt-1 text-sm text-neutral-600">
-                        Esta assinatura será adicionada ao final dos emails de campanha enviados
-                        pela conta admin.
-                      </p>
-                    </div>
-                    <Badge color="brand" size="sm">
-                      Admin
-                    </Badge>
+                    )}
                   </div>
 
-                  <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
-                    <div>
-                      <label className="block mb-1 text-xs font-semibold tracking-wide uppercase text-neutral-600">
-                        Texto da assinatura
-                      </label>
-                      <textarea
-                        rows={6}
-                        maxLength={1200}
-                        placeholder="Ex: Atenciosamente&#10;Equipa AngoPress&#10;contacto@angopress.ao"
-                        className="block w-full resize-y rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 shadow-sm placeholder:text-neutral-400 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
-                        {...register('emailSignatureText', {
-                          maxLength: {
-                            value: 1200,
-                            message: 'Máximo 1200 caracteres',
-                          },
-                        })}
-                      />
-                      {profileErrors.emailSignatureText && (
-                        <p className="mt-1 text-xs text-red-600">
-                          {profileErrors.emailSignatureText.message}
-                        </p>
+                  <div className="space-y-3">
+                    <label className="block text-xs font-semibold tracking-wide uppercase text-neutral-600">
+                      Imagem da assinatura
+                    </label>
+                    <div className="flex min-h-[150px] items-center justify-center rounded-xl border border-dashed border-neutral-300 bg-white p-3">
+                      {signatureImageUrl ? (
+                        <img
+                          src={signatureImageUrl}
+                          alt="Pré-visualização da assinatura"
+                          className="max-h-32 max-w-full object-contain"
+                        />
+                      ) : (
+                        <div className="text-center text-neutral-400">
+                          <ImagePlus size={28} className="mx-auto" />
+                          <p className="mt-2 text-xs">PNG, JPG, WEBP ou GIF até 2MB</p>
+                        </div>
                       )}
                     </div>
-
-                    <div className="space-y-3">
-                      <label className="block text-xs font-semibold tracking-wide uppercase text-neutral-600">
-                        Imagem
+                    <div className="flex flex-wrap gap-2">
+                      <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-brand-600 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-700">
+                        <ImagePlus size={14} />
+                        {uploadSignatureImage.isPending ? 'A carregar...' : 'Adicionar imagem'}
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp,image/gif"
+                          className="sr-only"
+                          disabled={uploadSignatureImage.isPending}
+                          onChange={handleSignatureImageChange}
+                        />
                       </label>
-                      <div className="flex min-h-[150px] items-center justify-center rounded-xl border border-dashed border-neutral-300 bg-white p-3">
-                        {signatureImageUrl ? (
-                          <img
-                            src={signatureImageUrl}
-                            alt="Pré-visualização da assinatura"
-                            className="max-h-32 max-w-full object-contain"
-                          />
-                        ) : (
-                          <div className="text-center text-neutral-400">
-                            <ImagePlus size={28} className="mx-auto" />
-                            <p className="mt-2 text-xs">PNG, JPG, WEBP ou GIF até 2MB</p>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-brand-600 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-700">
-                          <ImagePlus size={14} />
-                          {uploadSignatureImage.isPending ? 'A carregar...' : 'Adicionar imagem'}
-                          <input
-                            type="file"
-                            accept="image/png,image/jpeg,image/webp,image/gif"
-                            className="sr-only"
-                            disabled={uploadSignatureImage.isPending}
-                            onChange={handleSignatureImageChange}
-                          />
-                        </label>
-                        {signatureImageUrl && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setValue('emailSignatureImageUrl', '', { shouldDirty: true })
-                            }
-                            className="inline-flex items-center gap-2 rounded-lg border border-neutral-300 px-3 py-2 text-xs font-semibold text-neutral-700 transition-colors hover:bg-white"
-                          >
-                            <Trash2 size={14} />
-                            Remover
-                          </button>
-                        )}
-                      </div>
+                      {signatureImageUrl && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setValue('emailSignatureImageUrl', '', { shouldDirty: true })
+                          }
+                          className="inline-flex items-center gap-2 rounded-lg border border-neutral-300 px-3 py-2 text-xs font-semibold text-neutral-700 transition-colors hover:bg-white"
+                        >
+                          <Trash2 size={14} />
+                          Remover
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
-              )}
+              </div>
 
               <div className="p-4 border rounded-2xl border-brand-100 bg-brand-50/60">
                 <div className="flex items-start gap-3">
